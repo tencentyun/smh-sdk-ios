@@ -31,7 +31,6 @@
 #import "QCloudSMHOrganizationDetailInfo.h"
 #import "QCloudSMHOrganizationInfo.h"
 #import "QCloudSMHOrganizationsInfo.h"
-#import "QCloudSMHPurchaseModel.h"
 #import "QCloudSMHRecentlyFileListInfo.h"
 #import "QCloudSMHShareUserInfo.h"
 #import "QCloudSMHSpacesSizeInfo.h"

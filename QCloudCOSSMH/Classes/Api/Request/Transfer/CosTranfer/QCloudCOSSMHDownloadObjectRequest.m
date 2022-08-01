@@ -238,7 +238,7 @@
             QCloudRemoveFileByPath(self.resumableTaskFile);
         }
     }
-    QCloudRemoveFileByPath(self.downloadingURL);
+    QCloudRemoveFileByPath(self.downloadingURL.relativePath);
     [self cancel];
 }
 

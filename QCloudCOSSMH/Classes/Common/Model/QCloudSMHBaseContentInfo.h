@@ -6,7 +6,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "NSObject+QCloudModel.h"
 #import "QCloudSMHUserInfo.h"
 #import "QCloudSpaceTagEnum.h"
 #import "QCloudSMHTeamInfo.h"

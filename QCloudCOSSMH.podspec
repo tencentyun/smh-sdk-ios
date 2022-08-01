@@ -19,11 +19,13 @@ Pod::Spec.new do |s|
   s.default_subspec = 'Default'
   s.subspec 'Default' do |default|
     default.source_files = 'QCloudCOSSMH/Classes/**/*'
+    default.exclude_files = 'QCloudCOSSMH/Classes/Api/QCloudCOSSMHApi.h','QCloudCOSSMH/Classes/User/QCloudCOSSMHUser.h'
     default.dependency "QCloudCore",'6.1.3'
   end
   
   s.subspec 'Slim' do |slim|
-    slim.source_files = 'Pod/Classes/**/*'
+    slim.source_files = 'QCloudCOSSMH/Classes/**/*'
+    slim.exclude_files = 'QCloudCOSSMH/Classes/Api/QCloudCOSSMHApi.h','QCloudCOSSMH/Classes/User/QCloudCOSSMHUser.h'
     slim.dependency "QCloudCore/WithoutMTA",'6.1.3'
   end
 
@@ -32,7 +34,7 @@ Pod::Spec.new do |s|
                        'QCloudCOSSMH/Classes/Api/**/*',
                        'QCloudCOSSMH/Classes/QCloudCOSSMHVersion.*',
                        'QCloudCOSSMH/Classes/Common/*',
-                       'Pod/Classes/Common/**/*'
+                       'QCloudCOSSMH/Classes/Common/**/*'
     api.dependency "QCloudCore/WithoutMTA",'6.1.3'
   end
   
