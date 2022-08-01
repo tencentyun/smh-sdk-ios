@@ -205,4 +205,5 @@ SMH SDK提供了自定义域名的功能，若业务有自研后台，可以是�
 * UserToken: 用户令牌，必选参数
 
 >? 更多概念 请[点击查看](https://cloud.tencent.com/document/product/1339/49939)
+#### 其他接口 请前往[SDK API文档](https://smh-sdk-doc-1253960454.cos.ap-guangzhou.myqcloud.com/ios_api_doc/html/index.html)
 
