@@ -1,0 +1,81 @@
+//
+//  QCloudSMHSortTypeEnum.h
+//  QCloudCOSSMH
+//
+//  Created by karisli(李雪) on 2021/7/26.
+//
+
+#import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+typedef NS_ENUM(uint8_t, QCloudSMHSortType) {
+    QCloudSMHSortTypeNone                  = 0,  /**< 无排序方式，*/
+    QCloudSMHSortTypeMTime                 = 1,  /**< 修改时间*/
+    QCloudSMHSortTypeCTime                 = 2,  /**< 创建时间*/
+    QCloudSMHSortTypeSize                  = 3,  /**< 大小 */
+    QCloudSMHSortTypeName                  = 4,  /**< 名字排序 */
+    QCloudSMHSortTypeExpireTime            = 5,  /**< 过期时间 */
+    QCloudSMHSortTypeFavoriteTime          = 6,  /**< 收藏时间 */
+    QCloudSMHSortTypeVisitTime             = 7,  /**< 访问时间 */
+    QCloudSMHSortTypeRemainingTime         = 8,  /**< 剩余时间 */
+    QCloudSMHSortTypeRemovalTime           = 9,   /**< 删除时间 */
+    
+    QCloudSMHSortTypeMTimeReverse          = 101,  /**< 修改时间*/
+    QCloudSMHSortTypeCTimeReverse          = 102,  /**< 创建时间*/
+    QCloudSMHSortTypeSizeReverse           = 103,  /**< 大小 */
+    QCloudSMHSortTypeNameReverse           = 104,  /**< 名字排序 */
+    QCloudSMHSortTypeExpireTimeReverse     = 105,  /**< 过期时间 */
+    QCloudSMHSortTypeFavoriteTimeReverse   = 106,  /**< 收藏时间 */
+    QCloudSMHSortTypeVisitTimeReverse      = 107,  /**< 访问时间 */
+    QCloudSMHSortTypeRemainingTimeReverse  = 108,  /**< 剩余时间 */
+    QCloudSMHSortTypeRemovalTimeReverse    = 109,  /**< 删除时间 */
+
+};
+
+
+NSString * QCloudSMHOrderByTransferToString(QCloudSMHSortType type);
+
+
+/// 排序方式，支持 role | enabled | nickname，默认 role;
+typedef NS_ENUM(NSUInteger, QCloudSMHGetTeamSortType) {
+    QCloudSMHGetTeamSortByRole = 0,
+    QCloudSMHGetTeamSortByEnabled = 1,
+    QCloudSMHGetTeamSortByNickname = 2,
+    QCloudSMHGetTeamSortByRoleAsc = 100,
+    QCloudSMHGetTeamSortByEnabledAsc = 101,
+    QCloudSMHGetTeamSortByNicknameAsc =102,
+};
+
+
+NSString * QCloudSMHGetTeamSortTypeTransferToString(QCloudSMHGetTeamSortType type);
+NS_ASSUME_NONNULL_END
+
+/**
+ 群组排序方式
+ */
+typedef NS_ENUM(NSUInteger, QCloudSMHGetGroupSortType) {
+    QCloudSMHGroupSortTypeCreationTime     = 0,  /**< 创建时间 */
+    QCloudSMHGroupSortTypeJoinTime     = 1,  /**< 加入时间 */
+    
+    QCloudSMHGroupSortTypeCreationTimeReverse     = 100,  /**< 创建时间 */
+    QCloudSMHGroupSortTypeJoinTimeReverse     = 101,  /**< 加入时间 */
+};
+
+NS_ASSUME_NONNULL_BEGIN
+NSString * QCloudSMHGetGroupSortTypeTransferToString(QCloudSMHGetGroupSortType type);
+NS_ASSUME_NONNULL_END
+
+
+/// 排序方式，支持 groupRole | enabled | nickname，默认 groupRole;
+typedef NS_ENUM(NSUInteger, QCloudSMHGroupMemberSortType) {
+    QCloudSMHGroupMemberSortByRole = 0,
+    QCloudSMHGroupMemberSortByEnabled = 1,
+    QCloudSMHGroupMemberSortByNickname = 2,
+    QCloudSMHGroupMemberSortByRoleAsc = 100,
+    QCloudSMHGroupMemberSortByEnabledAsc = 101,
+    QCloudSMHGroupMemberSortByNicknameAsc =102,
+};
+
+NS_ASSUME_NONNULL_BEGIN
+NSString * QCloudSMHGroupMemberSortTypeTransferToString(QCloudSMHGroupMemberSortType type);
+NS_ASSUME_NONNULL_END
