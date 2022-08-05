@@ -761,3 +761,6 @@ extern QCloudSMHErrorCode const KNoDefaultRoleFound;
 /// 分配存储空间失败
 extern QCloudSMHErrorCode const KSpaceAllocationFail;
 
+/// 海外手机号不支持获取 token
+extern QCloudSMHErrorCode const KOperationNotAllowedForOverseasPhoneNumberToken;
+

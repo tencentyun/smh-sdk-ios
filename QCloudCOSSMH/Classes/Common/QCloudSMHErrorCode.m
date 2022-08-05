@@ -257,3 +257,5 @@ QCloudSMHErrorCode const KSendSmsFailed = @"SendSmsFailed";
 QCloudSMHErrorCode const KSmartMediaHostingError = @"SmartMediaHostingError";
 QCloudSMHErrorCode const KNoDefaultRoleFound = @"NoDefaultRoleFound";
 QCloudSMHErrorCode const KSpaceAllocationFail = @"SpaceAllocationFail";
+QCloudSMHErrorCode const KOperationNotAllowedForOverseasPhoneNumberToken = @"OperationNotAllowedForOverseasPhoneNumberToken";
+
