@@ -27,6 +27,14 @@
         }
     }
     
+    NSString *spaceTag = dic[@"spaceTag"];
+    if (spaceTag) {
+        NSString *value = QCloudSMHQCloudSpaceTagTransferToString([spaceTag intValue]);
+        if (value) {
+            dic[@"spaceTag"] = value;
+        }
+    }
+    
     return YES;
 }
 
@@ -46,12 +54,18 @@
         NSInteger value = QCloudSMHContentInfoTypeDumpFromString(fileType);
         transfromDic[@"fileType"] = @(value);
     }
+    
+    NSString *spaceTag = transfromDic[@"spaceTag"];
+    if (spaceTag && [spaceTag isKindOfClass:[NSString class]] && spaceTag.length > 0) {
+        NSInteger value = QCloudSMHQCloudSpaceTagFromString(spaceTag);
+        transfromDic[@"spaceTag"] = @(value);
+    }
     return transfromDic;
 }
 
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
     return @{
-        @"team":QCloudSMHTeamInfo.class,@"user":QCloudSMHUserInfo.class,@"authorityList":QCloudSMHRoleInfo.class
+        @"team":QCloudSMHTeamInfo.class,@"user":QCloudSMHUserInfo.class,@"group":QCloudSMHContentGroupInfo.class,@"authorityList":QCloudSMHRoleInfo.class
     };
 }
 @end

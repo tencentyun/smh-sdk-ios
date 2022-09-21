@@ -56,7 +56,7 @@
     self.requestData.URIComponents = __pathComponents;
     [__pathComponents addObject:self.searchId];
   
-    if(self.nextMarker.integerValue >0){
+    if(self.nextMarker != nil){
         [self.requestData setQueryStringParamter:self.nextMarker withKey:@"marker"];
     }
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];

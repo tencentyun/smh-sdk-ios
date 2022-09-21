@@ -21,6 +21,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+/// 搜索创建/更新者，可选参数，对象数组
+@interface QCloudSMHSearchCreator : NSObject
+
+/// 创建/更新者所在的组织 ID
+@property (nonatomic,strong) NSString *userOrgId;
+
+/// 创建/更新者用户 ID
+@property (nonatomic,strong) NSString *userId;
+
+@end
+
 @interface QCloudSMHSearchListInfo : NSObject
 
 /// 搜索任务 ID，用于异步获取搜索结果；

@@ -1,14 +1,13 @@
 //
-//  QCloudSMHGetFileAuthorityRequest.m
-//  AOPKit
+//  QCloudSMHGetMessageSettingRequest.m
+//  Pods
 //
-//  Created by karisli(李雪) on 2021/8/17.
+//  Created by karisli(李雪) on 2021/12/6.
 //
 
-#import "QCloudSMHGetFileAuthorityRequest.h"
+#import "QCloudSMHGetMessageSettingRequest.h"
 
-
-@implementation QCloudSMHGetFileAuthorityRequest
+@implementation QCloudSMHGetMessageSettingRequest
 - (void)dealloc {
     
 }
@@ -27,7 +26,7 @@
     NSArray *responseSerializers = @[
         QCloudAcceptRespnseCodeBlock([NSSet setWithObjects:@(200), @(201), @(202), @(203), @(204), @(205), @(206), @(207), @(208), @(226), nil], nil),
         QCloudResponseJSONSerilizerBlock,
-        QCloudResponseObjectSerilizerBlock([QCloudFileAutthorityInfo class])
+        QCloudResponseObjectSerilizerBlock([QCloudSMHMessageSetting class])
     ];
     [requestSerializer setSerializerBlocks:customRequestSerilizers];
     [responseSerializer setSerializerBlocks:responseSerializers];
@@ -40,35 +39,19 @@
         return NO;
     }
     
-    NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"user/v1/authority"]];
-    
+    NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"user/v1/message"]];
     self.requestData.serverURL = serverHost.absoluteString;
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
-    
     [__pathComponents addObject:self.organizationId];
-    [__pathComponents addObject:@"directory-authority"];
-    if (!self.dirPath) {
-        *error = [NSError
-            qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
-                         message:[NSString stringWithFormat:
-                                               @"InvalidArgument:paramter[dirPath] is invalid (nil), it must have some value. please check it"]];
-        return NO;
-    }
-    [__pathComponents addObject:self.dirPath];
-    
-    self.requestData.URIComponents = __pathComponents;
-    
-    
-    [self.requestData setQueryStringParamter:self.dirLibraryId withKey:@"dirLibraryId"];
-    [self.requestData setQueryStringParamter:self.dirSpaceId withKey:@"dirSpaceId"];
+    [__pathComponents addObject:@"settings"];
+    self.requestData.URIComponents = [__pathComponents copy];
     [self.requestData setQueryStringParamter:self.userToken withKey:@"user_token"];
-    
+  
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
-    
     return YES;
 }
 
-- (void)setFinishBlock:(void (^)(NSArray <QCloudFileAutthorityInfo *> *_Nullable result, NSError * _Nullable error))QCloudRequestFinishBlock{
+- (void)setFinishBlock:(void (^)(QCloudSMHMessageSetting * _Nullable result, NSError * _Nullable error))QCloudRequestFinishBlock{
     [super setFinishBlock:QCloudRequestFinishBlock];
 }
 

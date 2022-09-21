@@ -128,6 +128,14 @@
 @class QCloudSMHVerifyYufuCodeRequest;
 @class QCloudSMHGetTaskStatusRequest;
 
+@class QCloudSMHUpdateMessageSettingRequest;
+@class QCloudSMHGetMessageSettingRequest;
+@class QCloudSMHDeleteMessageRequest;
+
+@class QCloudSMHGetVirusDetectionListRequest;
+@class QCloudSMHVirusDetectionRestoreRequest;
+@class QCloudSMHGetOrgRoleListRequest;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHUserService : NSObject
@@ -426,9 +434,26 @@ NS_ASSUME_NONNULL_BEGIN
 /// 根据玉符授权 code 获取用户登录信息。
 -(void)verifyYufuCode:(QCloudSMHVerifyYufuCodeRequest *)request;
 
-
 /// 查询任务状态
 -(void)getTaskStatus:(QCloudSMHGetTaskStatusRequest *)request;
+
+/// 修改用户接收消息配置;
+-(void)updateMessageSetting:(QCloudSMHUpdateMessageSettingRequest *)request;
+
+/// 获取用户接收消息配置;
+-(void)getMessageSetting:(QCloudSMHGetMessageSettingRequest *)request;
+
+/// 用于删除指定消息
+-(void)deleteMessage:(QCloudSMHDeleteMessageRequest *)request;
+
+/// 用于列出可疑文件列表，跨空间
+-(void)getVirusDetectionList:(QCloudSMHGetVirusDetectionListRequest *)request;
+
+/// 用于对可疑文件进行恢复或信任操作（可批量）
+-(void)virusDetectionRestore:(QCloudSMHVirusDetectionRestoreRequest *)request;
+
+/// 用于获取企业角色列表
+-(void)getOrgRoleList:(QCloudSMHGetOrgRoleListRequest *)request;
 @end
 
 NS_ASSUME_NONNULL_END

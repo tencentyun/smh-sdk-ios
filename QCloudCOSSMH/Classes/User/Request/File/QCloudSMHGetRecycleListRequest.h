@@ -70,6 +70,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,strong)NSArray <QCloudSMHSpaceItem *> *spaceItems;
 
+/**
+ 是否快捷筛选当前用户加入的所有团队空间，默认 false；
+ */
+@property (nonatomic,assign)BOOL withAllTeamSpace;
+
+/**
+ 是否快捷筛选当前用户加入的群组空间，默认 false；
+ */
+@property (nonatomic,assign)BOOL withAllGroupSpace;
+
 - (void)setFinishBlock:(void (^)(QCloudSMHCrossSpaceRecycleInfo * _Nullable result, NSError * _Nullable error))QCloudRequestFinishBlock;
 @end
 

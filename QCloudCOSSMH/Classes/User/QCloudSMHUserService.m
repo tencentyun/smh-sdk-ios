@@ -67,6 +67,10 @@
 #import "QCloudSMHGetYufuLoginAddressRequest.h"
 #import "QCloudSMHVerifyYufuCodeRequest.h"
 #import "QCloudSMHGetTaskStatusRequest.h"
+#import "QCloudSMHUpdateMessageSettingRequest.h"
+#import "QCloudSMHGetMessageSettingRequest.h"
+#import "QCloudSMHDeleteMessageRequest.h"
+#import "QCloudSMHGetOrgRoleListRequest.h"
 
 @interface QCloudSMHUserService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
@@ -466,4 +470,28 @@ static QCloudSMHUserService *_service;
     [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
 }
 
+
+-(void)updateMessageSetting:(QCloudSMHUpdateMessageSettingRequest *)request{
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)getMessageSetting:(QCloudSMHGetMessageSettingRequest *)request{
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)deleteMessage:(QCloudSMHDeleteMessageRequest *)request{
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)getVirusDetectionList:(QCloudSMHGetVirusDetectionListRequest *)request{
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)virusDetectionRestore:(QCloudSMHVirusDetectionRestoreRequest *)request{
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)getOrgRoleList:(QCloudSMHGetOrgRoleListRequest *)request{
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
 @end

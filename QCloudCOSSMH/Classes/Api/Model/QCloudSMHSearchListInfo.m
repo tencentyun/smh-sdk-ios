@@ -13,6 +13,11 @@
     return @{@"contents" : QCloudSMHContentInfo.class};
 }
 @end
+@implementation QCloudSMHSearchCreator
+
+
+@end
+
 
 @implementation QCloudSMHSearchTag
 

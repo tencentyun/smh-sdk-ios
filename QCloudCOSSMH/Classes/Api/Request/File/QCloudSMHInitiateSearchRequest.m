@@ -67,6 +67,24 @@
         bodyDic[@"tags"] = self.searchTags;
     }
     
+    if (self.maxFileSize > 0) {
+        [bodyDic setObject:@(self.maxFileSize) forKey:@"maxFileSize"];
+    }
+    
+    if (self.minFileSize > 0) {
+        [bodyDic setObject:@(self.minFileSize) forKey:@"minFileSize"];
+    }
+    
+    if (self.modificationTimeStart > 0) {
+        [bodyDic setObject:self.modificationTimeStart forKey:@"modificationTimeStart"];
+    }
+    
+    if (self.modificationTimeEnd > 0) {
+        [bodyDic setObject:self.modificationTimeEnd forKey:@"modificationTimeEnd"];
+    }
+    if (self.creators) {
+        [bodyDic setObject:self.creators forKey:@"creators"];
+    }
     self.requestData.directBody = [bodyDic qcloud_modelToJSONData];
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     return YES;

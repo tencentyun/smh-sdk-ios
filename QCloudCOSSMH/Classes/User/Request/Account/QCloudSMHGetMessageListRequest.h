@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
  我的消息列表
  */
 @interface QCloudSMHGetMessageListRequest : QCloudSMHUserBizRequest
+
+/// MessageType: 消息类型，0 所有（默认），1 系统消息，2 告警消息；
 @property (nonatomic,assign)QCloudSMHMessageType messageType;
 
 /**

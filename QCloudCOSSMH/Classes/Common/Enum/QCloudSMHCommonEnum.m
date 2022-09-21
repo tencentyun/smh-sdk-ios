@@ -113,3 +113,18 @@ NSString *  QCloudSMHPurposeTypeTransferToString( QCloudSMHPurposeType type){
         }
 }
 
+NSString *  QCloudSMHUsedSenceTransferToString( QCloudSMHUsedSence type){
+    switch (type) {
+        case QCloudSMHUsedSencePersonal:
+            return @"personal_space";
+            break;
+        case QCloudSMHUsedSenceTeam:
+            return @"team_space";
+            break;
+        case QCloudSMHUsedSenceGroup:
+            return @"group_space";
+            break;
+        default:
+            break;
+    }
+}

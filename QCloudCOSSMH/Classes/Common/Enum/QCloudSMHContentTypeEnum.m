@@ -35,6 +35,8 @@ QCloudSMHContentInfoType QCloudSMHContentInfoTypeDumpFromString(NSString *key) {
 }
 NSString * QCloudSMHContentInfoTypeTransferToString(QCloudSMHContentInfoType type) {
     switch (type) {
+        case QCloudSMHContentInfoTypeWord:
+            return @"word";
         case QCloudSMHContentInfoTypeFile: {
             return @"file";
         }

@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 组织ID
 @property (nonatomic, copy) NSString * orgId;
+
+/// : 空间 ID
+@property (nonatomic, copy) NSString * spaceId;
 @end
 
 @interface QCloudSMHUploadPersonalInfoResult : NSObject

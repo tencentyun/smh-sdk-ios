@@ -31,6 +31,12 @@ NSString * QCloudSMHSearchTypeByTransferToString(QCloudSMHSearchType type){
             return @"audio";
         case QCloudSMHSearchTypeImage:
             return @"image";
+        case QCloudSMHSearchTypePowerPoint:
+            return @"powerpoint";
+        case QCloudSMHSearchTypeExcel:
+            return @"excel";
+        case QCloudSMHSearchTypeWord:
+            return @"word";
         default:
             break;
     }

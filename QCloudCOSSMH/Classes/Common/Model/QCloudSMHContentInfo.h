@@ -33,6 +33,21 @@ NS_ASSUME_NONNULL_BEGIN
  QCloudSMHContentInfoTypeImage: 图片，仅用于媒体类型媒体库；
  QCloudSMHContentInfoTypeVideo: 视频，仅用于媒体类型媒体库；
  */
+
+/**
+ 病毒详细名称信息
+ */
+@property (nonatomic, strong) NSString * virusName;
+
+
+/// QCloudSMHVirusAuditStatus 检测状态
+@property (nonatomic, assign) QCloudSMHVirusAuditStatus virusAuditStatus;
+
+/**
+ 布尔值，是否有权限进行恢复或信任操作；
+ */
+@property (nonatomic, assign) BOOL canMarkAsNonVirus;
+
 @property (nonatomic, assign) QCloudSMHContentInfoType type;
 /**
  ISO 8601格式的日期与时间字符串，表示目录或相簿的创建时间或文件的上传时间，例如 2020-10-14T10:17:57.953Z；
@@ -132,6 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSArray <QCloudFileTagItemModel *> * tagList;
 
+@property (nonatomic,strong)NSDictionary * metaData;
 
 @end
 

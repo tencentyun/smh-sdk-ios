@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "QCloudCOSSMH"
-s.version              = "1.0.0"
+s.version              = "1.0.1"
   s.summary          = "QCloudCOSSMH 腾讯云iOS-SDK组件"
 
   s.homepage         = "https://cloud.tencent.com/"
@@ -20,13 +20,13 @@ s.version              = "1.0.0"
   s.subspec 'Default' do |default|
     default.source_files = 'QCloudCOSSMH/Classes/**/*'
     default.exclude_files = 'QCloudCOSSMH/Classes/Api/QCloudCOSSMHApi.h','QCloudCOSSMH/Classes/User/QCloudCOSSMHUser.h'
-    default.dependency "QCloudCore",'6.1.3'
+  default.dependency "QCloudCore",'1.0.1'
   end
   
   s.subspec 'Slim' do |slim|
     slim.source_files = 'QCloudCOSSMH/Classes/**/*'
     slim.exclude_files = 'QCloudCOSSMH/Classes/Api/QCloudCOSSMHApi.h','QCloudCOSSMH/Classes/User/QCloudCOSSMHUser.h'
-    slim.dependency "QCloudCore/WithoutMTA",'6.1.3'
+  slim.dependency "QCloudCore/WithoutMTA",'1.0.1'
   end
 
   s.subspec 'Api' do |api|
@@ -35,7 +35,7 @@ s.version              = "1.0.0"
                        'QCloudCOSSMH/Classes/QCloudCOSSMHVersion.*',
                        'QCloudCOSSMH/Classes/Common/*',
                        'QCloudCOSSMH/Classes/Common/**/*'
-    api.dependency "QCloudCore/WithoutMTA",'6.1.3'
+  api.dependency "QCloudCore/WithoutMTA",'1.0.1'
   end
   
   s.subspec 'User' do |user|
@@ -44,7 +44,7 @@ s.version              = "1.0.0"
                         'QCloudCOSSMH/Classes/QCloudCOSSMHVersion.*',
                         'QCloudCOSSMH/Classes/Common/*',
                         'QCloudCOSSMH/Classes/Common/**/*'
-    user.dependency "QCloudCore/WithoutMTA",'6.1.3'
+  user.dependency "QCloudCore/WithoutMTA",'1.0.1'
   end
 
 end

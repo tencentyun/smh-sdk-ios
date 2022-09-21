@@ -33,6 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// 对象，具体授权的团队信息，仅当授权给团队时返回，非必返；
 @property (nonatomic,strong) QCloudSMHTeamInfo * team;
 
+/// : 布尔型，是否禁止访问者
+@property (nonatomic,assign) BOOL isForbidden;
+
+/// : 布尔型，是否默认权限
+@property (nonatomic,assign) BOOL isDefault;
+
+/// : 继承角色ID，当继承了多个角色时，才返回
+@property (nonatomic,strong) NSString *inheritRoleId;
+
 @end
 
 NS_ASSUME_NONNULL_END

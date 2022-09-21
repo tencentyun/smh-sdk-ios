@@ -1,13 +1,14 @@
 //
-//  QCloudSMHBatchDeleteSpaceRecycleObjectReqeust.m
+//  QCloudSMHVirusDetectionRestoreRequest.m
 //  QCloudCOSSMH
 //
-//  Created by garenwang on 2021/7/28.
+//  Created by garenwang on 2021/7/30.
 //
 
-#import "QCloudSMHBatchDeleteSpaceRecycleObjectReqeust.h"
-@implementation QCloudSMHBatchDeleteSpaceRecycleObjectReqeust
+#import "QCloudSMHVirusDetectionRestoreRequest.h"
 
+
+@implementation QCloudSMHVirusDetectionRestoreRequest
 - (void)dealloc {
     
 }
@@ -20,7 +21,7 @@
 }
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
-        QCloudURLFuseURIMethodASURLParamters,
+        QCloudURLFuseSimple,
         QCloudURLSerilizerURLEncodingBody,
         QCloudURLFuseWithJSONParamters
     ];
@@ -39,32 +40,28 @@
         return NO;
     }
     
-    if (self.recycledItems.count == 0) {
-        if (error != NULL) {
-            *error = [NSError
-                qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
-                             message:[NSString stringWithFormat:
-                                                   @"InvalidArgument:paramter[recycledItemId] is invalid (nil), it must have some value. please check it"]];
-            return NO;
-        }
+    if (!self.restoreItems) {
+        *error = [NSError
+            qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
+                         message:[NSString stringWithFormat:
+                                               @"InvalidArgument:paramter[restoreItems] is invalid (nil), it must have some value. please check it"]];
+        return NO;
     }
-
-    NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"user/v1/recycled"]];
+    
+    NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"user/v1/virus-detection"]];
+    
+    
     self.requestData.serverURL = serverHost.absoluteString;
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
+    [__pathComponents addObject:self.organizationId];
+    [__pathComponents addObject:@"restore"];
     self.requestData.URIComponents = __pathComponents;
     
-    [__pathComponents addObject:self.organizationId];
+    self.requestData.directBody = @{@"restoreItems":self.restoreItems}.qcloud_modelToJSONData;
+    
     [self.requestData setQueryStringParamter:self.userToken withKey:@"user_token"];
-    
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
-  
-    NSData * data = [@{@"recycledItems":self.recycledItems,@"withAllGroups":@(self.withAllGroups)} qcloud_modelToJSONData];
-    self.requestData.directBody = data;
-    self.requestData.URIMethod = @"delete";
-    
     return YES;
 }
-
 
 @end

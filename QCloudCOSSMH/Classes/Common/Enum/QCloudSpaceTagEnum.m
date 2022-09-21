@@ -23,7 +23,7 @@ NSString *  QCloudSMHQCloudSpaceTagTransferToString( QCloudSpaceTagEnum type){
         case QCloudSpaceTag_Personal:
             return @"personal";
         case QCloudSpaceTag_Team:
-            return @"dir";
+            return @"team";
         case QCloudSpaceTag_Group:
             return @"group";
         case QCloudSpaceTag_None:

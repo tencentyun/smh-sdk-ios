@@ -24,7 +24,9 @@ typedef NS_ENUM(uint8_t, QCloudSMHSearchType) {
     QCloudSMHSearchTypeImage,
     QCloudSMHSearchTypeVideo,
     QCloudSMHSearchTypeAudio,
-
+    QCloudSMHSearchTypePowerPoint,
+    QCloudSMHSearchTypeExcel,
+    QCloudSMHSearchTypeWord,
 
 };
 

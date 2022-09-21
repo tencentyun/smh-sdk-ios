@@ -7,7 +7,18 @@
 
 #import "QCloudSMHBaseRequest.h"
 
+
 NS_ASSUME_NONNULL_BEGIN
+
+@interface QCloudSMHNewPhoneInfo  : NSObject
+
+/// 新手机号国家码，如 +86
+@property (nonatomic,strong)NSString *nCountryCode;
+
+/// 新手机号码，如 18888888888
+@property (nonatomic,strong)NSString *nPhoneNumber;
+@end
+
 /**
  发送短信验证码
  更新手机号全局生效，更改生效后，用户登录其它组织也需要使用需要用新手机号
@@ -28,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// user 令牌
 @property (nonatomic,strong)NSString *userToken;
+
+- (void)setFinishBlock:(void (^)(QCloudSMHNewPhoneInfo * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end
 
 NS_ASSUME_NONNULL_END

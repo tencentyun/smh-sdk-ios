@@ -764,3 +764,5 @@ extern QCloudSMHErrorCode const KSpaceAllocationFail;
 /// 海外手机号不支持获取 token
 extern QCloudSMHErrorCode const KOperationNotAllowedForOverseasPhoneNumberToken;
 
+
+extern QCloudSMHErrorCode const KUserPhoneNumberUnchanged;

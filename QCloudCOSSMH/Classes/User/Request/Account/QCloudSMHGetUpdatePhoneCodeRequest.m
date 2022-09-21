@@ -7,6 +7,15 @@
 
 #import "QCloudSMHGetUpdatePhoneCodeRequest.h"
 
+@implementation QCloudSMHNewPhoneInfo
+
+
++ (nullable NSDictionary<NSString *, id> *)modelCustomPropertyMapper{
+    return @{ @"nPhoneNumber" : @"newPhoneNumber" , @"nCountryCode" : @"newCountryCode" };
+}
+
+@end
+
 @implementation QCloudSMHGetUpdatePhoneCodeRequest
 
 - (void)dealloc {
@@ -27,6 +36,8 @@
 
     NSArray *responseSerializers = @[
         QCloudAcceptRespnseCodeBlock([NSSet setWithObjects:@(200), @(201), @(202), @(203), @(204), @(205), @(206), @(207), @(208), @(226), nil], nil),
+        QCloudResponseJSONSerilizerBlock,
+        QCloudResponseObjectSerilizerBlock(QCloudSMHNewPhoneInfo.class)
 
     ];
     [requestSerializer setSerializerBlocks:customRequestSerilizers];
@@ -80,5 +91,9 @@
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     
     return YES;
+}
+
+- (void)setFinishBlock:(void (^)(QCloudSMHNewPhoneInfo * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock{
+    [super setFinishBlock:QCloudRequestFinishBlock];
 }
 @end

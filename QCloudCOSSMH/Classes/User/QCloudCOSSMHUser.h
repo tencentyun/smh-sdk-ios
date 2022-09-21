@@ -174,5 +174,10 @@
 #import "NSData+SHA256.h"
 #import "NSNull+Safe.h"
 #import "NSObject+Equal.h"
-
+#import "QCloudSMHUpdateMessageSettingRequest.h"
+#import "QCloudSMHGetMessageSettingRequest.h"
+#import "QCloudSMHDeleteMessageRequest.h"
+#import "QCloudSMHGetVirusDetectionListRequest.h"
+#import "QCloudSMHVirusDetectionRestoreRequest.h"
+#import "QCloudSMHGetOrgRoleListRequest.h"
 #endif /* QCloudCOSSMHUser_h */

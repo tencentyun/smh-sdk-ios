@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 回收站数据集合
 @property (nonatomic,copy)NSArray <QCloudSMHBatchInputRecycleInfo *> * recycledItems;
 
+@property(nonatomic,assign)BOOL withAllGroups;
+
 @end
 
 NS_ASSUME_NONNULL_END

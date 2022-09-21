@@ -22,8 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// : 字符串，回收站文件空间 ID；
 @property (nonatomic, strong) NSString *spaceId;
 
+/// 空间标签
+@property (nonatomic, assign) QCloudSpaceTagEnum spaceTag;
+
 /// : 数组，原始路径；
-@property (nonatomic, strong) NSString *originalPath;
+@property (nonatomic, strong) NSArray *originalPath;
 
 /// : 文件大小，为了避免数字精度问题，这里为字符串格式；
 @property (nonatomic, strong) NSString *size;
@@ -75,6 +78,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// : 用户空间信息；和 团队空间信息二选一返回
 @property (nonatomic, strong) QCloudSMHUserInfo *user;
+
+/// 共享群组空间信息；和 用户空间信息、团队空间信息三选一返回
+@property (nonatomic, strong) QCloudSMHContentGroupInfo * group;
 
 @end
 

@@ -407,6 +407,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.beginningHash = beginningHashString;
     request.size = @(self.dataContentLength).stringValue;
     request.finishBlock = ^(id outputObject, NSError *error) {
+        [handler closeFile];
         if (error) {
             self.finishBlock(outputObject, error);
             return;
@@ -449,6 +450,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.fullHash = [NSData qcloudSha256BytesTostring:fullHash];
     request.size = @(self.dataContentLength).stringValue;
     request.finishBlock = ^(id outputObject, NSError *error) {
+        [handler closeFile];
         if (error) {
             self.finishBlock(outputObject, error);
             return;

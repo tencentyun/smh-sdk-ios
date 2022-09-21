@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "QCloudSMHCommonEnum.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHFileExtraInfo : NSObject
@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// authType: 0（共享给我） | 1（我共享的）；
 @property (nonatomic, strong) NSString * autyType;
+
+@property (nonatomic, assign) QCloudSMHVirusAuditStatus virusAuditStatus;
 
 @end
 

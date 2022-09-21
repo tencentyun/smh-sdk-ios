@@ -9,6 +9,8 @@
 #import "QCloudSMHSearchTypeEnum.h"
 #import "QCloudSMHSearchListInfo.h"
 NS_ASSUME_NONNULL_BEGIN
+
+
 /**
  用于搜索目录与文件
  */
@@ -30,6 +32,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong)NSArray<NSNumber *> *searchTypes;
 
 @property (nonatomic,strong)NSArray<QCloudSMHSearchTag *> *searchTags;
+
+/// 搜索创建/更新者，可选参数，对象数组
+@property (nonatomic,strong)NSArray<QCloudSMHSearchCreator *> *creators;
+
+/// 搜索文件大小范围，整数，单位 Byte，均为可选参数
+@property (nonatomic,assign)NSInteger minFileSize;
+@property (nonatomic,assign)NSInteger maxFileSize;
+
+/// 搜索更新时间范围，时间戳字符串，与时区无关，均可选参数
+@property (nonatomic,strong)NSString *modificationTimeStart;
+@property (nonatomic,strong)NSString *modificationTimeEnd;
 
 -(void)setFinishBlock:(void (^_Nullable)(QCloudSMHSearchListInfo * _Nullable result , NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end

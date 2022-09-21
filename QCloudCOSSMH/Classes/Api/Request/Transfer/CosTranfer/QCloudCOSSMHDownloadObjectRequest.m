@@ -184,17 +184,31 @@
                 }
                 return;
             }
-            //计算文件的CRC64
-            uint64_t localCrc64 = [[[NSMutableData alloc] initWithContentsOfFile:strongSelf.downloadingURL.relativePath] qcloud_crc64];
-            NSString *localCrc64Str = [NSString stringWithFormat:@"%llu",localCrc64];
+
             QCloudRemoveFileByPath(strongSelf.resumableTaskFile);
-            if(self.enableCRC64Verification && ![localCrc64Str isEqualToString:dic[@"crc64"]]){
-                //下载完成之后如果crc64不一致，删除记录文件和已经下载的文件，重新开始下载
-                QCloudRemoveFileByPath(strongSelf.downloadingURL.relativePath);
-                [self fakeStart];
-                return;
-            }
-            if(self.finishBlock){
+            if(self.enableCRC64Verification){
+                //计算文件的CRC64
+                NSInteger slice = 8 * 1024;
+                uint64_t localCrc64 = 0;
+                NSInteger fileSize = QCloudFileSize(strongSelf.downloadingURL.path);
+                NSFileHandle *handler = [NSFileHandle fileHandleForReadingAtPath:strongSelf.downloadingURL.path];
+                for (NSInteger offset = 0; offset < fileSize; offset += MIN(fileSize - offset, slice)) {
+                    @autoreleasepool {
+                        [handler seekToFileOffset:offset];
+                        NSMutableData *data = [handler readDataOfLength:MIN(fileSize - offset, slice)].mutableCopy;
+                        localCrc64 = [data qcloud_crc64ForCombineCRC1:localCrc64 CRC2:data.qcloud_crc64 length:data.length];
+                    }
+                }
+                [handler closeFile];
+                NSString *localCrc64Str = [NSString stringWithFormat:@"%llu",localCrc64];
+                if (![localCrc64Str isEqualToString:dic[@"crc64"]]) {
+                    //下载完成之后如果crc64不一致，删除记录文件和已经下载的文件，重新开始下载
+                    QCloudRemoveFileByPath(strongSelf.downloadingURL.relativePath);
+                    [self fakeStart];
+                }else{
+                    strongSelf.finishBlock(outputObject, error);
+                }
+            }else if(self.finishBlock){
                 strongSelf.finishBlock(outputObject, error);
             }
         }

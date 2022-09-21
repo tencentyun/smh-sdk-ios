@@ -78,6 +78,23 @@ typedef NS_ENUM(NSUInteger, QCloudSMHAllowEditionType) {
     QCloudSMHAllowEditionEnterpriseOnly,
 };
 
+//virusAuditStatus: 0-6 查毒状态
+typedef NS_ENUM(NSUInteger, QCloudSMHVirusAuditStatus) {
+    QCloudSMHVirusWaitAudit = 0,  //0 未检测 （文件夹不标记可疑状态，一直为0）
+    QCloudSMHVirusAuditIng,  //1 检测中
+    QCloudSMHVirusAuditSafety,  //2 无风险
+    QCloudSMHVirusAuditUnsafety,  //3 风险文件
+    QCloudSMHVirusCantAudit,  //4 无法检测 （比如文件太大超过可检测范围，端侧当无风险处理）（超1G不检）
+    QCloudSMHVirusAuditManualSafety,  //5 人为标记为无风险
+    QCloudSMHVirusAuditFailure,  //6 检测任务失败
+};
+
+typedef NS_ENUM(NSUInteger, QCloudSMHUsedSence) {
+    QCloudSMHUsedSencePersonal = 0,
+    QCloudSMHUsedSenceTeam,
+    QCloudSMHUsedSenceGroup,
+};
+NSString *  QCloudSMHUsedSenceTransferToString( QCloudSMHUsedSence type);
 
 NS_ASSUME_NONNULL_END
 

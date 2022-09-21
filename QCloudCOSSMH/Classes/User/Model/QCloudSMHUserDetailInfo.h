@@ -92,6 +92,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否绑定微信
 @property (nonatomic,assign)BOOL wechat;
 
+///是否绑定玉符
+@property (nonatomic,assign)BOOL yufu;
+
 @end
 
 NS_ASSUME_NONNULL_END

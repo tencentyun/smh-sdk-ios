@@ -241,3 +241,10 @@
 #import "QCloudSMHVerifyYufuCodeRequest.h"
 #import "QCloudSMHGetYufuLoginAddressRequest.h"
 #import "QCloudCOSSMHDownloadObjectRequest.h"
+#import "QCloudSMHUpdateMessageSettingRequest.h"
+#import "QCloudSMHGetMessageSettingRequest.h"
+#import "QCloudSMHDeleteMessageRequest.h"
+
+#import "QCloudSMHGetVirusDetectionListRequest.h"
+#import "QCloudSMHVirusDetectionRestoreRequest.h"
+#import "QCloudSMHGetOrgRoleListRequest.h"
