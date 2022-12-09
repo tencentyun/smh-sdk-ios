@@ -59,6 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL deregister;
 
+@property (nonatomic, assign) BOOL inactive;
+
 /// 用户头像链接
 @property (nonatomic,strong)NSString *avatar;
 

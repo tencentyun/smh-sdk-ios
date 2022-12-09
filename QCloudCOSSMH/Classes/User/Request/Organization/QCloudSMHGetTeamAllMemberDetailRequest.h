@@ -48,6 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign)QCloudSMHGetTeamSortType sortType;
 
 
+// 是否包含未激活用户，NO 不包含，YES 包含，默认包含
+@property (nonatomic,assign)BOOL includeInactiveUser;
+
 - (void)setFinishBlock:(void (^_Nullable)(QCloudSMHTeamContentInfo *_Nullable result, NSError *_Nullable error))QCloudRequestFinishBlock;
 @end
 

@@ -62,4 +62,7 @@
     return YES;
 }
 
+- (void)setFinishBlock:(void (^)(QCloudSMHUserDetailInfo * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock{
+    [super setFinishBlock:QCloudRequestFinishBlock];
+}
 @end

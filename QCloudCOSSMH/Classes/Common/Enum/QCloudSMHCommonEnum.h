@@ -54,8 +54,8 @@ QCloudSMHLoginAuthType QCloudSMHLoginAuthTypeFromString(NSString *key);
 NSString *  QCloudSMHLoginAuthTypeTransferToString( QCloudSMHLoginAuthType type);
 
 typedef NS_ENUM(NSUInteger, QCloudSMHPurposeType) {
-    QCloudSMHPurposePreview = 0,
-    QCloudSMHPurposeDownload,
+    QCloudSMHPurposeDownload = 0,
+    QCloudSMHPurposePreview,
     QCloudSMHPurposeList,
 };
 NSString *  QCloudSMHPurposeTypeTransferToString( QCloudSMHPurposeType type);
@@ -96,5 +96,18 @@ typedef NS_ENUM(NSUInteger, QCloudSMHUsedSence) {
 };
 NSString *  QCloudSMHUsedSenceTransferToString( QCloudSMHUsedSence type);
 
+typedef NS_ENUM(NSUInteger, QCloudSMHFileTemplate) {
+    QCloudSMHFileTemplateWord = 0,
+    QCloudSMHFileTemplateExcel,
+    QCloudSMHFileTemplatePPT,
+};
+NSString *  QCloudSMHFileTemplateTransferToString( QCloudSMHFileTemplate fileTemplate);
+
+typedef NS_ENUM(NSUInteger, QCloudSMHChannnelFlag) {
+    QCloudSMHChannnelFlagNone = 0,
+    QCloudSMHChannnelFlagMeeting = 1,
+};
+NSString *  QCloudSMHChannnelFlagTransferToString( QCloudSMHChannnelFlag flag);
+QCloudSMHChannnelFlag QCloudSMHChannnelFlagFromString(NSString *key);
 NS_ASSUME_NONNULL_END
 

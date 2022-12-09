@@ -61,7 +61,7 @@
         [__pathComponents addObject:self.filePath];
     }
     
-    self.requestData.URIMethod = @"preview";
+    self.requestData.URIMethod = @"preview&mobile";
     return YES;
 }
 

@@ -51,8 +51,7 @@
     }
     
     [__pathComponents addObject:@"user"];
-    
-    [self.requestData setQueryStringParamter:@"true" withKey:@"with_belonging_teams"];
+
     
     [self.requestData setQueryStringParamter:self.userToken withKey:@"user_token"];
     
@@ -101,6 +100,8 @@
     if (self.withBelongingTeams) {
         [self.requestData setQueryStringParamter:@(self.withBelongingTeams).stringValue withKey:@"with_belonging_teams"];
     }
+    
+    [self.requestData setQueryStringParamter:@(self.checkBelongingTeams).stringValue withKey:@"check_belonging_teams"];
     
     if(self.limit>0){
         [self.requestData setQueryStringParamter:@(self.limit).stringValue withKey:@"limit"];

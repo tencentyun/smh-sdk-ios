@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 整数，递归团队成员数量，仅当 WithRecursiveUserCount = 1 时返回；
 @property (nonatomic,assign) NSInteger recursiveUserCount;
 
+@property (nonatomic,assign) NSInteger recursiveRecycledFileCount;
+
 /// 对象数组，子级团队列表；
 @property (nonatomic,strong) NSArray <QCloudSMHTeamInfo *>*children;
 
@@ -48,6 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 对象数组，团队层级目录对象，仅当 WithPath = 1 时返回；
 @property (nonatomic,strong) NSArray <QCloudSMHTeamInfoPathNode *>*pathNodes;
+
+/// 布尔值，是否有子级团队，仅当 CheckChildren = true，才返回该字段；
+@property (nonatomic,assign)BOOL hasChildren;
 
 @end
 
@@ -70,5 +75,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,strong) NSArray <QCloudSMHTeamInfo *>*contents;
 @end
+
+@interface QCloudSMHSearchTeamResult : NSObject
+@property (nonatomic,strong)NSString * searchId;
+@property (nonatomic,assign)BOOL hasMore;
+@property (nonatomic,strong)NSString * nextMarker;
+@property (nonatomic,strong)NSArray <QCloudSMHTeamInfo *> * contents;
+@end
+
 
 NS_ASSUME_NONNULL_END

@@ -71,6 +71,9 @@
 #import "QCloudSMHGetMessageSettingRequest.h"
 #import "QCloudSMHDeleteMessageRequest.h"
 #import "QCloudSMHGetOrgRoleListRequest.h"
+#import "QCloudSMHNextSearchTeamRequest.h"
+#import "QCloudSMHAbortSearchTeamRequest.h"
+#import "QCloudSMHBeginSearchTeamRequest.h"
 
 @interface QCloudSMHUserService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
@@ -493,5 +496,15 @@ static QCloudSMHUserService *_service;
 
 -(void)getOrgRoleList:(QCloudSMHGetOrgRoleListRequest *)request{
     [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)nextSearchTeam:(QCloudSMHNextSearchTeamRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+-(void)abortSearchTeam:(QCloudSMHAbortSearchTeamRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+-(void)beginSearchTeam:(QCloudSMHBeginSearchTeamRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
 }
 @end

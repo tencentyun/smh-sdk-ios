@@ -36,6 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 ///  分享人昵称
 @property (nonatomic,strong) NSString *userNickname;
 
+///  布尔型，是否永久有效，可选参数，默认 false；
+@property (nonatomic,assign) BOOL isPermanent;
+
 /// 'personal', 表示个人版
 /// 'team', 表示团队版
 /// 'enterprise', 表示企业版

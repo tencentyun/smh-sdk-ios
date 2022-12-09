@@ -149,6 +149,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,strong)NSDictionary * metaData;
 
+@property (nonatomic, assign)BOOL inDirectory;
+
+@property (nonatomic, assign)BOOL inRecycledDirectory;
+
 @end
 
 

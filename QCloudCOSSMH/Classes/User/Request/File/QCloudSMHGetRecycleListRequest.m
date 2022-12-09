@@ -45,14 +45,6 @@
         return NO;
     }
     
-    if (self.spaceItems == 0) {
-        *error = [NSError
-            qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
-                         message:[NSString stringWithFormat:
-                                               @"InvalidArgument:paramter[spaceItems] is invalid (nil), it must have some value. please check it"]];
-        return NO;
-    }
-    
     NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"user/v1/recycled"]];
 
     self.requestData.serverURL = serverHost.absoluteString;

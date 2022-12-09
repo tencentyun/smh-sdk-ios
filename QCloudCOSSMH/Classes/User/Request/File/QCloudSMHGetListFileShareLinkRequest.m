@@ -78,4 +78,7 @@
     return YES;
 }
 
+-(void)setFinishBlock:(void (^ _Nullable)(QCloudFileListContent * _Nullable result , NSError * _Nullable error))QCloudRequestFinishBlock{
+    [super setFinishBlock:QCloudRequestFinishBlock];
+}
 @end

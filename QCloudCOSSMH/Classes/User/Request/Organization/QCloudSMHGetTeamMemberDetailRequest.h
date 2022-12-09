@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否同时获取用户所属的团队信息，1|0，默认 0；
 @property (nonatomic,assign)NSInteger withBelongingTeams;
 
+@property (nonatomic,assign)NSInteger checkBelongingTeams;
 /// 排序方式  支持
 /// QCloudSMHGetTeamSortByRole
 /// QCloudSMHGetTeamSortByEnabled

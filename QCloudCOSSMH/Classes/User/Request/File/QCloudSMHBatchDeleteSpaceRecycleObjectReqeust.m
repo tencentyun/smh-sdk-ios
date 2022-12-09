@@ -38,16 +38,6 @@
     if (![super buildRequestData:error]) {
         return NO;
     }
-    
-    if (self.recycledItems.count == 0) {
-        if (error != NULL) {
-            *error = [NSError
-                qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
-                             message:[NSString stringWithFormat:
-                                                   @"InvalidArgument:paramter[recycledItemId] is invalid (nil), it must have some value. please check it"]];
-            return NO;
-        }
-    }
 
     NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"user/v1/recycled"]];
     self.requestData.serverURL = serverHost.absoluteString;
@@ -59,7 +49,7 @@
     
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
   
-    NSData * data = [@{@"recycledItems":self.recycledItems,@"withAllGroups":@(self.withAllGroups)} qcloud_modelToJSONData];
+    NSData * data = [@{@"recycledItems":self.recycledItems,@"withAllGroups":@(self.withAllGroups),@"withAllTeams":@(self.withAllTeams)} qcloud_modelToJSONData];
     self.requestData.directBody = data;
     self.requestData.URIMethod = @"delete";
     

@@ -65,6 +65,15 @@ NS_ASSUME_NONNULL_BEGIN
 NSString * QCloudSMHGetGroupSortTypeTransferToString(QCloudSMHGetGroupSortType type);
 NS_ASSUME_NONNULL_END
 
+/// 发起类型，own - 我发起的；join - 我加入的；all - 所有类型，默认所有类型，可选参数
+typedef NS_ENUM(NSUInteger, QCloudSMHGroupJoinType) {
+    QCloudSMHGroupJoinTypeAll     = 0,
+    QCloudSMHGroupJoinTypeOwn     = 1,
+    QCloudSMHGroupJoinTypeJoin    = 2,
+    
+};
+
+NSString * QCloudSMHGroupJoinTypeTransferToString(QCloudSMHGroupJoinType type);
 
 /// 排序方式，支持 groupRole | enabled | nickname，默认 groupRole;
 typedef NS_ENUM(NSUInteger, QCloudSMHGroupMemberSortType) {

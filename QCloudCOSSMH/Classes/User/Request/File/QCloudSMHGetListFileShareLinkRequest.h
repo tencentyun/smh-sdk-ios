@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
  分页标记，当需要分页时，响应体中将返回下一次请求时用于该参数的值，当请求第一页时无需指定该参数
  */
 @property (nonatomic,copy)NSString *marker;
+
+-(void)setFinishBlock:(void (^ _Nullable)(QCloudFileListContent * _Nullable result , NSError * _Nullable error))QCloudRequestFinishBlock;
 @end
 
 NS_ASSUME_NONNULL_END

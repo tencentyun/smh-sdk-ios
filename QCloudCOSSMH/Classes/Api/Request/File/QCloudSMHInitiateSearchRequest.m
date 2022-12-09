@@ -46,7 +46,7 @@
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
     [__pathComponents addObject:@"space-contents"];
     self.requestData.URIComponents = __pathComponents;
-   
+    
     NSMutableDictionary *bodyDic = [NSMutableDictionary new];
     if(self.keyword.length){
         bodyDic[@"keyword"] = self.keyword;
@@ -54,7 +54,11 @@
     if(self.scope.length){
         bodyDic[@"scope"] = self.scope;
     }
-   
+    
+    if(self.extname.count > 0){
+        bodyDic[@"extname"] = self.extname;
+    }
+    
     NSMutableArray *searchTypeTexts = [NSMutableArray array];
     if(self.searchTypes){
         for (NSNumber *obj in self.searchTypes) {

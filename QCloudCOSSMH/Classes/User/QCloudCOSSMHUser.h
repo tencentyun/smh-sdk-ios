@@ -180,4 +180,7 @@
 #import "QCloudSMHGetVirusDetectionListRequest.h"
 #import "QCloudSMHVirusDetectionRestoreRequest.h"
 #import "QCloudSMHGetOrgRoleListRequest.h"
+#import "QCloudSMHNextSearchTeamRequest.h"
+#import "QCloudSMHAbortSearchTeamRequest.h"
+#import "QCloudSMHBeginSearchTeamRequest.h"
 #endif /* QCloudCOSSMHUser_h */

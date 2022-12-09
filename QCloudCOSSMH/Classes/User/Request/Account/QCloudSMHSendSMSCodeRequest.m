@@ -89,6 +89,10 @@ NSString * QCloudSMHSendSMSCodeTypeTransferToString( QCloudSMHSendSMSCodeType ty
         [self.requestData setQueryStringParamter:self.captchaRandstr withKey:@"captcha_randstr"];
     }
     
+    if(self.pf != nil){
+        [self.requestData setQueryStringParamter:self.pf withKey:@"pf"];
+    }
+    
     self.requestData.URIComponents = __pathComponents;
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     

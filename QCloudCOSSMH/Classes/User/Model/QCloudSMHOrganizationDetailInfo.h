@@ -28,6 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong) NSString *logo;
 @property (nonatomic,assign) BOOL ensurePersonalSpace;
 
+/// 组织渠道标识
+@property (nonatomic, assign) QCloudSMHChannnelFlag channelFlag;
+
+@property (nonatomic, strong) NSString *allowProduct;
+
 /// 布尔值，是否允许分享；
 @property (nonatomic,assign) BOOL enableShare;
 

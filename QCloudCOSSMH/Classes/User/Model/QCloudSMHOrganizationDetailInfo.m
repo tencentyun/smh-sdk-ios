@@ -29,6 +29,27 @@
     };
 }
 
+- (NSDictionary *)modelCustomWillTransformFromDictionary:(NSDictionary *)dic {
+    if (!dic) {
+        return dic;
+    }
+    NSMutableDictionary *transfromDic = [NSMutableDictionary dictionaryWithDictionary:dic];
+
+    NSString *editionFlag = transfromDic[@"editionFlag"];
+    if (editionFlag && [editionFlag isKindOfClass:[NSString class]] && editionFlag.length > 0) {
+        NSInteger value = QCloudSMHOrganizationTypeFromString(editionFlag);
+        transfromDic[@"editionFlag"] = @(value);
+    }
+    
+    NSString *channelFlag = transfromDic[@"channelFlag"];
+    if (channelFlag && [channelFlag isKindOfClass:[NSString class]] && channelFlag.length > 0) {
+        NSInteger value = QCloudSMHChannnelFlagFromString(channelFlag);
+        transfromDic[@"channelFlag"] = @(value);
+    }
+
+    return transfromDic;
+}
+
 -(BOOL)isEqual:(id)object{
     return [self smh_isEqual:object];
 }

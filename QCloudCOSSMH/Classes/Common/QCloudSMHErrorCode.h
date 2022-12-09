@@ -10,7 +10,6 @@
 
 typedef NSString * QCloudSMHErrorCode;
 
-
 /// 错误请求
 extern QCloudSMHErrorCode const KBadRequest;
 
@@ -140,7 +139,7 @@ extern QCloudSMHErrorCode const KInvalidBatchAllowlistInfo;
 /// 团队空间文件不可移交至其子团队空间
 extern QCloudSMHErrorCode const KChildTeamAsDestinationTeam;
 
-/// 二维码与当前登录企业不匹配，请使用该域名绑定的企业云盘APP扫码
+/// 二维码与当前登录企业不匹配，请使用该域名绑定的企业网盘APP扫码
 extern QCloudSMHErrorCode const KQrCodeOrganizationNotMatch;
 
 /// 当前域名未关联企业
@@ -224,13 +223,13 @@ extern QCloudSMHErrorCode const KMultipartUploadPartTooSmall;
 /// 搜索参数无效，请重新输入
 extern QCloudSMHErrorCode const KSearchIdInvalid;
 
-/// 文件(夹)名称不合规，请重新输入
+/// 请修改文件(夹)名称后，重新提交
 extern QCloudSMHErrorCode const KDirectoryNameNotAvailable;
 
 /// 群主个人空间不存在
 extern QCloudSMHErrorCode const KGroupOwnerSpaceNotFound;
 
-/// 当前账号未加入任何团队，请前往官网购买
+/// 当前帐号未加入任何团队，请前往官网购买
 extern QCloudSMHErrorCode const KOrganizationNotRegistered;
 
 /// 文件内容不合规，不支持进行该操作
@@ -247,6 +246,27 @@ extern QCloudSMHErrorCode const KGetWechatUserInfoFailed;
 
 /// 玉符参数校验失败，请检查后重新填写
 extern QCloudSMHErrorCode const KInvalidYufuParams;
+
+/// 当前企业暂未开通企业微信代开发应用功能
+extern QCloudSMHErrorCode const KWeworkDelegateAppNotEnabled;
+
+/// 当前企业暂未关联企业微信应用
+extern QCloudSMHErrorCode const KWeworkIntegrationNotInstalled;
+
+/// 未获取部门名称和员工姓名授权，请前往企业微信管理后台修改
+extern QCloudSMHErrorCode const KNoAuthToNameOfWeworkDelegateApp;
+
+/// 该用户当前未激活账号
+extern QCloudSMHErrorCode const KInactiveUserId;
+
+/// 未激活用户需前往 企业微信工作台-腾讯云企业网盘 绑定手机号
+extern QCloudSMHErrorCode const KInatciveUserPhoneNotBind;
+
+/// 清除配置后方可重新绑定应用
+extern QCloudSMHErrorCode const KDuplicateWeworkIntegration;
+
+/// 团队名称重复
+extern QCloudSMHErrorCode const KDuplicateTeamName;
 
 /// 访问令牌无效/过期/不匹配
 extern QCloudSMHErrorCode const KInvalidAccessToken;
@@ -266,6 +286,9 @@ extern QCloudSMHErrorCode const KLibraryServiceTimeExpired;
 /// 服务已到期，续期后方可继续使用
 extern QCloudSMHErrorCode const KOrganizationServiceTimeExpired;
 
+/// 当前企业用户数已达购买上限，请联系管理员处理
+extern QCloudSMHErrorCode const KOrganizationUserInactive;
+
 /// 腾讯会议授权失败
 extern QCloudSMHErrorCode const KMeetingOauthFailed;
 
@@ -278,7 +301,7 @@ extern QCloudSMHErrorCode const KPhoneNumberNotInSpecifiedOrganization;
 /// 无法操作其它用户发起的任务
 extern QCloudSMHErrorCode const KNoPermissionToOtherUserTask;
 
-/// 未绑定 CoFile企业云盘账号，请进行绑定
+/// 未绑定 CoFile企业网盘帐号，请进行绑定
 extern QCloudSMHErrorCode const KUserNotBindPhoneNumber;
 
 /// 文件预览次数已达上限
@@ -310,6 +333,9 @@ extern QCloudSMHErrorCode const KGetShareGroupDynamicNotAllowed;
 
 /// 海外手机号暂不支持
 extern QCloudSMHErrorCode const KOverseasPhoneNumberNotAllowed;
+
+/// 暂不支持海外手机号
+extern QCloudSMHErrorCode const KOperationNotAllowedForOverseasPhoneNumberToken;
 
 /// 此套餐暂不支持分享管理
 extern QCloudSMHErrorCode const KShareManageNotAllowed;
@@ -350,13 +376,13 @@ extern QCloudSMHErrorCode const KCreateTeamSpaceNotAllowed;
 /// 企业初始化中，请耐心等待
 extern QCloudSMHErrorCode const KLibraryInitializing;
 
-/// 该手机号码已绑定其他微信账号
+/// 该手机号码已绑定其他微信帐号
 extern QCloudSMHErrorCode const KDuplicateBindPhoneNumber;
 
-/// 该微信账号已绑定其他手机号码
+/// 该微信帐号已绑定其他手机号码
 extern QCloudSMHErrorCode const KDuplicateBindWechat;
 
-/// 该腾讯会议账号已绑定其他手机号码
+/// 该腾讯会议帐号已绑定其他手机号码
 extern QCloudSMHErrorCode const KMeetingOauthDuplicateBindPhoneNumber;
 
 /// 绑定手机号码失败
@@ -368,7 +394,13 @@ extern QCloudSMHErrorCode const KWechatOauthFailed;
 /// 媒体库未注册
 extern QCloudSMHErrorCode const KLibraryNotRegistered;
 
-/// 玉符授权认证失败
+/// 未开启玉符单点登录
+extern QCloudSMHErrorCode const KYufuSSOLoginNotAllowed;
+
+/// 玉符租户已绑定其他网盘
+extern QCloudSMHErrorCode const KDuplicateBindYufuConfig;
+
+/// 玉符授权认证失败，请联系管理员在后台管理中检查SSO登录-clientID与密钥配置
 extern QCloudSMHErrorCode const KYufuOauthFailed;
 
 /// 获取玉符用户信息失败
@@ -377,10 +409,10 @@ extern QCloudSMHErrorCode const KGetYufuUserInfoFailed;
 /// 获取 wellknown 信息失败，请检查后重新填写
 extern QCloudSMHErrorCode const KGetYufuWellknownFailed;
 
-/// 当前玉符账号已绑定手机号码，无需再次绑定
+/// 当前玉符帐号已绑定手机号码，无需再次绑定
 extern QCloudSMHErrorCode const KDuplicateBindYufu;
 
-/// 当前手机号码已绑定其他玉符账号，请更换手机号进行绑定
+/// 当前手机号码已绑定其他玉符帐号，请更换手机号进行绑定
 extern QCloudSMHErrorCode const KYufuOauthDuplicateBindPhoneNumber;
 
 /// 媒体库不存在
@@ -479,7 +511,7 @@ extern QCloudSMHErrorCode const KNoviceGuidanceNotFound;
 /// 玉符用户 openId 同步失败
 extern QCloudSMHErrorCode const KYufuUserIdNotFound;
 
-/// 云盘后台未找到玉符配置
+/// 网盘后台未找到玉符配置
 extern QCloudSMHErrorCode const KYufuConfigNotFound;
 
 /// 处理请求时出错
@@ -526,6 +558,9 @@ extern QCloudSMHErrorCode const KDuplicatePurchaseRecord;
 
 /// 系统繁忙请稍后重试
 extern QCloudSMHErrorCode const KDuplicateInvitationRecord;
+
+/// 自定义角色名称重复
+extern QCloudSMHErrorCode const KDuplicateRoleName;
 
 /// 国家代码或手机号码不合法
 extern QCloudSMHErrorCode const KInvalidPhoneNumber;
@@ -614,6 +649,117 @@ extern QCloudSMHErrorCode const KNotAllowSaveToNetDisc;
 /// 文件标签已存在
 extern QCloudSMHErrorCode const KSameNameTag;
 
+/// 没有足够的剩余配额。
+extern QCloudSMHErrorCode const KNoEnoughRemainingQuota;
+
+/// 无法转换指定格式的文件。
+extern QCloudSMHErrorCode const KConvertFileFormatNotMatch;
+
+/// 时间戳无效。
+extern QCloudSMHErrorCode const KTimeStampInvalid;
+
+/// 被授予的权力缺失了。
+extern QCloudSMHErrorCode const KGrantAuthorityMissing;
+
+/// 不允许删除系统角色
+extern QCloudSMHErrorCode const KDeleteSystemRoleNotAllowed;
+
+/// 不允许授权给组用户
+extern QCloudSMHErrorCode const KCanAuthorizeRoleToGroupNotAllowed;
+
+/// 删除自定义权限失败。处理步骤
+extern QCloudSMHErrorCode const KDeleteCustomAuthorityFailed;
+
+/// 不允许删除Space默认角色
+extern QCloudSMHErrorCode const KDeleteSpaceDefaultRoleNotAllowed;
+
+/// 转换文件任务未完成。
+extern QCloudSMHErrorCode const KConvertFileTaskNotFinished;
+
+/// wework中的IP列表设置不正确。
+extern QCloudSMHErrorCode const KInvalidWeworkIpList;
+
+/// 时间无效。
+extern QCloudSMHErrorCode const KInvalidTime;
+
+/// 内部组不允许外部用户。
+extern QCloudSMHErrorCode const KInternalGroupDoesNotAllowExternalUser;
+
+/// 用户未被注销。
+extern QCloudSMHErrorCode const KUserIsNotUnderDeregister;
+
+/// 用户只能有一个个人组织。
+extern QCloudSMHErrorCode const KDuplicatePersonalOrgApplication;
+
+/// 请重新登录获得个人组织。
+extern QCloudSMHErrorCode const KReLoginNeededToGetPersonalOrg;
+
+/// 域名未获授权
+extern QCloudSMHErrorCode const KDomainNotLicensed;
+
+/// 上传SSL失败
+extern QCloudSMHErrorCode const KUploadSslFailed;
+
+/// 自定义域与证书内容不匹配。
+extern QCloudSMHErrorCode const KDomainCertKeyNotMatch;
+
+/// SSL证书密钥无效
+extern QCloudSMHErrorCode const KInvalidSslCertKey;
+
+/// SSL证书密钥过期
+extern QCloudSMHErrorCode const KDomainSslCertKeyExpired;
+
+/// 组织用户处于注销状态。
+extern QCloudSMHErrorCode const KOrganizationUserUnderDeregister;
+
+/// 目标组织用户处于注销状态。
+extern QCloudSMHErrorCode const KTargetOrganizationUserUnderDeregister;
+
+/// 手机号码与当前手机号码相同。
+extern QCloudSMHErrorCode const KUserPhoneNumberUnchanged;
+
+/// eSign文档内容不匹配。
+extern QCloudSMHErrorCode const KESignDocContentNotMatch;
+
+/// 电子签二维码已过期
+extern QCloudSMHErrorCode const KESignKeyExpired;
+
+/// 电子签授权已过期
+extern QCloudSMHErrorCode const KESignCodeExpired;
+
+/// 设计过程完成。
+extern QCloudSMHErrorCode const KESignProcedureFinished;
+
+/// 搜索条件太复杂。
+extern QCloudSMHErrorCode const KSearchTooComplex;
+
+/// 当前企业未找到对应角色
+extern QCloudSMHErrorCode const KNoOrganizationRoleFound;
+
+/// 该手机号已领取此渠道体验账号
+extern QCloudSMHErrorCode const KDuplicateChannelOrgApplication;
+
+/// 创建渠道体验版本失败
+extern QCloudSMHErrorCode const KCreateChannelOrgFailed;
+
+/// 刷新 token 已过期
+extern QCloudSMHErrorCode const KRefreshTokenExpired;
+
+/// 第三方应用配置的回调地址和当前传入的不匹配
+extern QCloudSMHErrorCode const KRedirectUriNotMatchApplication;
+
+/// 申请的接口权限和第三方应用配置的不匹配
+extern QCloudSMHErrorCode const KScopeNotMatchApplication;
+
+/// 第三方应用授权，返回类型参数不合法
+extern QCloudSMHErrorCode const KResponseTypeNotAllowed;
+
+/// 应用授权码已过期
+extern QCloudSMHErrorCode const KAuthorizationCodeExpired;
+
+/// 应用授权码已被使用
+extern QCloudSMHErrorCode const KAuthorizationCodeHasBeenUsed;
+
 /// 您未加入任何企业，请联系管理员添加
 extern QCloudSMHErrorCode const KPhoneNumberNotInAllowlist;
 
@@ -665,6 +811,57 @@ extern QCloudSMHErrorCode const KNoTeamPermission;
 /// 验证码失效，请刷新页面重新操作
 extern QCloudSMHErrorCode const KInvalidShareAccessToken;
 
+/// 下载令牌过期。
+extern QCloudSMHErrorCode const KXinanDownloadTokenExpired;
+
+/// 该文件为病毒文件，不支持使用
+extern QCloudSMHErrorCode const KVirusFileNotAvailable;
+
+/// 该文件为病毒文件，不支持授权操作
+extern QCloudSMHErrorCode const KVirusFileNotAvailableAuthorize;
+
+/// 该文件为病毒文件，不支持下载操作
+extern QCloudSMHErrorCode const KVirusFileNotAvailableDownload;
+
+/// 该文件为病毒文件，不支持分享操作
+extern QCloudSMHErrorCode const KVirusFileNotAvailableShare;
+
+/// 批量下载包含加载文件。
+extern QCloudSMHErrorCode const KBatchDownloadFileContentIsLoading;
+
+/// 批量下载包含不可用的文件。
+extern QCloudSMHErrorCode const KBatchDownloadFileContentNotAvailable;
+
+/// 图书馆是循环利用的。
+extern QCloudSMHErrorCode const KLibraryRecycled;
+
+/// 访问COS的授权已被撤销，请将授权模式切换到服务链接角色模式。
+extern QCloudSMHErrorCode const KAuthorizationRevoked;
+
+/// 如果有个人文件和组，则不允许注销。
+extern QCloudSMHErrorCode const KDeregisterNotAllowed;
+
+/// 我们工作绑定电话认证码未找到，请重新登录。
+extern QCloudSMHErrorCode const KWeworkBindPhoneOauthNotFound;
+
+/// 绑定电话失败，请重新登录。
+extern QCloudSMHErrorCode const KWeworkBindPhoneByOauthFailed;
+
+/// 重复创建角色。
+extern QCloudSMHErrorCode const KDuplicateRoleCreation;
+
+/// 共享组织服务已过期。
+extern QCloudSMHErrorCode const KSharingOrganizationServiceTimeExpired;
+
+/// 邀请组织服务已过期。
+extern QCloudSMHErrorCode const KInvitingOrganizationServiceTimeExpired;
+
+/// 该角色不允许授权给其他人
+extern QCloudSMHErrorCode const KRoleCannotBeAuthorized;
+
+/// 该用户不允许被授权
+extern QCloudSMHErrorCode const KUserCannotBeAuthorized;
+
 /// 未找到该组织
 extern QCloudSMHErrorCode const KOrganizationNotFound;
 
@@ -701,6 +898,36 @@ extern QCloudSMHErrorCode const KDirectorySyncNotFound;
 /// 文件标签未找到
 extern QCloudSMHErrorCode const KTagNotFound;
 
+/// 此api已弃用。
+extern QCloudSMHErrorCode const KApiDeprecated;
+
+/// 未找到批量下载或已过期。
+extern QCloudSMHErrorCode const KBatchDownloadNotFound;
+
+/// 在指定的组织中找不到自定义域。
+extern QCloudSMHErrorCode const KCustomDomainNotFound;
+
+/// 未找到对应的电子签二维码
+extern QCloudSMHErrorCode const KESignKeyNotFound;
+
+/// 未找到对应的电子签授权
+extern QCloudSMHErrorCode const KESignCodeNotFound;
+
+/// 电子签客户端有误
+extern QCloudSMHErrorCode const KEsignClientError;
+
+/// 电子签刷新令牌有误
+extern QCloudSMHErrorCode const KESignRefreshTokenNotFound;
+
+/// 电子签刷新令牌已过期
+extern QCloudSMHErrorCode const KESignRefreshTokenExpired;
+
+/// 未找到第三方应用授权信息
+extern QCloudSMHErrorCode const KApplicationAuthorizationNotFound;
+
+/// 未找到第三方应用
+extern QCloudSMHErrorCode const KApplicationNotFound;
+
 /// 存在重复数据
 extern QCloudSMHErrorCode const KDuplicateRecord;
 
@@ -721,6 +948,18 @@ extern QCloudSMHErrorCode const KChildDirectorySyncExist;
 
 /// 所选文件夹的某父级文件夹已被设为同步盘，请重新选择
 extern QCloudSMHErrorCode const KParentDirectorySyncExist;
+
+/// 组织只能有一个自定义域。
+extern QCloudSMHErrorCode const KDuplicateCustomDomain;
+
+/// 复制域。
+extern QCloudSMHErrorCode const KDuplicateDomain;
+
+/// 下载包时文件太多。
+extern QCloudSMHErrorCode const KTooManyFiles;
+
+/// 请稍后重试
+extern QCloudSMHErrorCode const KDomainCheckFrequencyLimit;
 
 /// 该文件存在敏感字段
 extern QCloudSMHErrorCode const KSensitiveContentRecognized;
@@ -761,8 +1000,16 @@ extern QCloudSMHErrorCode const KNoDefaultRoleFound;
 /// 分配存储空间失败
 extern QCloudSMHErrorCode const KSpaceAllocationFail;
 
-/// 海外手机号不支持获取 token
-extern QCloudSMHErrorCode const KOperationNotAllowedForOverseasPhoneNumberToken;
+/// 检查域cip信息时发生错误。
+extern QCloudSMHErrorCode const KCipCheckServiceError;
+
+/// 处理wework请求时发生错误。
+extern QCloudSMHErrorCode const KWeworkInternalServerError;
+
+/// 初始化失败或已经初始化。
+extern QCloudSMHErrorCode const KInitRoleListFailed;
+
+/// 转换文件任务失败。
+extern QCloudSMHErrorCode const KConvertFileTaskFailed;
 
 
-extern QCloudSMHErrorCode const KUserPhoneNumberUnchanged;

@@ -1,14 +1,15 @@
 //
-//  QCloudSMHGeFileShareLinkDetailRequest.m
-//  Pods
+//  QCloudSMHCreateFileRequest.m
+//  QCloudCOSSMH
 //
-//  Created by garenwang on 2021/9/16.
+//  Created by karisli(李雪) on 2021/7/27.
 //
 
-#import "QCloudSMHGeFileShareLinkDetailRequest.h"
+#import "QCloudSMHCreateFileRequest.h"
 
-@implementation QCloudSMHGeFileShareLinkDetailRequest
+@implementation QCloudSMHCreateFileRequest
 - (void)dealloc {
+    
 }
 - (instancetype)init {
     self = [super init];
@@ -20,36 +21,38 @@
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseSimple,
-        QCloudURLSerilizerURLEncodingBody
+        QCloudURLFuseWithJSONParamters
+        
     ];
 
     NSArray *responseSerializers = @[
         QCloudAcceptRespnseCodeBlock([NSSet setWithObjects:@(200), @(201), @(202), @(203), @(204), @(205), @(206), @(207), @(208), @(226), nil], nil),
         QCloudResponseJSONSerilizerBlock,
-        QCloudResponseObjectSerilizerBlock([QCloudFileShareInfo class])
+        QCloudResponseObjectSerilizerBlock([QCloudSMHContentInfo class])
     ];
     [requestSerializer setSerializerBlocks:customRequestSerilizers];
     [responseSerializer setSerializerBlocks:responseSerializers];
 
-    requestSerializer.HTTPMethod = @"get";
+    requestSerializer.HTTPMethod = @"put";
 }
 
 - (BOOL)buildRequestData:(NSError *__autoreleasing *)error {
     if (![super buildRequestData:error]) {
         return NO;
     }
+    NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"api/v1/file"]];
+    self.requestData.serverURL = serverHost.absoluteString;
+    NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
+    [__pathComponents addObject:self.filePath];
+    self.requestData.URIComponents = __pathComponents;
 
-    NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingFormat:@"user/v1/share/%@/detail/%@?user_token=%@",self.organizationId,self.shareId,self.userToken]];
-    self.requestData.serverURL = serverHost.absoluteString;
- 
-    self.requestData.serverURL = serverHost.absoluteString;
-    [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
-   
+    NSDictionary * dic = @{@"fromTemplate":QCloudSMHFileTemplateTransferToString(self.fromTemplate)};
+    NSData * data = [dic qcloud_modelToJSONData];
+    self.requestData.directBody = data;
+
     return YES;
 }
-
--(void)setFinishBlock:(void (^ _Nullable)(QCloudFileShareInfo * _Nullable result , NSError * _Nullable error))QCloudRequestFinishBlock{
+-(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHContentInfo * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock{
     [super setFinishBlock:QCloudRequestFinishBlock];
 }
-
 @end

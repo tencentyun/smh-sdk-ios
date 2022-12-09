@@ -248,3 +248,10 @@
 #import "QCloudSMHGetVirusDetectionListRequest.h"
 #import "QCloudSMHVirusDetectionRestoreRequest.h"
 #import "QCloudSMHGetOrgRoleListRequest.h"
+
+#import "QCloudSMHEditFileOnlineRequest.h"
+#import "QCloudSMHCreateFileRequest.h"
+
+#import "QCloudSMHNextSearchTeamRequest.h"
+#import "QCloudSMHAbortSearchTeamRequest.h"
+#import "QCloudSMHBeginSearchTeamRequest.h"

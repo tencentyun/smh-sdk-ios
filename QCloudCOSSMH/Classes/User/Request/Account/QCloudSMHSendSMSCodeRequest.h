@@ -40,6 +40,9 @@ typedef NS_ENUM(NSUInteger, QCloudSMHSendSMSCodeType) {
 /// 图形验证码 randstr，可选参数
 @property (nonatomic,strong)NSString *captchaRandstr;
 
+/// 渠道参数pf 会议渠道值为 meeting
+@property (nonatomic,strong)NSString * pf;
+
 @end
 
 NS_ASSUME_NONNULL_END

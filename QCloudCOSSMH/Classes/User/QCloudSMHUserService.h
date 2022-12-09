@@ -136,6 +136,12 @@
 @class QCloudSMHVirusDetectionRestoreRequest;
 @class QCloudSMHGetOrgRoleListRequest;
 
+@class QCloudSMHNextSearchTeamRequest;
+@class QCloudSMHAbortSearchTeamRequest;
+@class QCloudSMHBeginSearchTeamRequest;
+
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHUserService : NSObject
@@ -454,6 +460,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 用于获取企业角色列表
 -(void)getOrgRoleList:(QCloudSMHGetOrgRoleListRequest *)request;
+
+
+/// 继续获取搜索结果
+-(void)nextSearchTeam:(QCloudSMHNextSearchTeamRequest *)request;
+
+/// 删除团队搜索结果
+-(void)abortSearchTeam:(QCloudSMHAbortSearchTeamRequest *)request;
+
+/// 搜索团队
+-(void)beginSearchTeam:(QCloudSMHBeginSearchTeamRequest *)request;
+
+
+
+
+
 @end
 
 NS_ASSUME_NONNULL_END

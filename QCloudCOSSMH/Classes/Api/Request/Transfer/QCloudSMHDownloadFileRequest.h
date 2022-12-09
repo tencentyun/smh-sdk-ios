@@ -6,7 +6,7 @@
 //
 
 #import "QCloudSMHBizRequest.h"
-
+#import "QCloudSMHCommonEnum.h"
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^QCloudSMHReciveResponseHeader)(NSDictionary * header);
@@ -25,6 +25,11 @@ typedef void(^QCloudSMHReciveResponseHeader)(NSDictionary * header);
  RFC 2616 中定义的指定文件下载范围，以字节（bytes）为单位
  */
 @property (strong, nonatomic) NSString *range;
+
+/// 只要调用这个接口获取的返回值，
+/// 用来做下载就传 download，
+/// 用来预览就传 preview，
+@property (nonatomic,assign)QCloudSMHPurposeType purpose;
 
 /**
  历史版本 ID，用于获取不同版本的文件内容，可选参数，不传默认为最新版；

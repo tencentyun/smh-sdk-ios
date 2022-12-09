@@ -14,6 +14,7 @@
 - (instancetype)init {
     self = [super init];
     if (!self) {
+        self.includeInactiveUser = YES;
         return nil;
     }
     return self;
@@ -94,7 +95,7 @@
     [self.requestData setQueryStringParamter:@(self.withSpaceUsage).stringValue withKey:@"with_space_usage"];
     
     [self.requestData setQueryStringParamter:@(self.withBelongingTeams).stringValue withKey:@"with_belonging_teams"];
-    
+    [self.requestData setQueryStringParamter:self.includeInactiveUser ? @"1":@"0" withKey:@"include_inactive_user"];
     if(self.limit>0){
         [self.requestData setQueryStringParamter:@(self.limit).stringValue withKey:@"limit"];
     }

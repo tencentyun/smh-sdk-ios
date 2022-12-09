@@ -68,6 +68,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 整数，群组内文件数量，仅当 WithFileCount = 1 时返回，非必返；
 @property (nonatomic,assign)NSInteger fileCount;
 
+/// 整数，群组内回收站文件数量，仅当 WithRecycledFileCount = 1 时返回，非必返；
+@property (nonatomic,assign)NSInteger recycledFileCount;
+
 /// 字符串，群主昵称
 @property (nonatomic,strong)NSString * ownerName;
 

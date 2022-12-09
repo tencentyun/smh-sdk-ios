@@ -62,6 +62,7 @@
     
     [self.requestData setQueryStringParamter:self.WithRecursiveUserCount?@"1":@"0" withKey:@"with_recursive_user_count"];
     
+    [self.requestData setQueryStringParamter:@(self.withRecycledFileCount).stringValue withKey:@"with_recycled_file_count"];
     
     [self.requestData setQueryStringParamter:self.userToken withKey:@"user_token"];
    

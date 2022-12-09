@@ -44,6 +44,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否禁用
 @property (nonatomic,assign)BOOL enabled;
 
+/// 是否新用户，手机号为当天加入网盘的用户
+@property (nonatomic,assign)BOOL isNewUser;
+
+/// 是否机构新用户，加入企业 7 天之内属于新用户
+@property (nonatomic,assign)BOOL within7DaysOrgUser;
+
+/// 是否已有对应渠道的体验版本
+@property (nonatomic,assign)BOOL hasAppliedChannelOrg;
+
 /// 是否注销
 @property (nonatomic, assign) BOOL deregister;
 

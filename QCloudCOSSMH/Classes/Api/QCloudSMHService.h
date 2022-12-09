@@ -93,6 +93,8 @@
 @class QCloudSMHGetAlbumRequest;
 
 @class QCloudSMHCrossSpaceCopyDirectoryRequest;
+@class QCloudSMHCreateFileRequest;
+@class QCloudSMHEditFileOnlineRequest;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHService : NSObject
@@ -415,6 +417,16 @@ NS_ASSUME_NONNULL_BEGIN
  异步跨空间复用接口
  */
 -(void)crossSpaceCopyDirectory:(QCloudSMHCrossSpaceCopyDirectoryRequest *)request;
+
+/**
+ 用于模板创建文件
+ */
+-(void)createFileRequest:(QCloudSMHCreateFileRequest *)request;
+
+/**
+ 获取在线编辑链接
+ */
+-(void)getEditFileOnlineUrl:(QCloudSMHEditFileOnlineRequest *)request;
 @end
 
 NS_ASSUME_NONNULL_END

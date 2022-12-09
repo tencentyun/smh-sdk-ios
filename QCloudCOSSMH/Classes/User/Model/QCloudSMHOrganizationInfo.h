@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 整数，组织 ID
 @property (nonatomic, strong) NSString *organizationID;
+
 @property (nonatomic, strong) NSString *libraryId;
 
 /// 字符串，组织名称

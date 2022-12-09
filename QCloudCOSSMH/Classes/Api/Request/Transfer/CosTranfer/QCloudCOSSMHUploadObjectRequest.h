@@ -9,11 +9,15 @@
 #import <QCloudCore/QCloudCore.h>
 #import "QCloudSMHBizRequest.h"
 #import "QCloudSMHConflictStrategyEnumType.h"
+#import "QCloudSMHContentInfo+Transfer.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @class QCloudSMHConfirmInfo;
 @class QCloudSMHInitUploadInfo;
 @class QCloudCOSSMHUploadObjectRequest;
+
+typedef void (^QCloudSMHPreviewSendProcessBlock)(int64_t count, int64_t total, BOOL isStart);
+
 
 typedef void (^RequestsMetricArrayBlock)(NSMutableArray *_Nullable requstMetricArray);
 
@@ -59,6 +63,7 @@ typedef void (^QCloudSMHRequestsConfirmKeyBlock)(NSString *_Nullable confirmKey)
  */
 @property (nonatomic,assign)QCloudSMHConflictStrategyEnum conflictStrategy;
 
+@property (nonatomic, strong) QCloudSMHPreviewSendProcessBlock _Nullable previewSendProcessBlock;
 /**
  表明该请求是否已经被中断
  */

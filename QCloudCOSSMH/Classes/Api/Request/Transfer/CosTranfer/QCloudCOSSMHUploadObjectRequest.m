@@ -394,7 +394,9 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     NSData *data = [handler readDataOfLength:kQCloudCOSXMLUploadSliceLength];
     uint8_t * beginningHash = [data qcloudSha256Bytes];
     NSString *beginningHashString = [NSData qcloudSha256BytesTostring:beginningHash];
-    
+    if(self.previewSendProcessBlock != nil){
+        self.previewSendProcessBlock(kQCloudCOSXMLUploadSliceLength, self.dataContentLength,YES);
+    }
     QCloudSMHQuickPutObjectRequest * request = [QCloudSMHQuickPutObjectRequest new];
     request.createionDate = [self createDate];
     request.libraryId = self.libraryId;
@@ -409,7 +411,9 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.finishBlock = ^(id outputObject, NSError *error) {
         [handler closeFile];
         if (error) {
-            self.finishBlock(outputObject, error);
+            if(self.finishBlock){
+                self.finishBlock(outputObject, error);
+            }
             return;
         }
         // 上传过，开始秒传
@@ -431,11 +435,19 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     NSFileHandle *handler = [NSFileHandle fileHandleForReadingAtPath:bodyURL.path];
     uint8_t * fullHash = beginningHash;
     for (NSInteger i = kQCloudCOSXMLUploadSliceLength; i < self.dataContentLength; i += kQCloudCOSXMLUploadSliceLength) {
-        [handler seekToFileOffset:i];
-        NSData *data = [handler readDataOfLength:MIN(kQCloudCOSXMLUploadSliceLength, self.dataContentLength - i)];
-        NSMutableData * mdata = [NSMutableData dataWithBytes:fullHash length:32];
-        [mdata appendData:data];
-        fullHash = [mdata qcloudSha256Bytes];
+        if(self.canceled){
+            break;
+        }
+        @autoreleasepool {
+            [handler seekToFileOffset:i];
+            NSData *data = [handler readDataOfLength:MIN(kQCloudCOSXMLUploadSliceLength, self.dataContentLength - i)];
+            NSMutableData * mdata = [NSMutableData dataWithBytes:fullHash length:32];
+            [mdata appendData:data];
+            fullHash = [mdata qcloudSha256Bytes];
+        }
+        if(self.previewSendProcessBlock != nil){
+            self.previewSendProcessBlock(MIN(i,self.dataContentLength ), self.dataContentLength,NO);
+        }
     }
     QCloudSMHQuickPutObjectRequest * request = [QCloudSMHQuickPutObjectRequest new];
     request.createionDate = [self createDate];
@@ -452,7 +464,9 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.finishBlock = ^(id outputObject, NSError *error) {
         [handler closeFile];
         if (error) {
-            self.finishBlock(outputObject, error);
+            if(self.finishBlock){
+                self.finishBlock(outputObject, error);
+            }
             return;
         }
         // 秒传成功
@@ -462,6 +476,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             NSDictionary * infoDic = [NSJSONSerialization JSONObjectWithData:outputObject[@"data"] options:NSJSONReadingFragmentsAllowed error:nil];
             QCloudSMHContentInfo * info = QCloudSMHContentInfo.new;
             [info qcloud_modelSetWithDictionary:infoDic];
+            info.isQuickUpload = YES;
             self.finishBlock(info, error);
             
         }else{

@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 分享id
 @property (nonatomic,strong)NSString * shareId;
 
+-(void)setFinishBlock:(void (^ _Nullable)(QCloudFileShareInfo * _Nullable result , NSError * _Nullable error))QCloudRequestFinishBlock;
 @end
 
 NS_ASSUME_NONNULL_END

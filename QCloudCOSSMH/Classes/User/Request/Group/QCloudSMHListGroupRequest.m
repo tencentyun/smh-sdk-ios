@@ -35,9 +35,18 @@
     [self.requestData setQueryStringParamter:self.userToken withKey:@"user_token"];
     [self.requestData setQueryStringParamter:@(self.withDirectory).stringValue withKey:@"with_directory"];
     [self.requestData setQueryStringParamter:@(self.checkUpdateRecursively).stringValue withKey:@"check_update_recursively"];
+    [self.requestData setQueryStringParamter:@(self.withRecycledFileCount).stringValue withKey:@"with_recycled_file_count"];
     [self.requestData setQueryStringParamter:@(self.withFileCount).stringValue withKey:@"with_file_count"];
     [self.requestData setQueryStringParamter:@(self.withUser).stringValue withKey:@"with_users"];
+    [self.requestData setQueryStringParamter:QCloudSMHGroupJoinTypeTransferToString(self.joinType) withKey:@"join_type"];
+    [self.requestData setQueryStringParamter:@(self.adminOnly).stringValue withKey:@"admin_only"];
+    if(self.joinTimeStart){
+        [self.requestData setQueryStringParamter:self.joinTimeStart withKey:@"join_time_start"];
+    }
     
+    if(self.joinTimeStart){
+        [self.requestData setQueryStringParamter:self.joinTimeStart withKey:@"join_time_end"];
+    }
     
     [self.requestData setQueryStringParamter:QCloudSMHGetGroupSortTypeTransferToString(self.sortType) withKey:@"order_by"];
     if(self.sortType<100){

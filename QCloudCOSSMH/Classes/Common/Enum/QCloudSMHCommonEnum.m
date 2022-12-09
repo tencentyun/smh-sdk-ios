@@ -128,3 +128,40 @@ NSString *  QCloudSMHUsedSenceTransferToString( QCloudSMHUsedSence type){
             break;
     }
 }
+
+NSString *  QCloudSMHFileTemplateTransferToString( QCloudSMHFileTemplate fileTemplate){
+    switch (fileTemplate) {
+        case QCloudSMHFileTemplateWord:
+            return @"word.docx";
+            break;
+        case QCloudSMHFileTemplateExcel:
+            return @"excel.xlsx";
+            break;
+        case QCloudSMHFileTemplatePPT:
+            return @"powerpoint.pptx";
+            break;
+        default:
+            return @"";
+            break;
+    }
+}
+
+NSString *  QCloudSMHChannnelFlagTransferToString( QCloudSMHChannnelFlag flag){
+    switch (flag) {
+        case QCloudSMHChannnelFlagMeeting:
+            return @"meeting";
+            break;
+        case QCloudSMHChannnelFlagNone:
+            return @"";
+            break;
+        default:
+            return @"";
+            break;
+    }
+}
+QCloudSMHChannnelFlag QCloudSMHChannnelFlagFromString(NSString *key){
+    if([key isEqualToString:@"meeting"]){
+        return QCloudSMHChannnelFlagMeeting;
+    }
+    return QCloudSMHChannnelFlagNone;
+}

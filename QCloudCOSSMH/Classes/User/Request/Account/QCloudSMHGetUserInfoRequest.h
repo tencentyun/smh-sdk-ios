@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否返回所属团队，true | false
 @property (nonatomic,assign)BOOL withBelongingTeams;
 
+- (void)setFinishBlock:(void (^)(QCloudSMHUserDetailInfo * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -61,8 +61,7 @@
     if (self.historVersionId > 0) {
         [self.requestData setQueryStringParamter:@(self.historVersionId).stringValue withKey:@"history_id"];
     }
-    
-    [self.requestData setQueryStringParamter:@"download" withKey:@"purpose"];
+    [self.requestData setQueryStringParamter:QCloudSMHPurposeTypeTransferToString(self.purpose) withKey:@"purpose"];
     
     NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"api/v1/file"]];
     self.requestData.serverURL = serverHost.absoluteString;

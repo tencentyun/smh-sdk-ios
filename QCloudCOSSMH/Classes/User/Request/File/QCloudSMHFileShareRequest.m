@@ -84,6 +84,7 @@
     if (self.shareInfo.downloadCount > 0) {
         [mParams setObject:@(self.shareInfo.downloadCount) forKey:@"downloadCount"];
     }
+    [mParams setObject:@(self.shareInfo.isPermanent) forKey:@"isPermanent"];
     self.requestData.directBody = [mParams qcloud_modelToJSONData];;
     return YES;
 }

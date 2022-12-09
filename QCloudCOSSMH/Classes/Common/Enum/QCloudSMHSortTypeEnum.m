@@ -64,3 +64,18 @@ NSString * QCloudSMHGroupMemberSortTypeTransferToString(QCloudSMHGroupMemberSort
     }
     return @"";
 }
+
+NSString * QCloudSMHGroupJoinTypeTransferToString(QCloudSMHGroupJoinType type){
+    
+    
+    switch (type) {
+        case QCloudSMHGroupJoinTypeOwn:
+            return @"own";
+        case QCloudSMHGroupJoinTypeJoin:
+            return @"join";
+        case QCloudSMHGroupJoinTypeAll:
+        default:
+            return @"all";
+            break;
+    }
+}

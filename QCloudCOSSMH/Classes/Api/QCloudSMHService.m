@@ -52,6 +52,8 @@
 #import "QCloudSMHCrossSpaceAsyncCopyDirectoryRequest.h"
 #import "QCloudSMHGetAlbumRequest.h"
 #import "QCloudSMHCrossSpaceCopyDirectoryRequest.h"
+#import "QCloudSMHCreateFileRequest.h"
+#import "QCloudSMHEditFileOnlineRequest.h"
 
 @interface QCloudSMHService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
@@ -208,6 +210,36 @@ static QCloudSMHService *_service;
             request.finishBlock(requestURLString, nil);
         }
     }];
+}
+
+-(void)getEditFileOnlineUrl:(QCloudSMHEditFileOnlineRequest *)request{
+    request.accessTokenProvider = self.accessTokenProvider;
+    NSError *error;
+    NSURLRequest *urlRequest = [request buildURLRequest:&error];
+    if (nil != error) {
+        [request onError:error];
+        return;
+    }
+    __block NSString *requestURLString = urlRequest.URL.absoluteString;
+    [request.accessTokenProvider accessTokenWithRequest:request urlRequest:urlRequest compelete:^(QCloudSMHSpaceInfo *spaceInfo, NSError *error) {
+        if ([requestURLString hasSuffix:@"&"] || [requestURLString hasSuffix:@"?"]) {
+            requestURLString = [requestURLString stringByAppendingFormat:@"access_token=%@",spaceInfo.accessToken];
+        } else {
+            requestURLString = [requestURLString stringByAppendingFormat:@"&access_token=%@", spaceInfo.accessToken];
+        }
+        if (spaceInfo.libraryId != nil) {
+            if (request.libraryId) {
+                requestURLString = [requestURLString stringByReplacingOccurrencesOfString:request.libraryId withString:spaceInfo.libraryId];
+            }else{
+                requestURLString = [requestURLString stringByReplacingOccurrencesOfString:@"emptyLibraryId" withString:spaceInfo.libraryId];
+            }
+        }
+        
+        if (request.finishBlock) {
+            request.finishBlock(requestURLString, nil);
+        }
+    }];
+
 }
 
 - (void)copyFile:(QCloudSMHCopyFileRequest *)request{
@@ -390,6 +422,10 @@ static QCloudSMHService *_service;
 }
 
 -(void)crossSpaceCopyDirectory:(QCloudSMHCrossSpaceCopyDirectoryRequest *)request{
+    [self performRequest:request];
+}
+
+-(void)createFileRequest:(QCloudSMHCreateFileRequest *)request{
     [self performRequest:request];
 }
 

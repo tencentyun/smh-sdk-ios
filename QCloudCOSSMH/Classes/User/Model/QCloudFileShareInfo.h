@@ -75,6 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否被禁用
 @property (nonatomic,assign) BOOL disabled;
 
+/// 是否永久有效，可选参数，默认 false；
+@property (nonatomic,assign) BOOL isPermanent;
+
 /// 文件大小，分享单个文件才返回，文件夹不返回；
 @property (nonatomic,strong) NSString * size;
 

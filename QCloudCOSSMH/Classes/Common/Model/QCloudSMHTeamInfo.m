@@ -46,3 +46,11 @@
 }
 @end
 
+@implementation QCloudSMHSearchTeamResult
++ (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
+    return @{@"contents" : QCloudSMHTeamInfo.class};
+}
+@end
+
+
+

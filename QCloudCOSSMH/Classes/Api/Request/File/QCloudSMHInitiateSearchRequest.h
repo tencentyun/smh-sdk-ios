@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,strong)NSArray<NSNumber *> *searchTypes;
 
+@property (nonatomic,strong)NSArray<NSString *> *extname;
+
 @property (nonatomic,strong)NSArray<QCloudSMHSearchTag *> *searchTags;
 
 /// 搜索创建/更新者，可选参数，对象数组

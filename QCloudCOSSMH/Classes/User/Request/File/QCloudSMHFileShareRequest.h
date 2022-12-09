@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// previewCount: 预览次数限制，可选参数；
 /// downloadCount: 下载次数限制，可选参数；
 /// disabled: 布尔型，是否被禁用，可选参数，默认 false；
+/// isPermanent: 是否永久有效，可选参数，默认 false；
 @property (nonatomic,strong)QCloudFileShareInfo * shareInfo;
 
 -(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHFileShareResult * _Nullable result , NSError * _Nullable error))QCloudRequestFinishBlock;
