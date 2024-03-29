@@ -22,7 +22,7 @@
 }
 
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
-    return @{@"directoryList" : QCloudSMHListGroupFileItem.class,@"authorityList":QCloudSMHRoleInfo.class,@"users":QCloudSMHListGroupMember.class};
+    return @{@"directoryList" : QCloudSMHListGroupFileItem.class,@"authorityList":QCloudSMHRoleInfo.class,@"users":QCloudSMHListGroupMember.class,@"authorityButtonList":QCloudSMHButtonAuthority.class};
 }
 
 - (NSDictionary *)modelCustomWillTransformFromDictionary:(NSDictionary *)dic {
@@ -74,7 +74,7 @@
 }
 
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
-    return @{@"authorityList" : QCloudSMHRoleInfo.class};
+    return @{@"authorityList" : QCloudSMHRoleInfo.class,@"authorityButtonList":QCloudSMHButtonAuthority.class};
 }
 
 @end

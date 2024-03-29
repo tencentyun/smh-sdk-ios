@@ -139,9 +139,29 @@
 @class QCloudSMHNextSearchTeamRequest;
 @class QCloudSMHAbortSearchTeamRequest;
 @class QCloudSMHBeginSearchTeamRequest;
+@class QCloudSMHGetTemporaryUserRequest;
 
 
+@class QCloudSMHUserAbortSearchRequest;
+@class QCloudSMHUserInitiateSearchRequest;
+@class QCloudSMHUserResumeSearchRequest;
 
+@class QCloudSMHGetOrganizationShareListRequest;
+@class QCloudSMHGetApplyDirectoryDetailRequest;
+@class QCloudSMHDisagreeApplyDirectoryRequest;
+@class QCloudSMHCancelApplyDirectoryRequest;
+@class QCloudSMHGetApplyDirectoryListRequest;
+@class QCloudSMHAgreeApplyDirectoryRequest;
+@class QCloudSMHApplyDirectoryAuthorityRequest;
+@class QCloudSMHCheckDirectoryApplyRequest;
+@class QCloudSMHGetApplyDirectoryListTotalInfoRequest;
+
+@class QCloudSMHOffcialFreeLoginRequest;
+@class QCloudSMHCheckOfficalFreeRequest;
+@class QCloudSMHOffcialFreeRegisterRequest;
+@class QCloudSMHSSOLoginRedirectRequest;
+@class QCloudSMHVerifyAccountLoginRequest;
+@class QCloudSMHGetSSOListRequest;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHUserService : NSObject
@@ -471,10 +491,55 @@ NS_ASSUME_NONNULL_BEGIN
 /// 搜索团队
 -(void)beginSearchTeam:(QCloudSMHBeginSearchTeamRequest *)request;
 
+/// 临时用户列表，以及搜索
+-(void)getTemporaryUser:(QCloudSMHGetTemporaryUserRequest *)request;
 
+/// 用于删除搜索任务
+-(void)abortSearch:(QCloudSMHUserAbortSearchRequest *)request;
 
+/// 用于全局搜索目录与文件
+-(void)initiateSearch:(QCloudSMHUserInitiateSearchRequest *)request;
 
+/// 用于继续获取搜索结果
+-(void)resumeSearch:(QCloudSMHUserResumeSearchRequest *)request;
 
+/// 获取组织分享列表
+-(void)getOrganizationShareList:(QCloudSMHGetOrganizationShareListRequest *)request;
+
+/// 同意文件审批
+-(void)getApplyDirectoryDetail:(QCloudSMHGetApplyDirectoryDetailRequest *)request;
+
+/// 用于驳回文件审批
+-(void)disagreeApplyDirectory:(QCloudSMHDisagreeApplyDirectoryRequest *)request;
+
+/// 撤销文件审批
+-(void)cancelApplyDirectory:(QCloudSMHCancelApplyDirectoryRequest *)request;
+
+/// 文件权限审批列表
+-(void)getApplyDirectoryList:(QCloudSMHGetApplyDirectoryListRequest *)request;
+
+/// 同意文件审批
+-(void)agreeApplyDirectory:(QCloudSMHAgreeApplyDirectoryRequest *)request;
+
+/// 用于发起文件审批
+-(void)applyDirectoryAuthority:(QCloudSMHApplyDirectoryAuthorityRequest *)request;
+
+/// 用于检查文件是否在审批中
+-(void)checkDirectoryApply:(QCloudSMHCheckDirectoryApplyRequest *)request;
+
+-(void)getApplyDirectoryListTotalInfo:(QCloudSMHGetApplyDirectoryListTotalInfoRequest *)request;
+
+-(void)offcialFreeLogin:(QCloudSMHOffcialFreeLoginRequest *)request;
+
+-(void)checkOfficalFree:(QCloudSMHCheckOfficalFreeRequest *)request;
+
+-(void)offcialFreeRegister:(QCloudSMHOffcialFreeRegisterRequest *)request;
+
+-(void)ssoLoginRedirect:(QCloudSMHSSOLoginRedirectRequest *)request;
+
+-(void)verifyAccountLogin:(QCloudSMHVerifyAccountLoginRequest *)request;
+
+-(void)getSSOList:(QCloudSMHGetSSOListRequest *)request;
 @end
 
 NS_ASSUME_NONNULL_END

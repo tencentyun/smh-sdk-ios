@@ -89,6 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong)  QCloudSMHRoleInfo*authorityList;
 
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
+
 @property (nonatomic) QCloudSMHContentInfoType fileType;
 
 /// 是否可通过万象预览；

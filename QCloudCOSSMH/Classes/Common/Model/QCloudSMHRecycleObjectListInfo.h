@@ -40,16 +40,35 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否可通过万象预览；
 @property (nonatomic, assign) BOOL previewByCI;
 
+/// 是否可用预览图当做 icon
+@property (nonatomic, assign) BOOL previewAsIcon;
+
+/// 是否可通过 wps 预览；
+@property (nonatomic, assign) BOOL previewByDoc;
+
 /// 字符串，条目类型：
 /// dir: 目录或相簿；
 /// file: 文件，仅用于文件类型媒体库；
 /// image: 图片，仅用于媒体类型媒体库；
 /// video: 视频，仅用于媒体类型媒体库；
 @property (nonatomic, assign) QCloudSMHContentInfoType type;
+
 @property (nonatomic, strong) NSString* cosUrl;
+
+/**
+ 病毒详细名称信息
+ */
+@property (nonatomic, strong) NSString * virusName;
+
+
+/// QCloudSMHVirusAuditStatus 检测状态
+@property (nonatomic, assign) QCloudSMHVirusAuditStatus virusAuditStatus;
+
+@property (nonatomic, assign) QCloudSMHSensitiveWordAuditStatus sensitiveWordAuditStatus;
 
 /// 允许操作的权限；
 @property (nonatomic, strong) QCloudSMHRoleInfo*authorityList;
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
 @property (nonatomic, assign) QCloudSMHContentInfoType fileType;
 @property (nonatomic,copy) NSArray * paths;
 @property (nonatomic,copy) NSArray * detailPaths;
@@ -69,6 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger totalNum;
 @property (nonatomic, strong) NSString* nextMarker;
 @property (nonatomic, strong) NSArray <QCloudSMHRecycleObjectItemInfo *>* contents;
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
 @property (nonatomic, strong) QCloudSMHRoleInfo*authorityList;
 
 @end

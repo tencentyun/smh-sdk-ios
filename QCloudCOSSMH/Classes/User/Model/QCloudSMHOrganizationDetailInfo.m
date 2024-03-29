@@ -43,8 +43,16 @@
     
     NSString *channelFlag = transfromDic[@"channelFlag"];
     if (channelFlag && [channelFlag isKindOfClass:[NSString class]] && channelFlag.length > 0) {
-        NSInteger value = QCloudSMHChannnelFlagFromString(channelFlag);
+        NSInteger value = QCloudSMHChannelFlagFromString(channelFlag);
         transfromDic[@"channelFlag"] = @(value);
+    }
+    id enableDocPreviewValue = transfromDic[@"enableDocPreview"];
+    if (!enableDocPreviewValue) {
+        transfromDic[@"enableDocPreview"] = @(YES);
+    }
+    id enableDocEditValue = transfromDic[@"enableDocEdit"];
+    if (!enableDocEditValue) {
+        transfromDic[@"enableDocEdit"] = @(YES);
     }
 
     return transfromDic;

@@ -144,8 +144,8 @@
             dic = [[NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:nil] mutableCopy];
         }
       
-        if (!self.resumableDownload) {
-            if(self.finishBlock){
+        if (!strongSelf.resumableDownload) {
+            if(strongSelf.finishBlock){
                 strongSelf.finishBlock(outputObject, error);
             }
             return;
@@ -172,21 +172,21 @@
             if(writeDataError){
                 error = writeDataError;
             }
-            if(self.finishBlock && error.code != QCloudNetworkErrorCodeCanceled){
+            if(strongSelf.finishBlock && error.code != QCloudNetworkErrorCodeCanceled){
                 strongSelf.finishBlock(outputObject, error);
             }
         }else{
             //下载完成之后如果没有crc64，删除记录文件
             if(!dic[@"crc64"]){
                 QCloudRemoveFileByPath(strongSelf.resumableTaskFile);
-                if(self.finishBlock){
+                if(strongSelf.finishBlock){
                     strongSelf.finishBlock(outputObject, error);
                 }
                 return;
             }
 
             QCloudRemoveFileByPath(strongSelf.resumableTaskFile);
-            if(self.enableCRC64Verification){
+            if(strongSelf.enableCRC64Verification){
                 //计算文件的CRC64
                 NSInteger slice = 8 * 1024;
                 uint64_t localCrc64 = 0;
@@ -204,11 +204,14 @@
                 if (![localCrc64Str isEqualToString:dic[@"crc64"]]) {
                     //下载完成之后如果crc64不一致，删除记录文件和已经下载的文件，重新开始下载
                     QCloudRemoveFileByPath(strongSelf.downloadingURL.relativePath);
-                    [self fakeStart];
+                    [strongSelf fakeStart];
                 }else{
-                    strongSelf.finishBlock(outputObject, error);
+                    if(strongSelf.finishBlock){
+                        strongSelf.finishBlock(outputObject, error);
+                    }
+                    
                 }
-            }else if(self.finishBlock){
+            }else if(strongSelf.finishBlock){
                 strongSelf.finishBlock(outputObject, error);
             }
         }
@@ -220,8 +223,6 @@
 }
 
 -(void)cancel{
-    [super cancel];
-    
     if (self.ownerQueue) {
         [self.ownerQueue cancelByRequestID:self.requestID];
     }
@@ -242,6 +243,7 @@
     }
 
     [[QCloudHTTPSessionManager shareClient] cancelRequestsWithID:cancelledRequestIDs];
+    [super cancel];
 }
 
 - (void)remove{

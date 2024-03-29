@@ -183,4 +183,5 @@
 #import "QCloudSMHNextSearchTeamRequest.h"
 #import "QCloudSMHAbortSearchTeamRequest.h"
 #import "QCloudSMHBeginSearchTeamRequest.h"
+#import "QCloudSMHGetTemporaryUserRequest.h"
 #endif /* QCloudCOSSMHUser_h */

@@ -21,8 +21,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// 字符串，组织名称
 @property (nonatomic, strong) NSString *name;
 
+@property (nonatomic, assign) BOOL isTemporary;
+
+
+/// 是否限制登录 true受限制，false不受限制
+@property (assign, nonatomic) BOOL ipLimitEnabled;
 /// 组织配置参数
 @property (nonatomic,strong) QCloudSMHOrgExtensionData *extensionData;
+
+@property (assign, nonatomic) BOOL expired;
+
 @property (nonatomic,strong) QCloudSMHOrgUser *orgUser;
 
 ///  布尔值，是否为最后一次登录的组织

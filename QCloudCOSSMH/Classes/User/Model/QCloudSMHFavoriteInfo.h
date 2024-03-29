@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 权限列表
 @property (nonatomic, strong)  QCloudSMHRoleInfo * authorityList;
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
 
 @end
 

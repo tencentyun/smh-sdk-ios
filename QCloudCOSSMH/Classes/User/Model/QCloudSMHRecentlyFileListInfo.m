@@ -19,6 +19,7 @@
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
     NSMutableDictionary * params = [QCloudSMHBaseContentInfo modelContainerPropertyGenericClass].mutableCopy;
     [params addEntriesFromDictionary:@{@"authorityList":QCloudSMHRoleInfo.class}];
+    [params addEntriesFromDictionary:@{@"authorityButtonList":QCloudSMHButtonAuthority.class}];
     return params.copy;
 }
 

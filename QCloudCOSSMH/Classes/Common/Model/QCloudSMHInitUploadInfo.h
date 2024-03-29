@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 键值对，实际上传时需指定的请求头部
 @property (nonatomic, strong) NSDictionary * headers;
 
+@property (nonatomic, strong) NSDictionary * parts;
+
 @property (nonatomic, strong) NSString * uploadId;
 
 /// 字符串，用于完成文件上传的确认参数；

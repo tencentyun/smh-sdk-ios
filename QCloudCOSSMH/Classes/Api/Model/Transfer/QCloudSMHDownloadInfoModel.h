@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 文件首次完成上传的时间；
 @property (strong, nonatomic) NSString * creationTime;
 
+/// 文件最近一次被覆盖的时间。
+@property (strong, nonatomic) NSString * modificationTime;
+
 ///  媒体类型；
 @property (strong, nonatomic) NSString * contentType;
 

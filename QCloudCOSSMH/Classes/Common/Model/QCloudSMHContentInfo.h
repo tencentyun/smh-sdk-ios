@@ -39,10 +39,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong) NSString * virusName;
 
+@property (nonatomic, strong) NSString * objectKey;
 
 /// QCloudSMHVirusAuditStatus 检测状态
 @property (nonatomic, assign) QCloudSMHVirusAuditStatus virusAuditStatus;
 
+@property (nonatomic, assign) QCloudSMHSensitiveWordAuditStatus sensitiveWordAuditStatus;
 /**
  布尔值，是否有权限进行恢复或信任操作；
  */
@@ -100,6 +102,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString *userId;
 
+@property (nonatomic, strong) NSString *userOrgId;
+
 /**
  文件 CRC64ECMA 校验值
  */
@@ -143,6 +147,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong)  QCloudSMHRoleInfo*authorityList;
 
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
+
 @property (nonatomic, strong)  QCloudSMHHighLightInfo *highlight;
 
 @property (nonatomic, strong) NSArray <QCloudFileTagItemModel *> * tagList;
@@ -152,6 +158,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign)BOOL inDirectory;
 
 @property (nonatomic, assign)BOOL inRecycledDirectory;
+
+/// 字符串，自定义水印信息，可选参数，仅当企业配置使用自定义水印时才生效；
+@property (nonatomic,strong)NSDictionary * watermarkText;
 
 @end
 

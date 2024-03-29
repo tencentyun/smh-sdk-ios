@@ -39,6 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 默认 QCloudSMHGroupMemberSortByRole;
 @property (nonatomic,assign)QCloudSMHGroupMemberSortType sortType;
 
+/// 0：仅为企业用户
+/// 1：其他企业用户
+/// 不传则表示所有用户
+@property (nonatomic,strong,nullable)NSNumber * withExternalUser;
 -(void)setFinishBlock:(void (^_Nullable)(QCloudSMHListGroupMemberInfo *  _Nullable result , NSError * _Nullable error))QCloudRequestFinishBlock;
 @end
 

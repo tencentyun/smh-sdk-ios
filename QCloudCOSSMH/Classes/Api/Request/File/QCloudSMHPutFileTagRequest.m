@@ -7,6 +7,10 @@
 
 #import "QCloudSMHPutFileTagRequest.h"
 
+@implementation QCloudSMHTagModel
+
+@end
+
 @implementation QCloudSMHPutFileTagRequest
 
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
@@ -45,9 +49,20 @@
     self.requestData.URIComponents = __pathComponents;
 
     NSMutableArray * tags = [NSMutableArray new];
-    [tags enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [tags addObject:@{@"tagName":obj}];
-    }];
+    
+    if(self.tags.count > 0){
+        [tags enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [tags addObject:@{@"tagName":obj}];
+        }];
+    }
+    
+    if(self.kvTags.count > 0){
+        [tags enumerateObjectsUsingBlock:^(QCloudSMHTagModel *  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [tags addObject:obj.qcloud_modelToJSONObject];
+        }];
+    }
+    
+    
     self.requestData.directBody = [tags qcloud_modelToJSONData];
     
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];

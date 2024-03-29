@@ -88,9 +88,18 @@ typedef NS_ENUM(NSUInteger, QCloudSMHVirusAuditStatus) {
     QCloudSMHVirusAuditManualSafety,  //5 人为标记为无风险
     QCloudSMHVirusAuditFailure,  //6 检测任务失败
 };
+// 敏感词状态
+typedef NS_ENUM(NSUInteger, QCloudSMHSensitiveWordAuditStatus) {
+    QCloudSMHSensitiveWordWaitAudit = 0,  //0 未检查
+    QCloudSMHSensitiveWordAuditNone,  //1无风险
+    QCloudSMHSensitiveWordAuditSuccess,  //2 敏感文件
+    QCloudSMHSensitiveWordAuditMarkNone,  //3 人为标记为无风险
+    QCloudSMHSensitiveWordAuditError,  // 4无法判断（如文件内容读取失败等原因）
+};
 
 typedef NS_ENUM(NSUInteger, QCloudSMHUsedSence) {
-    QCloudSMHUsedSencePersonal = 0,
+    QCloudSMHUsedSenceAll = 0,
+    QCloudSMHUsedSencePersonal,
     QCloudSMHUsedSenceTeam,
     QCloudSMHUsedSenceGroup,
 };
@@ -103,11 +112,58 @@ typedef NS_ENUM(NSUInteger, QCloudSMHFileTemplate) {
 };
 NSString *  QCloudSMHFileTemplateTransferToString( QCloudSMHFileTemplate fileTemplate);
 
-typedef NS_ENUM(NSUInteger, QCloudSMHChannnelFlag) {
-    QCloudSMHChannnelFlagNone = 0,
-    QCloudSMHChannnelFlagMeeting = 1,
+typedef NS_ENUM(NSUInteger, QCloudSMHChannelFlag) {
+    QCloudSMHChannelFlagNone = 0,
+    QCloudSMHChannelFlagMeeting = 1,
+    QCloudSMHChannelFlagHiflow = 2,
+    QCloudSMHChannelFlagOfficialFree = 3,
+    QCloudSMHChannelFlagVisitor = 4,
 };
-NSString *  QCloudSMHChannnelFlagTransferToString( QCloudSMHChannnelFlag flag);
-QCloudSMHChannnelFlag QCloudSMHChannnelFlagFromString(NSString *key);
+NSString *  QCloudSMHChannelFlagTransferToString( QCloudSMHChannelFlag flag);
+QCloudSMHChannelFlag QCloudSMHChannelFlagFromString(NSString *key);
+
+
+/// 文件类型；混合文件：multi-file、文件：file、文件夹：dir；
+typedef NS_ENUM(NSUInteger, QCloudSMHShareFileType) {
+    QCloudSMHShareFileTypeNone = 0,
+    QCloudSMHShareFileTypeMultiFile ,
+    QCloudSMHShareFileTypeFile ,
+    QCloudSMHShareFileTypeDir ,
+};
+NSString *  QCloudSMHShareFileTypeTransferToString( QCloudSMHShareFileType flag);
+QCloudSMHShareFileType QCloudSMHShareFileTypeFromString(NSString *key);
+
+/// 查询类型：my_audit（我审核的）、my_apply（我申请的）；
+typedef NS_ENUM(NSUInteger, QCloudSMHAppleType) {
+    QCloudSMHAppleTypeNone = 0,
+    QCloudSMHAppleTypeMyAudit,
+    QCloudSMHAppleTypeMyApply,
+};
+NSString *  QCloudSMHAppleTypeTransferToString( QCloudSMHAppleType flag);
+
+typedef NS_ENUM(NSUInteger, QCloudSMHAppleStatusType) {
+    QCloudSMHAppleStatusTypeAll = 0,
+    QCloudSMHAppleStatusTypeAuditing,
+    QCloudSMHAppleStatusTypeHistory,
+};
+NSString *  QCloudSMHAppleStatusTypeTransferToString( QCloudSMHAppleStatusType flag);
+
+// 审批状态，0 审批中 1 已失效 2 已撤回 3 已驳回 4 审批通过
+typedef NS_ENUM(NSUInteger, QCloudSMHApplyAuditStatus) {
+    QCloudSMHApplyAuditIng = 0,  //0 审批中
+    QCloudSMHApplyAuditInvalid,  //1 已失效
+    QCloudSMHApplyAuditUndo,  //2 已撤回
+    QCloudSMHApplyAuditReject,  //3 已驳回
+    QCloudSMHApplyAuditPass,  //4 审批通过
+};
+typedef NS_ENUM(NSUInteger, QCloudSMHApplyAuditStatusCause) {
+    QCloudSMHApplyAuditCauseNormal = 0,  //0 正常
+    QCloudSMHApplyAuditCauseFileDelete,  //1 文件删除
+    QCloudSMHApplyAuditCauseSpaceDelete,  //2 空间删除
+    QCloudSMHApplyAuditCauseUserDelete,  //3 用户删除
+    QCloudSMHApplyAuditCauseRoleDelete,  //4 角色删除
+    QCloudSMHApplyAuditCauseUserDeleteFromGroup,  //5 用户被移除群组
+};
+
 NS_ASSUME_NONNULL_END
 

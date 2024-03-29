@@ -39,6 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// : 布尔型，是否默认权限
 @property (nonatomic,assign) BOOL isDefault;
 
+/// 指定显示的分类，可空，当有返回时，优先判断显示到对应的标签
+@property (nonatomic,assign)NSInteger displayTag;
+
 /// : 继承角色ID，当继承了多个角色时，才返回
 @property (nonatomic,strong) NSString *inheritRoleId;
 

@@ -25,9 +25,9 @@
 
 @class QCloudSMHGetUploadStateRequest;
 @class QCloudSMHPutObjectRequest;
-@class QCloudPutObjectRequest;
+@class QCloudCOSSMHPutObjectRequest;
 @class QCloudSMHUploadPartRequest;
-@class QCloudUploadPartRequest;
+@class QCloudCOSSMHUploadPartRequest;
 @class QCloudSMHCompleteUploadRequest;
 
 @class QCloudSMHAbortMultipfartUploadRequest;
@@ -95,6 +95,14 @@
 @class QCloudSMHCrossSpaceCopyDirectoryRequest;
 @class QCloudSMHCreateFileRequest;
 @class QCloudSMHEditFileOnlineRequest;
+
+@class QCloudSMHCheckHostRequest;
+@class QCloudSMHDetailDirectoryRequest;
+@class QCloudSMHSpaceAuthorizeRequest;
+@class QCloudSMHAPIListHistoryVersionRequest;
+@class QCloudSMHGetFileCountRequest;
+@class QCloudSMHGetINodeDetailRequest;
+@class QCloudSMHGetRecentlyUsedFileRequest;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHService : NSObject
@@ -142,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  实际简单上传
  */
--(void)putObject:(QCloudPutObjectRequest *)request;
+-(void)putObject:(QCloudCOSSMHPutObjectRequest *)request;
 /**
  开分块上传
  */
@@ -151,7 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  分块上传
  */
--(void)uploadPartObject:(QCloudUploadPartRequest *)request;
+-(void)uploadPartObject:(QCloudCOSSMHUploadPartRequest *)request;
 
 /**
  完成上传
@@ -427,6 +435,29 @@ NS_ASSUME_NONNULL_BEGIN
  获取在线编辑链接
  */
 -(void)getEditFileOnlineUrl:(QCloudSMHEditFileOnlineRequest *)request;
+
+-(void)checkHost:(QCloudSMHCheckHostRequest *)request;
+
+/// 查看文件详情
+-(void)detailDirectory:(QCloudSMHDetailDirectoryRequest *)request;
+
+/// 给空间分配权限
+-(void)spaceAuthorize:(QCloudSMHSpaceAuthorizeRequest *)request;
+
+/// 查看历史版本
+-(void)listHistoryVersion:(QCloudSMHAPIListHistoryVersionRequest *)request;
+
+/**
+ 获取云盘文件数量
+ */
+-(void)getCloudFileCount:(QCloudSMHGetFileCountRequest *)requset;
+
+/// 查询 inode 文件信息（返回路径）
+-(void)getINodeDetail:(QCloudSMHGetINodeDetailRequest *)request;
+
+/// 查询最近使用的文件列表
+-(void)getRecentlyUsedFile:(QCloudSMHGetRecentlyUsedFileRequest *)request;
+
 @end
 
 NS_ASSUME_NONNULL_END

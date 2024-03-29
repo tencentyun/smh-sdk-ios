@@ -29,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 布尔值，绑定的手机号是否为新手机号
 @property (nonatomic, assign) BOOL isNewUser;
 
+@property (nonatomic, assign) BOOL allowedRegisterOfficialFree;
+
+@property (nonatomic, assign) BOOL hasEffectiveOrg;
 ///  当前登录用户所属组织
 @property (nonatomic, strong) NSArray <QCloudSMHOrganizationInfo *>*organizations;
 

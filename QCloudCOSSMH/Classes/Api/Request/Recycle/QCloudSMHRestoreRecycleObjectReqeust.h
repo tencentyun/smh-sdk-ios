@@ -6,12 +6,15 @@
 //
 
 #import "QCloudSMHBizRequest.h"
+#import "QCloudSMHConflictStrategyEnumType.h"
 
 NS_ASSUME_NONNULL_BEGIN
 /**
  恢复一个回收站文件
  */
 @interface QCloudSMHRestoreRecycleObjectReqeust : QCloudSMHBizRequest
+
+@property (nonatomic,assign)QCloudSMHConflictStrategyEnum conflictStrategy;
 
 /// 回收站项目 ID，必选参数；
 @property (nonatomic,strong)NSString * recycledItemId;

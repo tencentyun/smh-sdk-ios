@@ -36,6 +36,21 @@ NS_ASSUME_NONNULL_BEGIN
 /// 客户端版本号，可选值，如 1.2.0
 @property (nonatomic,strong)NSString *clientVersion;
 
+/// 企业邀请码，可选参数
+@property (nonatomic,strong)NSString *inviteCode;
+
+/// 自定义域名，可选参数
+@property (nonatomic,strong)NSString *domain;
+
+/// 图形验证码 ticket，可选参数
+@property (nonatomic,strong)NSString *captchaTicket;
+
+/// 图形验证码 randstr，可选参数
+@property (nonatomic,strong)NSString *captchaRandstr;
+
+///  渠道参数，可选参数，比如腾讯会议值为meeting，Hiflow连接器为hiflow，游客为visitor
+@property (nonatomic,assign)QCloudSMHChannelFlag pf;
+
 /// 是否仅允许登录企业版，1 - 仅企业版可登录，0 - 所有版本账号都可登录，默认 0，可选参数
 @property (nonatomic,assign)QCloudSMHAllowEditionType allowEdition;
 

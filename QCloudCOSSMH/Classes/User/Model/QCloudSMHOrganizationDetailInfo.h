@@ -25,16 +25,26 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface QCloudSMHOrgExtensionData : NSObject
+
+/// 布尔值，是否允许修改个人昵称；
+@property (nonatomic,assign) BOOL allowChangeNickname;
+
 @property (nonatomic,strong) NSString *logo;
+
 @property (nonatomic,assign) BOOL ensurePersonalSpace;
 
+/// 布尔值，是否允许查看所有企业成员；
+@property (nonatomic,assign) BOOL enableViewAllOrgUser;
 /// 组织渠道标识
-@property (nonatomic, assign) QCloudSMHChannnelFlag channelFlag;
+@property (nonatomic, assign) QCloudSMHChannelFlag channelFlag;
 
 @property (nonatomic, strong) NSString *allowProduct;
 
 /// 布尔值，是否允许分享；
 @property (nonatomic,assign) BOOL enableShare;
+
+/// 是否升级过
+@property (nonatomic,assign) BOOL isUpdated;
 
 @property (nonatomic,assign) BOOL showWeworkAppLink;
 
@@ -54,6 +64,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 布尔值，是否允许企业微信扫码登录
 @property (nonatomic,assign) BOOL enableWeworkLogin;
+
+@property (nonatomic,assign) BOOL enableWindowsAdLogin;
+
+@property (nonatomic,assign) NSString * ssoWay;
+
+@property (nonatomic,strong) NSString * syncWay;
+
+/// 是否允许玉符 SSO 登录
+@property (nonatomic,assign) BOOL enableYufuLogin;
+
+/// 是否开启文档预览服务
+@property (nonatomic,assign) BOOL enableDocPreview;
+
+/// 是否开启文档编辑服务
+@property (nonatomic,assign) BOOL enableDocEdit;
+
 @property (nonatomic,strong) NSString *expireTime;
 @end
 
@@ -72,9 +98,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否可用
 @property (nonatomic,assign) BOOL enabled;
 
-/// /// 是否允许分配个人空间；
+/// 是否允许分配个人空间；
 @property (nonatomic,assign) BOOL allowPersonalSpace;
 @property (nonatomic,strong) NSString *personalSpaceQuotaSize;
+
+
 @end
 
 @interface QCloudSMHOrgExtDomains : NSObject

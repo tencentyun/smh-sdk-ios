@@ -21,6 +21,12 @@ typedef NS_ENUM(NSUInteger, QCloudECDAPIType) {
     QCloudECDTargetAPIFile  // file模块（api）
 };
 
+// 后台类型 公有云 私有云
+typedef NS_ENUM(NSUInteger, QCloudSMHServerType) {
+    QCloudSMHServerPublicCloud = 0,
+    QCloudSMHServerPrivateCloud,
+};
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,7 +40,15 @@ FOUNDATION_EXTERN QCloudResponseSerializerBlock QCloudResponseRedirectBlock;
 */
 @property (strong, nonatomic) NSMutableDictionary *customHeaders;
 
++(BOOL)isHttps;
+
 - (instancetype)initWithApiType:(QCloudECDAPIType)apiType;
+
+/// 获取后台为公有云还是私有云
++(QCloudSMHServerType)getServerType;
+
+/// 设置后台为公有云还是私有云 默认公有云
++(void)setServerType:(QCloudSMHServerType)serverType;
 
 /// 当前项目targettype 默认发布模式；
 +(void)setTargetType:(QCloudECDTargetType)targetType;

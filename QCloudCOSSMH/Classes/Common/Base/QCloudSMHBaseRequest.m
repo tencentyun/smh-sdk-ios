@@ -18,6 +18,7 @@ QCloudResponseSerializerBlock QCloudResponseRedirectBlock = ^(NSHTTPURLResponse 
     return (id)(response.URL.absoluteString);
 };
 
+static QCloudSMHServerType _serverType;
 static QCloudECDTargetType _targetType;
 static NSString * _devHost;
 static NSString * _testHost;
@@ -163,6 +164,38 @@ static NSString * _releaseApiHost;
         }
     }
     
+}
+
++(BOOL)isHttps{
+    
+    NSString * host;
+    if (_targetType == QCloudECDTargetDevelop) {
+        host = _devHost;
+    }
+    
+    if (_targetType == QCloudECDTargetTest) {
+        host = _testHost;
+    }
+    
+    
+    if (_targetType == QCloudECDTargetPreview) {
+        host = _previewHost;
+    }
+    
+    if (_targetType == QCloudECDTargetRelease) {
+        host = _releaseHost;
+    }
+    return [[host lowercaseString] hasPrefix:@"https://"];
+}
+
+/// 获取后台为公有云还是私有云
++(QCloudSMHServerType)getServerType{
+    return _serverType;
+}
+
+/// 设置后台为公有云还是私有云 默认公有云
++(void)setServerType:(QCloudSMHServerType)serverType{
+    _serverType = serverType;
 }
 
 - (void)loadConfigureBlock {

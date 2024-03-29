@@ -18,7 +18,7 @@
 {
     
 
-    return @{@"contents" : QCloudSMHContentInfo.class,@"authorityList" : QCloudSMHRoleInfo.class};
+    return @{@"contents" : QCloudSMHContentInfo.class,@"authorityList" : QCloudSMHRoleInfo.class,@"authorityButtonList":QCloudSMHButtonAuthority.class};
 
     
 }

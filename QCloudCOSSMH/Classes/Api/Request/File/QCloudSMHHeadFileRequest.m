@@ -22,11 +22,11 @@
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseSimple,
         QCloudURLFuseWithURLEncodeParamters,
-        
     ];
 
     NSArray *responseSerializers = @[
-        QCloudAcceptRespnseCodeBlock([NSSet setWithObjects:@(200), @(201), @(202), @(203), @(204), @(205), @(206), @(207), @(208), @(226), nil], nil)
+        QCloudAcceptRespnseCodeBlock([NSSet setWithObjects:@(200), @(201), @(202), @(203), @(204), @(205), @(206), @(207), @(208), @(226), nil], nil),
+        QCloudResponseDataAppendHeadersSerializerBlock
 
     ];
     [requestSerializer setSerializerBlocks:customRequestSerilizers];
@@ -43,7 +43,9 @@
     self.requestData.serverURL = serverHost.absoluteString;
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
     self.requestData.URIComponents = __pathComponents;
-    [self.requestData setQueryStringParamter:@(self.historyId).stringValue withKey:@"history_id"];
+    if(self.historyId){
+        [self.requestData setQueryStringParamter:@(self.historyId).stringValue withKey:@"history_id"];
+    }
     if (self.filePath){
         [__pathComponents addObject:self.filePath];
     }

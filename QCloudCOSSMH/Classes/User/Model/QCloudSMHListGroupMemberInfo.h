@@ -22,6 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 ///  用户 ID
 @property (nonatomic, strong) NSString * userId;
 
+
+@property (nonatomic, assign) BOOL isTemporary;
+
 ///  用户国家码
 @property (nonatomic, strong) NSString * countryCode;
 

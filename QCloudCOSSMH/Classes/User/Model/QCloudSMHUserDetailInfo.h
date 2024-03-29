@@ -56,6 +56,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否注销
 @property (nonatomic, assign) BOOL deregister;
 
+/// 是否是该企业临时用户
+@property (nonatomic, assign) BOOL isTemporary;
+
 @property (nonatomic,strong)NSArray * canManageTeams;
 
 /// 头像

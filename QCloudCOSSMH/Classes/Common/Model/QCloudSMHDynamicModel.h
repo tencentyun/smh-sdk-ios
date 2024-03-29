@@ -42,6 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 用于获取后续页的分页标识，仅当 hasMore 为 true 时才返回该字段；
 @property (nonatomic,strong)NSString *nextMarker;
 
+/// newNextMarker
+@property (nonatomic,strong)NSString *nNextMarker;
+
 /// 搜索任务结束时，返回本次搜索任务的最后一条记录，数据结构与 contents 中记录一致；搜索任务未结束则无此字段；
 @property (nonatomic,strong)QCloudSMHDynamicListContent *lastHit;
 
@@ -151,6 +154,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @property (nonatomic, assign) BOOL isExist;
+
+@property (nonatomic, strong)  QCloudSMHRoleInfo*authorityList;
+
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
 
 @end
 

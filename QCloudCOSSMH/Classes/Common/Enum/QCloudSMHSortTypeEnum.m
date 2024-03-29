@@ -79,3 +79,58 @@ NSString * QCloudSMHGroupJoinTypeTransferToString(QCloudSMHGroupJoinType type){
             break;
     }
 }
+
+NSString * QCloudSMHTemporaryUserSortTypeTransferToString(QCloudSMHTemporaryUserSortType type){
+    switch (type) {
+        case QCloudSMHTemporaryUserSortByEnabled:
+        case QCloudSMHTemporaryUserSortByEnabledAsc:
+            return @"enabled";
+        case QCloudSMHTemporaryUserSortByNickname:
+        case QCloudSMHTemporaryUserSortByNicknameAsc:
+            return @"nickname";
+        case QCloudSMHTemporaryUserSortNone:
+        default:
+            return @"";
+    }
+}
+/// name, expireTime,nickname , shareTraffic
+NSString * QCloudSMHShareSortTypeTransferToString(QCloudSMHShareSortType type){
+    switch (type) {
+        case QCloudSMHShareSortTypeName:
+        case QCloudSMHShareSortTypeNameAsc:
+            return @"name";
+            break;
+        
+        case QCloudSMHShareSortTypeExpireTime:
+        case QCloudSMHShareSortTypeExpireTimeAsc:
+            return @"expireTime";
+            break;
+        case QCloudSMHShareSortTypeNickname:
+        case QCloudSMHShareSortTypeNicknameAsc:
+            return @"nickname";
+            break;
+        case QCloudSMHShareSortTypeShareTraffic:
+        case QCloudSMHShareSortTypeShareTrafficAsc:
+            return @"shareTraffic";
+            break;
+        default:
+            return @"expireTime";
+            break;
+    }
+}
+
+NSString * QCloudSMHApplySortTypeTransferToString(QCloudSMHApplySortType type){
+    switch (type) {
+        case QCloudSMHApplySortTypeCreationTime:
+        case QCloudSMHApplySortTypeCreationTimeAsc:
+            return @"creationTime";
+            break;
+        case QCloudSMHApplySortTypeOperationTime:
+        case QCloudSMHApplySortTypeOperationTimeAsc:
+            return @"operationTime";
+            break;
+        default:
+            return @"creationTime";
+            break;
+    }
+}

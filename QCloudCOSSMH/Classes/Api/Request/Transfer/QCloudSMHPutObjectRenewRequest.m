@@ -21,7 +21,8 @@
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseURIMethodASURLParamters,
-        QCloudURLFuseWithURLEncodeParamters
+        QCloudURLFuseWithURLEncodeParamters,
+        QCloudURLFuseWithJSONParamters
     ];
 
     NSArray *responseSerializers = @[
@@ -58,6 +59,10 @@
     [__pathComponents addObject:self.confirmKey];
     
     self.requestData.URIMethod = @"renew";
+    
+    if(self.partNumberRange && [QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        self.requestData.directBody = [@{@"partNumberRange":self.partNumberRange} qcloud_modelToJSONData];
+    }
     
     self.requestData.URIComponents = __pathComponents;
     for (NSString *key in self.customHeaders.allKeys.copy) {

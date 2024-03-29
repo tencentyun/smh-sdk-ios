@@ -54,8 +54,17 @@
     if (self.enabled) {
         [body setValue:self.enabled forKey:@"enabled"];
     }
-    [body setValue:self.comment forKey:@"comment"];
-    [body setValue:self.allowPersonalSpace forKey:@"allowPersonalSpace"];
+    if(self.comment){
+        [body setValue:self.comment forKey:@"comment"];
+    }
+    
+    if(self.allowPersonalSpace){
+        [body setValue:self.allowPersonalSpace forKey:@"allowPersonalSpace"];
+    }
+    
+    if(self.allowChangeNickname){
+        [body setValue:self.allowChangeNickname forKey:@"allowChangeNickname"];
+    }
     
     NSData * data = [body qcloud_modelToJSONData];
     self.requestData.directBody = data;

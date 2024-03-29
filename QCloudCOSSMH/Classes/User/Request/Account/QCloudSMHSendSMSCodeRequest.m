@@ -17,6 +17,8 @@ NSString * QCloudSMHSendSMSCodeTypeTransferToString( QCloudSMHSendSMSCodeType ty
             return @"bind-wechat-phone";
         case QCloudSMHSendSMSCodeBindYufuPhone:
             return @"bind-yufu-phone";
+        case QCloudSMHSendSMSCodeBindAccountPhone:
+            return @"bind-account-phone";
         default:
             return @"sign-in";
         }
@@ -92,6 +94,8 @@ NSString * QCloudSMHSendSMSCodeTypeTransferToString( QCloudSMHSendSMSCodeType ty
     if(self.pf != nil){
         [self.requestData setQueryStringParamter:self.pf withKey:@"pf"];
     }
+    
+    [self.requestData setQueryStringParamter:@"mobile" withKey:@"client"];
     
     self.requestData.URIComponents = __pathComponents;
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];

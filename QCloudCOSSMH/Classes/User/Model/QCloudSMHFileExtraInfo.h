@@ -27,9 +27,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isAuthorized;
 
 /// authType: 0（共享给我） | 1（我共享的）；
-@property (nonatomic, strong) NSString * autyType;
+@property (nonatomic, strong) NSString * authType;
 
 @property (nonatomic, assign) QCloudSMHVirusAuditStatus virusAuditStatus;
+@property (nonatomic, assign) QCloudSMHSensitiveWordAuditStatus sensitiveWordAuditStatus;
+
+@property (nonatomic, assign) BOOL hasApplied;
+@property (nonatomic, assign) BOOL canApply;
+
+@property (nonatomic, strong) NSArray <NSString *> * currentRoleIds;
+
 
 @end
 

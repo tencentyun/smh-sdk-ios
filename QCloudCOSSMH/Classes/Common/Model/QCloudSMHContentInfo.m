@@ -42,7 +42,7 @@
 
 {
     NSMutableDictionary * params = [QCloudSMHBaseContentInfo modelContainerPropertyGenericClass].mutableCopy;
-    [params addEntriesFromDictionary:@{@"authorityList" : QCloudSMHRoleInfo.class,@"highlight":QCloudSMHHighLightInfo.class,@"localSync":QCloudSMHLocalSync.class,@"tagList":QCloudFileTagItemModel.class}];
+    [params addEntriesFromDictionary:@{@"authorityList" : QCloudSMHRoleInfo.class,@"highlight":QCloudSMHHighLightInfo.class,@"localSync":QCloudSMHLocalSync.class,@"tagList":QCloudFileTagItemModel.class,@"authorityButtonList":QCloudSMHButtonAuthority.class}];
     return params.copy;
 
 }

@@ -72,8 +72,9 @@ typedef NS_ENUM(NSUInteger, QCloudSMHGroupJoinType) {
     QCloudSMHGroupJoinTypeJoin    = 2,
     
 };
-
+NS_ASSUME_NONNULL_BEGIN
 NSString * QCloudSMHGroupJoinTypeTransferToString(QCloudSMHGroupJoinType type);
+NS_ASSUME_NONNULL_END
 
 /// 排序方式，支持 groupRole | enabled | nickname，默认 groupRole;
 typedef NS_ENUM(NSUInteger, QCloudSMHGroupMemberSortType) {
@@ -88,3 +89,47 @@ typedef NS_ENUM(NSUInteger, QCloudSMHGroupMemberSortType) {
 NS_ASSUME_NONNULL_BEGIN
 NSString * QCloudSMHGroupMemberSortTypeTransferToString(QCloudSMHGroupMemberSortType type);
 NS_ASSUME_NONNULL_END
+
+/// 排序方式，支持 enabled | nickname，
+typedef NS_ENUM(NSUInteger, QCloudSMHTemporaryUserSortType) {
+    QCloudSMHTemporaryUserSortNone = 0,
+    QCloudSMHTemporaryUserSortByEnabled = 1,
+    QCloudSMHTemporaryUserSortByNickname = 2,
+    
+    QCloudSMHTemporaryUserSortByEnabledAsc = 101,
+    QCloudSMHTemporaryUserSortByNicknameAsc = 102,
+};
+
+NS_ASSUME_NONNULL_BEGIN
+NSString * QCloudSMHTemporaryUserSortTypeTransferToString(QCloudSMHTemporaryUserSortType type);
+NS_ASSUME_NONNULL_END
+
+/// name, expireTime, nickname, shareTraffic
+typedef NS_ENUM(NSUInteger, QCloudSMHShareSortType) {
+    QCloudSMHShareSortTypeName = 0,
+    QCloudSMHShareSortTypeExpireTime = 1,
+    QCloudSMHShareSortTypeNickname = 2,
+    QCloudSMHShareSortTypeShareTraffic = 3,
+    
+    QCloudSMHShareSortTypeNameAsc = 100,
+    QCloudSMHShareSortTypeExpireTimeAsc = 101,
+    QCloudSMHShareSortTypeNicknameAsc = 102,
+    QCloudSMHShareSortTypeShareTrafficAsc = 103,
+};
+
+NS_ASSUME_NONNULL_BEGIN
+NSString * QCloudSMHShareSortTypeTransferToString(QCloudSMHShareSortType type);
+NS_ASSUME_NONNULL_END
+
+typedef NS_ENUM(NSUInteger, QCloudSMHApplySortType) {
+    QCloudSMHApplySortTypeCreationTime = 0,
+    QCloudSMHApplySortTypeOperationTime = 1,
+    
+    QCloudSMHApplySortTypeCreationTimeAsc = 100,
+    QCloudSMHApplySortTypeOperationTimeAsc = 101,
+};
+
+NS_ASSUME_NONNULL_BEGIN
+NSString * QCloudSMHApplySortTypeTransferToString(QCloudSMHApplySortType type);
+NS_ASSUME_NONNULL_END
+

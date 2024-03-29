@@ -11,6 +11,9 @@
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
     return @{@"contents" : QCloudSMHDynamicListContent.class,@"total":QCloudSMHDynamicListTotal.class,@"lastHit":QCloudSMHDynamicListContent.class};
 }
++ (nullable NSDictionary<NSString *, id> *)modelCustomPropertyMapper{
+    return @{ @"nNextMarker" : @"newNextMarker"};
+}
 @end
 
 @implementation QCloudSMHSpaceDynamicList
@@ -33,7 +36,7 @@
 
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
     NSMutableDictionary * params = [QCloudSMHBaseContentInfo modelContainerPropertyGenericClass].mutableCopy;
-    [params addEntriesFromDictionary:@{@"authorityList":QCloudSMHRoleInfo.class}];
+    [params addEntriesFromDictionary:@{@"authorityList":QCloudSMHRoleInfo.class,@"authorityButtonList":QCloudSMHButtonAuthority.class}];
     return params.copy;
 }
 

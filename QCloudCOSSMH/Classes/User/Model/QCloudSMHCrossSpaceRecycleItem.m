@@ -65,7 +65,7 @@
 
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
     return @{
-        @"team":QCloudSMHTeamInfo.class,@"user":QCloudSMHUserInfo.class,@"group":QCloudSMHContentGroupInfo.class,@"authorityList":QCloudSMHRoleInfo.class
+        @"team":QCloudSMHTeamInfo.class,@"user":QCloudSMHUserInfo.class,@"group":QCloudSMHContentGroupInfo.class,@"authorityList":QCloudSMHRoleInfo.class,@"authorityButtonList":QCloudSMHButtonAuthority.class
     };
 }
 @end

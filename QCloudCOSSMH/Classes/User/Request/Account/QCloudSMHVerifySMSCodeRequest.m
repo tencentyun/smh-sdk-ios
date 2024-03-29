@@ -73,6 +73,28 @@
         [self.requestData setQueryStringParamter:self.clientVersion withKey:@"client_version"];
     }
     
+    if(self.pf != QCloudSMHChannelFlagNone){
+        [self.requestData setQueryStringParamter:QCloudSMHChannelFlagTransferToString(self.pf) withKey:@"pf"];
+    }
+    
+    [self.requestData setQueryStringParamter:@"mobile" withKey:@"client"];
+    
+    if(self.domain){
+        [self.requestData setQueryStringParamter:self.domain withKey:@"domain"];
+    }
+    
+    if(self.inviteCode){
+        [self.requestData setQueryStringParamter:self.inviteCode withKey:@"invite_code"];
+    }
+    
+    if (self.captchaTicket) {
+        [self.requestData setQueryStringParamter:self.captchaTicket withKey:@"captcha_ticket"];
+    }
+    
+    if (self.captchaRandstr) {
+        [self.requestData setQueryStringParamter:self.captchaRandstr withKey:@"captcha_randstr"];
+    }
+    
     [self.requestData setQueryStringParamter:@(self.allowEdition).stringValue withKey:@"allow_edition"];
     
     self.requestData.URIComponents = __pathComponents;

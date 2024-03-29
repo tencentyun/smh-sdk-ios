@@ -58,7 +58,9 @@
     [__pathComponents addObject:self.confirmKey];
 
     self.requestData.URIMethod = @"upload";
-    
+    if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        [self.requestData setQueryStringParamter:@"1" withKey:@"no_upload_part_info"];
+    }
     self.requestData.URIComponents = __pathComponents;
     for (NSString *key in self.customHeaders.allKeys.copy) {
         [self.requestData setValue:self.customHeaders[key] forHTTPHeaderField:key];

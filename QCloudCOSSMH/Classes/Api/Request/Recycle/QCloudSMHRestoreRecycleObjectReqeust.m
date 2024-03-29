@@ -58,6 +58,8 @@
     
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     
+    [self.requestData setQueryStringParamter:QCloudSMHConflictStrategyByTransferToString(self.conflictStrategy) withKey:@"conflict_resolution_strategy"];
+    
     self.requestData.URIMethod = @"restore";
     
     return YES;

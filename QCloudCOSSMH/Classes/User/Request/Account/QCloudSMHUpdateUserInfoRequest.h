@@ -18,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign)NSNumber * enabled;   //"enabled": true,
 @property (nonatomic,strong)NSString * comment;   //"comment": "研发部员工",
 @property (nonatomic,strong)NSString * allowPersonalSpace;   //"allowPersonalSpace": true
+
+/// : 布尔值，是否允许修改个人昵称，可选参数；
+@property (nonatomic,strong)NSString *allowChangeNickname;
 @end
 
 NS_ASSUME_NONNULL_END

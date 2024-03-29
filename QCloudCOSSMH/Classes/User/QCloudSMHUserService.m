@@ -74,6 +74,12 @@
 #import "QCloudSMHNextSearchTeamRequest.h"
 #import "QCloudSMHAbortSearchTeamRequest.h"
 #import "QCloudSMHBeginSearchTeamRequest.h"
+#import "QCloudSMHOffcialFreeLoginRequest.h"
+#import "QCloudSMHCheckOfficalFreeRequest.h"
+#import "QCloudSMHOffcialFreeRegisterRequest.h"
+#import "QCloudSMHSSOLoginRedirectRequest.h"
+#import "QCloudSMHVerifyAccountLoginRequest.h"
+#import "QCloudSMHGetSSOListRequest.h"
 
 @interface QCloudSMHUserService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
@@ -505,6 +511,80 @@ static QCloudSMHUserService *_service;
     [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
 }
 -(void)beginSearchTeam:(QCloudSMHBeginSearchTeamRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)getTemporaryUser:(QCloudSMHGetTemporaryUserRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)abortSearch:(QCloudSMHUserAbortSearchRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+-(void)initiateSearch:(QCloudSMHUserInitiateSearchRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+-(void)resumeSearch:(QCloudSMHUserResumeSearchRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)getOrganizationShareList:(QCloudSMHGetOrganizationShareListRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)getApplyDirectoryDetail:(QCloudSMHGetApplyDirectoryDetailRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)disagreeApplyDirectory:(QCloudSMHDisagreeApplyDirectoryRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)cancelApplyDirectory:(QCloudSMHCancelApplyDirectoryRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)getApplyDirectoryList:(QCloudSMHGetApplyDirectoryListRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)agreeApplyDirectory:(QCloudSMHAgreeApplyDirectoryRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)applyDirectoryAuthority:(QCloudSMHApplyDirectoryAuthorityRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)checkDirectoryApply:(QCloudSMHCheckDirectoryApplyRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)getApplyDirectoryListTotalInfo:(QCloudSMHGetApplyDirectoryListTotalInfoRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)offcialFreeLogin:(QCloudSMHOffcialFreeLoginRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)checkOfficalFree:(QCloudSMHCheckOfficalFreeRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)offcialFreeRegister:(QCloudSMHOffcialFreeRegisterRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)ssoLoginRedirect:(QCloudSMHSSOLoginRedirectRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)verifyAccountLogin:(QCloudSMHVerifyAccountLoginRequest *)request{
+    [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
+}
+
+-(void)getSSOList:(QCloudSMHGetSSOListRequest *)request{
     [[QCloudHTTPSessionManager shareClient]performRequest:(QCloudHTTPRequest *)request];
 }
 @end

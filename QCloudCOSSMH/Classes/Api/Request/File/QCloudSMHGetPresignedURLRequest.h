@@ -9,7 +9,7 @@
 #import "QCloudSMHCommonEnum.h"
 NS_ASSUME_NONNULL_BEGIN
 /**
- 获取文件预签名链接
+ 用于获取照片/视频封面缩略图
  */
 @interface QCloudSMHGetPresignedURLRequest : QCloudSMHBizRequest
 

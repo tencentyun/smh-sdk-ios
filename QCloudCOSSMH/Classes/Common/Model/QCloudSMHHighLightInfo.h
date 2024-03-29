@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QCloudSMHHighLightInfo : NSObject
 //每一个具体任务的状态码
 @property (nonatomic,copy) NSArray *name;
+
+@property (nonatomic,copy) NSArray *fileContent;
 @end
 
 NS_ASSUME_NONNULL_END

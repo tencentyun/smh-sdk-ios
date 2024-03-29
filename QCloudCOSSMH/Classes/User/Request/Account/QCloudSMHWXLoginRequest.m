@@ -40,7 +40,7 @@
         return NO;
     }
     
-    NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"user/v1/sign-in/verify-wechat-code/"]];
+    NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"user/v1/sign-in/verify-wechat-code"]];
     
     self.requestData.serverURL = serverHost.absoluteString;
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
@@ -58,6 +58,16 @@
     if(self.smsCode){
         [self.requestData setQueryStringParamter:self.smsCode withKey:@"sms_code"];
     }
+    
+    if(self.domain){
+        [self.requestData setQueryStringParamter:self.domain withKey:@"domain"];
+    }
+    
+    if(self.inviteCode){
+        [self.requestData setQueryStringParamter:self.inviteCode withKey:@"invite_code"];
+    }
+    
+    [self.requestData setQueryStringParamter:@"mobile" withKey:@"client"];
     
     if (QCloudSMHLoginAuthTypeTransferToString(self.authType).length > 0) {
         [self.requestData setQueryStringParamter:QCloudSMHLoginAuthTypeTransferToString(self.authType) withKey:@"auth_type"];

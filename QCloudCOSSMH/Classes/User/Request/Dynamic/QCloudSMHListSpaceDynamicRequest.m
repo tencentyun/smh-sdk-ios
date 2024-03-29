@@ -62,6 +62,15 @@
         [params setValue:[QCloudSMHDynamicActionDetailTypeTransferToString(self.actionTypeDetail) componentsJoinedByString:@"|"] forKey:@"actionTypeDetail"];
     }
     
+    if (self.marker) {
+        [params setValue:self.marker forKey:@"marker"];
+    }
+    
+    
+    if(self.isSync){
+        [params setValue:@(self.isSync) forKey:@"isSync"];
+    }
+    
     self.requestData.directBody = [params qcloud_modelToJSONData];
     
     self.requestData.serverURL = serverHost.absoluteString;

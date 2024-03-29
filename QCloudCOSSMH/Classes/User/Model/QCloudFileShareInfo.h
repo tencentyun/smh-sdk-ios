@@ -21,6 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// 字符串，分享文件名集合，如果有多个文件，显示第一个文件名 + 等；
 @property (nonatomic,strong) NSString * name;
 
+@property (nonatomic,strong) NSString * spaceId;
+
+@property (nonatomic,strong) NSString * fileName;
+
+@property (nonatomic,strong) NSArray * filePath;
 /// 数组，文件信息集合；
 @property (nonatomic,strong) NSArray <QCloudFileShareItem *> * directoryInfoList;
 
@@ -66,6 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 已使用下载次数；
 @property (nonatomic,assign) NSInteger downloadCountUsed;
 
+/// 链接产生的外网下行流量，单位 Byte
+@property (nonatomic,assign) NSInteger shareTraffic;
+
 /// 文件类型 分享文件时不需设置
 @property (nonatomic,strong) NSString * fileType;
 
@@ -78,10 +86,25 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否永久有效，可选参数，默认 false；
 @property (nonatomic,assign) BOOL isPermanent;
 
+/// 字符串，自定义水印信息，可选参数，仅当企业配置使用自定义水印时才生效；
+@property (nonatomic,strong) NSString * watermarkText;
+
 /// 文件大小，分享单个文件才返回，文件夹不返回；
 @property (nonatomic,strong) NSString * size;
 
 @property (nonatomic, strong)  QCloudSMHRoleInfo*authorityList;
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
+
+/// 是否可通过万象预览；
+@property (nonatomic,assign)BOOL previewByCI;
+
+/// 是否可通过 onlyoffice 预览；
+@property (nonatomic, assign)BOOL previewByDoc;
+
+/// 是否可用预览图做 icon，非必返；
+@property (nonatomic, assign) BOOL previewAsIcon;
+
+@property (nonatomic, assign) BOOL inDirectory;
 
 @end
 
@@ -129,6 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 字符串，创建时间
 @property (nonatomic,strong) NSString * creationTime;
+
 @end
 
 NS_ASSUME_NONNULL_END

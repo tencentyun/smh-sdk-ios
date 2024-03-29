@@ -43,3 +43,14 @@ NSString * QCloudSMHSearchTypeByTransferToString(QCloudSMHSearchType type){
     return nil;
 }
 
+NSString * QCloudSMHSearchByTypeByTransferToString(QCloudSMHSearchSearchByType type){
+    switch (type) {
+        case QCloudSMHSearchSearchByFileName:
+            return @"fileName";
+        case QCloudSMHSearchSearchByFileContents:
+            return @"fileContents";
+        case QCloudSMHSearchSearchByAll:
+        default:
+            return @"all";
+    }
+}

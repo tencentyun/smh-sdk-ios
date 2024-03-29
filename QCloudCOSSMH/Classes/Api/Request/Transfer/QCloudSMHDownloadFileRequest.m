@@ -83,4 +83,24 @@
     return NSURLSessionResponseAllow;
 }
 
+- (void)setFinishBlock:(void (^)(id _Nonnull result, NSError *_Nonnull error))finishBlock {
+    if (finishBlock) {
+        WeakSelf(self);
+        [super setFinishBlock:^(id outputObject, NSError *error) {
+            StrongSelf(self);
+            if ([strongself respondsToSelector:NSSelectorFromString(@"downloadingTempURL")]) {
+                NSError * lError;
+                NSURL * downloadingTempURL = [strongself performSelector:NSSelectorFromString(@"downloadingTempURL")];
+                if (QCloudFileExist(downloadingTempURL.relativePath)) {
+                    if (QCloudFileExist(strongself.downloadingURL.relativePath)) {
+                        QCloudRemoveFileByPath(strongself.downloadingURL.relativePath);
+                    }
+                    QCloudMoveFile(downloadingTempURL.relativePath, strongself.downloadingURL.relativePath, &lError);
+                }
+            }
+            finishBlock(outputObject,error);
+        }];
+    }
+}
+
 @end

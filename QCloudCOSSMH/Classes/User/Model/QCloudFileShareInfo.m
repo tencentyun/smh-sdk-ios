@@ -11,7 +11,7 @@
 
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
     NSMutableDictionary * mdic = [QCloudSMHBaseContentInfo modelContainerPropertyGenericClass].mutableCopy;
-    [mdic addEntriesFromDictionary:@{@"directoryInfoList" : QCloudFileShareItem.class,@"authorityList":QCloudSMHRoleInfo.class}];
+    [mdic addEntriesFromDictionary:@{@"directoryInfoList" : QCloudFileShareItem.class,@"authorityList":QCloudSMHRoleInfo.class,@"authorityButtonList":QCloudSMHButtonAuthority.class}];
     return mdic.copy;
 }
 

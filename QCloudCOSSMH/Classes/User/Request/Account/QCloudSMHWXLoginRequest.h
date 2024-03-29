@@ -34,6 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否仅允许登录企业版，1 - 仅企业版可登录，0 - 所有版本账号都可登录，默认 0，可选参数
 @property (nonatomic,assign)QCloudSMHAllowEditionType allowEdition;
 
+/// 企业邀请码，可选参数
+@property (nonatomic,strong)NSString *inviteCode;
+
+/// 自定义域名，可选参数
+@property (nonatomic,strong)NSString *domain;
+
 -(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHOrganizationsInfo * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock;
 
 @end

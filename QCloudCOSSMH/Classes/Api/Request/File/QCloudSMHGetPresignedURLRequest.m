@@ -6,7 +6,7 @@
 //
 
 #import "QCloudSMHGetPresignedURLRequest.h"
-
+#import "QCloudURLHelper.h"
 @implementation QCloudSMHGetPresignedURLRequest
 
 -(NSURLRequest *)buildURLRequest:(NSError * _Nullable __autoreleasing *)error{
@@ -19,7 +19,7 @@
     
     NSString *uriMethod = @"preview";
     
-    URLString = [URLString stringByAppendingFormat:@"%@/%@/%@/%@?%@",api,self.libraryId,self.spaceId,self.filePath,uriMethod];
+    URLString = [URLString stringByAppendingFormat:@"%@/%@/%@/%@?%@",api,self.libraryId,self.spaceId,QCloudPercentEscapedStringFromString(self.filePath),uriMethod];
     
     if(self.size){
         URLString=  [URLString stringByAppendingFormat:@"&size=%ld", self.size];
@@ -51,10 +51,10 @@
         URLString =[URLString stringByAppendingFormat:@"&history_id=%ld", self.historyId];
     }
 
-    NSString * encodedString = [URLString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+//    NSString * encodedString = [URLString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
       
     
-    [mutableURLRequest setURL:[NSURL URLWithString:encodedString]];
+    [mutableURLRequest setURL:[NSURL URLWithString:URLString]];
     if(!mutableURLRequest.URL){
         if (NULL != error) {
             *error = [NSError

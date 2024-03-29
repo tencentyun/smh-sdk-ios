@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 当前登录用户，对该文件的操作的权限，仅 WithDirectory = 1 时返回，非必返；
 @property (nonatomic, strong)QCloudSMHRoleInfo * authorityList;
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
 
 /// 整数，群组用户数量；
 @property (nonatomic,assign)NSInteger userCount;
@@ -104,6 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong)NSString * userOrgId;
 @property (nonatomic, strong)NSString * modifierName;
 @property (nonatomic, strong)QCloudSMHRoleInfo * authorityList;
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
 
 /// 字符串，文件名称；
 @property (nonatomic, strong)NSString * name;

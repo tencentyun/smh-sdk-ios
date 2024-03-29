@@ -62,6 +62,9 @@
     if (self.keyword) {
         [self.requestData setQueryStringParamter:self.keyword withKey:@"Keyword"];
     }
+    if(self.withExternalUser){
+        [self.requestData setQueryStringParamter:self.withExternalUser.stringValue withKey:@"with_external_user"];
+    }
     
     if(self.limit>0){
         [self.requestData setQueryStringParamter:@(self.limit).stringValue withKey:@"limit"];

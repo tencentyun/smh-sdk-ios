@@ -9,6 +9,14 @@
 
 @implementation QCloudSMHFileExtraInfo
 
+- (void)setCurrentRoleIds:(NSArray<NSString *> *)currentRoleIds{
+    NSMutableArray * tempRoldIds = [NSMutableArray new];
+    for(id roldId in currentRoleIds){
+        [tempRoldIds addObject:[NSString stringWithFormat:@"%@",roldId]];
+    }
+    _currentRoleIds = [tempRoldIds copy];
+}
+
 @end
 
 @implementation QCloudSMHFileExtraReqInfo

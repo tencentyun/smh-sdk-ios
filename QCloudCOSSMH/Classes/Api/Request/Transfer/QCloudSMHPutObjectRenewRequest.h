@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 完整文件路径，例如 /api/v1/file/smhxxx/-/foo/bar/file_new.docx ；
 @property (nonatomic,strong)NSString * confirmKey;
 
+@property (nonatomic,strong)NSString * partNumberRange;
 
 -(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHInitUploadInfo * _Nullable result , NSError * _Nullable error ))QCloudRequestFinishBlock;
 

@@ -22,7 +22,7 @@
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseURIMethodASURLParamters,
-        QCloudURLFuseWithURLEncodeParamters
+        QCloudURLFuseWithJSONParamters
     ];
 
     NSArray *responseSerializers = @[
@@ -43,9 +43,9 @@
     if (!self.filePath || ([self.filePath isKindOfClass:NSString.class] && ((NSString *)self.filePath).length == 0)) {
         if (error != NULL) {
             *error = [NSError
-                qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
-                             message:[NSString stringWithFormat:
-                                                   @"InvalidArgument:paramter[filePath] is invalid (nil), it must have some value. please check it"]];
+                      qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
+                      message:[NSString stringWithFormat:
+                               @"InvalidArgument:paramter[filePath] is invalid (nil), it must have some value. please check it"]];
             return NO;
         }
     }
@@ -55,12 +55,19 @@
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
     [self.requestData setParameter:QCloudSMHConflictStrategyByTransferToString(self.conflictStrategy) withKey:@"conflict_resolution_strategy"];
-
+    
     [__pathComponents addObject:self.filePath];
     
     
     self.requestData.URIMethod = @"multipart";
-
+    
+    if(self.partNumberRange && [QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        self.requestData.directBody = [@{@"partNumberRange":self.partNumberRange} qcloud_modelToJSONData];
+    }
+    
+    if (self.fileSize) {
+        [self.requestData setQueryStringParamter:self.fileSize withKey:@"filesize"];
+    }
 
     self.requestData.URIComponents = __pathComponents;
     for (NSString *key in self.customHeaders.allKeys.copy) {

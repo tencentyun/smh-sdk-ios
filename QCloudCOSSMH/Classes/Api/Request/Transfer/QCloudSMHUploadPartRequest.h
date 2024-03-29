@@ -17,11 +17,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong)NSString * filePath;
 
 
+/// 文件大小
+@property (nonatomic,strong)NSString * fileSize;
+
+
 /// 文件名冲突时的处理方式，默认为 rename
 /// ask: 冲突时返回 HTTP 409 Conflict 及 SameNameDirectoryOrFileExists 错误码，
 /// rename: 冲突时自动重命名文件
 /// overwrite: 如果冲突目标为目录时返回 HTTP 409 Conflict 及 SameNameDirectoryOrFileExists 错误码，否则覆盖已有文件，；
 @property (nonatomic,assign)QCloudSMHConflictStrategyEnum conflictStrategy;
+
+@property (nonatomic,strong)NSString * partNumberRange;
 
 
 -(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHInitUploadInfo * _Nullable result , NSError * _Nullable error ))QCloudRequestFinishBlock;

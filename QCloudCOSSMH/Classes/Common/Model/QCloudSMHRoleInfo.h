@@ -31,5 +31,44 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong)NSString * roleDesc;
 @end
 
+@interface QCloudSMHButtonAuthority : NSObject
+
+
+/// : 布尔值，查看详情
+@property (nonatomic,assign)BOOL showViewButton;
+
+/// : 布尔值，预览
+@property (nonatomic,assign)BOOL showPreviewButton;
+
+/// : 布尔值，下载
+@property (nonatomic,assign)BOOL showDownloadButton;
+
+/// : 布尔值，上传
+@property (nonatomic,assign)BOOL showUploadButton;
+
+/// : 布尔值，删除
+@property (nonatomic,assign)BOOL showDeleteButton;
+
+/// : 布尔值，共享
+@property (nonatomic,assign)BOOL showAuthorizeButton;
+
+/// : 布尔值，分享
+@property (nonatomic,assign)BOOL showShareButton;
+
+/// : 布尔值，编辑
+@property (nonatomic,assign)BOOL showModifyButton;
+
+/// : 布尔值，移动
+@property (nonatomic,assign)BOOL showMoveButton;
+
+/// : 布尔值，重命名
+@property (nonatomic,assign)BOOL showRenameButton;
+
+/// : 布尔值，复制
+@property (nonatomic,assign)BOOL showCopyButton;
+
+/// : 布尔值，还原
+@property (nonatomic,assign)BOOL showRestoreButton;
+@end
 
 NS_ASSUME_NONNULL_END

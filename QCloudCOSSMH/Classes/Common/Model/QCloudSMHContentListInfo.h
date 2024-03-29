@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong) NSArray <QCloudSMHContentInfo *>*contents;
 @property (nonatomic, strong)  QCloudSMHRoleInfo*authorityList;
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
 
 @end
 

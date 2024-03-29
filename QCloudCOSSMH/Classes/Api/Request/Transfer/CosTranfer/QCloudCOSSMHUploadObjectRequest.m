@@ -7,9 +7,9 @@
 //
 
 #import "QCloudCOSSMHUploadObjectRequest.h"
-#import "QCloudPutObjectRequest.h"
-#import "QCloudUploadPartRequest.h"
-#import "QCloudMultipartInfo.h"
+#import "QCloudCOSSMHPutObjectRequest.h"
+#import "QCloudCOSSMHUploadPartRequest.h"
+#import "QCloudSMHMultipartInfo.h"
 #import <QCloudCore/QCloudUniversalPath.h>
 #import <QCloudCore/QCloudSandboxPath.h>
 #import <QCloudCore/QCloudMediaPath.h>
@@ -43,6 +43,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 @interface QCloudCOSSMHUploadObjectRequest () <QCloudHttpRetryHandlerProtocol> {
     NSRecursiveLock *_recursiveLock;
     NSRecursiveLock *_progressLock;
+    NSRecursiveLock *_HeadersLock;
     NSUInteger uploadedSize;
     //标记下标，从0开始
     NSUInteger startPartNumber;
@@ -53,16 +54,17 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 @property (nonatomic, assign) NSUInteger dataContentLength;
 @property (nonatomic, strong) dispatch_source_t queueSource;
 //存储所有的分片
-@property (nonatomic, strong) NSMutableArray<QCloudMultipartInfo *> *uploadParts;
+@property (nonatomic, strong) NSMutableArray<QCloudSMHMultipartInfo *> *uploadParts;
 @property (nonatomic, strong) NSPointerArray *requestCacheArray;
 @property (strong, nonatomic) NSMutableArray *requstMetricArray;
 
 @property (nonatomic,strong)QCloudSMHUploadStateInfo *existParts;
 
 @property (nonatomic,strong)QCloudSMHInitUploadInfo *uploadInitInfo;
-
 /// 不用续期
 @property (nonatomic,strong)QCloudSMHInitUploadInfo *putInitInfo;
+
+@property (nonatomic,strong)NSMutableDictionary * uploadHeaders;
 
 @property (nonatomic, assign) NSInteger serverTimeOffset;
 
@@ -89,10 +91,12 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     _aborted = NO;
     _recursiveLock = [NSRecursiveLock new];
     _progressLock = [NSRecursiveLock new];
+    _HeadersLock = [NSRecursiveLock new];
     _requstMetricArray = [NSMutableArray array];
     _mutilThreshold = kQCloudCOSXMLUploadLengthLimit;
     _retryHandler = [QCloudHTTPRetryHanlder defaultRetryHandler];
     startPartNumber = -1;
+    self.uploadHeaders = [NSMutableDictionary new];
     self.priority = QCloudAbstractRequestPriorityNormal;
     return self;
 }
@@ -151,7 +155,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
                 isChange = YES;
                 break;
             }
-            QCloudMultipartInfo *info = [QCloudMultipartInfo new];
+            QCloudSMHMultipartInfo *info = [QCloudSMHMultipartInfo new];
             info.eTag = part.ETag;
             info.partNumber = part.PartNumber;
             [_uploadParts addObject:info];
@@ -185,7 +189,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 
     for (int i = 0; i < existParts.count; i++) {
         QCloudSMHUploadStatePartsInfo *part1 = existParts[i];
-        QCloudMultipartInfo *info1 = [QCloudMultipartInfo new];
+        QCloudSMHMultipartInfo *info1 = [QCloudSMHMultipartInfo new];
         info1.eTag = part1.ETag;
         info1.partNumber = part1.PartNumber;
         uploadedSize += [part1.Size integerValue];
@@ -209,12 +213,12 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.enableQuic = self.enableQuic;
     request.userId = self.userId;
     request.libraryId = self.libraryId;
+    request.priority = QCloudAbstractRequestPriorityHigh;
     request.spaceOrgId = self.spaceOrgId;
     request.spaceId = self.spaceId;
     request.confirmKey = self.confirmKey;
     request.retryPolicy.delegate = self;
     request.priority = self.priority;
-    
     __weak typeof(request) weakRequest = request;
     __weak typeof(self) weakSelf = self;
     
@@ -225,7 +229,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             return;
         }
         self.serverTimeOffset = [self getServerTimeOffsetWithLocal:[result __originHTTPURLResponse__]];
-        if (result.parts == nil && result.uploadPartInfo == nil) {
+        if (result.parts.count == 0 || ([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPublicCloud && result.uploadPartInfo == nil)) {
             
             [self startMultiUpload];
             return;
@@ -234,10 +238,10 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         __strong typeof(weakSelf) strongSelf = weakSelf;
         __strong typeof(weakRequest) strongRequst = weakRequest;
         [strongSelf.requstMetricArray addObject:@ { [NSString stringWithFormat:@"%@", strongRequst] : weakRequest.benchMarkMan.tastMetrics }];
-
+        [self syncGetUploadHeaderIndex:result.parts.lastObject.PartNumber.integerValue + 1];
         [weakSelf continueMultiUpload:result];
     }];
-
+    [self.requestCacheArray addPointer:(__bridge void * _Nullable)(request)];
     [[QCloudSMHService defaultSMHService] getUploadStateInfo:request];
 
 }
@@ -295,7 +299,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     putRequest.userId = self.userId;
     putRequest.filePath = self.uploadPath;
     putRequest.conflictStrategy = self.conflictStrategy;
-    
+    putRequest.fileSize = @([self getFileSize]).stringValue;
     __weak typeof(putRequest) weakRequest = putRequest;
     __weak typeof(self) weakSelf = self;
     [putRequest setFinishBlock:^(QCloudSMHInitUploadInfo * _Nullable info, NSError * _Nullable error) {
@@ -320,10 +324,10 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 -(void)startSimpleCOSUpload:(QCloudSMHInitUploadInfo *)info{
     
     self.putInitInfo = info;
-    QCloudPutObjectRequest *request = [QCloudPutObjectRequest new];
+    QCloudCOSSMHPutObjectRequest *request = [QCloudCOSSMHPutObjectRequest new];
     request.priority = self.priority;
     request.enableQuic = self.enableQuic;
-    request.domain = [NSString stringWithFormat:@"https://%@",info.domain];
+    request.domain = [NSString stringWithFormat:@"%@://%@",QCloudSMHBaseRequest.isHttps?@"https":@"http",info.domain];
     request.customHeaders = info.headers.mutableCopy;
     request.path = [self encodeSuffix:info.path];
     __weak typeof(self) weakSelf = self;
@@ -492,12 +496,24 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     return [dateFormatter stringFromDate:NSDate.new];
 }
 
-
+-(NSInteger)getFileSize{
+    if ([self.body isKindOfClass:[NSData class]]) {
+        return ((NSData *)self.body).length;
+    }else if ([self.body isKindOfClass:[NSURL class]]){
+        NSURL *url = (NSURL *)self.body;
+        return QCloudFileSize(url.relativePath);
+    }
+    return 0;
+}
 
 - (void)startMultiUpload {
     _uploadParts = [NSMutableArray new];
     QCloudSMHUploadPartRequest *uploadRequet = [QCloudSMHUploadPartRequest new];
     uploadRequet.libraryId = self.libraryId;
+    if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        uploadRequet.partNumberRange = @"1-100";
+    }
+    uploadRequet.fileSize = @([self getFileSize]).stringValue;
     uploadRequet.spaceId = self.spaceId;
     uploadRequet.filePath = self.uploadPath;
     uploadRequet.spaceOrgId = self.spaceOrgId;
@@ -509,8 +525,11 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     [uploadRequet setFinishBlock:^(QCloudSMHInitUploadInfo * _Nullable result, NSError * _Nullable error) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         __strong typeof(weakRequest) strongRequst = weakRequest;
-        [strongSelf.requstMetricArray addObject:@ { [NSString stringWithFormat:@"%@", strongRequst] : weakRequest.benchMarkMan.tastMetrics }];
-
+        
+        @synchronized (self) {
+            [strongSelf.requstMetricArray addObject:@ { [NSString stringWithFormat:@"%@", strongRequst] : weakRequest.benchMarkMan.tastMetrics }];
+        }
+        
         if (error) {
             [weakSelf onError:error];
         } else {
@@ -518,9 +537,13 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             if (self.getConfirmKey) {
                 self.getConfirmKey(result.confirmKey);
             }
+            if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+                [self.uploadHeaders setObject:result forKey:@"1-100"];
+            }else{
+                self.uploadInitInfo = result;
+            }
             
-            self.uploadInitInfo = result;
-            [weakSelf uploadMultiParts:result];
+            [weakSelf uploadMultiParts];
         }
     }];
 
@@ -607,20 +630,21 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             QCloudLogDebug(@"请求被取消，终止创建新的uploadPartRequest");
             break;
         }
-        QCloudUploadPartRequest *request = [QCloudUploadPartRequest new];
+        QCloudCOSSMHUploadPartRequest *request = [QCloudCOSSMHUploadPartRequest new];
         request.enableQuic = self.enableQuic;
         request.priority = QCloudAbstractRequestPriorityNormal;
         request.timeoutInterval = self.timeoutInterval;
         request.partNumber = (int)body.index + 1;
-        request.uploadId = self.uploadId;
+        request.uploadId = [self uploadIdWithIndex:body.index + 1];
         request.body = body;
         request.domain = [self getUploadDomain];
         request.path = [self encodeSuffix:[self getSMHUploadPath]];
+        __weak typeof(request) weakRequest = request;
         request.renewUploadInfo = ^NSMutableDictionary * _Nullable{
-            return [self getHeader];
+            return [self getHeaderWithIndex:weakRequest.partNumber].mutableCopy;
         };
         request.retryPolicy.delegate = self;
-        __weak typeof(request) weakRequest = request;
+        
         __block int64_t partBytesSent = 0;
         int64_t partSize = body.sliceLength;
         [request setSendProcessBlock:^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
@@ -634,7 +658,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
                 }
             }
         }];
-        [request setFinishBlock:^(QCloudUploadPartResult *outputObject, NSError *error) {
+        [request setFinishBlock:^(QCloudSMHUploadPartResult *outputObject, NSError *error) {
             QCloudLogInfo(@"收到一个part  %d的响应 %@", (i + 1), outputObject.eTag);
             if (!weakSelf) {
                 return;
@@ -646,7 +670,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             
             __strong typeof(weakSelf) strongSelf = weakSelf;
             __strong typeof(weakRequest) strongRequst = weakRequest;
-            [strongSelf.requstMetricArray addObject:@ { [NSString stringWithFormat:@"%@", strongRequst] : strongRequst.benchMarkMan.tastMetrics }];
+            [weakSelf.requstMetricArray addObject:@{ [NSString stringWithFormat:@"%@", weakRequest] : weakRequest.benchMarkMan.tastMetrics }];
 
             if (error && error.code != QCloudNetworkErrorCodeCanceled) {
                 __strong typeof(weakSelf) strongSelf = weakSelf;
@@ -679,7 +703,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
                     }
                 }
 
-                QCloudMultipartInfo *info = [QCloudMultipartInfo new];
+                QCloudSMHMultipartInfo *info = [QCloudSMHMultipartInfo new];
                 info.eTag = outputObject.eTag;
                 info.partNumber = [@(body.index + 1) stringValue];
                 [weakSelf markPartFinish:info];
@@ -692,14 +716,14 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     }
 }
 
-- (void)uploadMultiParts:(QCloudSMHInitUploadInfo *)result {
+- (void)uploadMultiParts{
     NSArray *allParts = [self getFileLocalUploadParts];
   
     [self uploadOffsetBodys:allParts];
     
 }
 
-- (void)markPartFinish:(QCloudMultipartInfo *)info {
+- (void)markPartFinish:(QCloudSMHMultipartInfo *)info {
     if (!info) {
         return;
     }
@@ -730,10 +754,18 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     complete.spaceOrgId = self.spaceOrgId;
     complete.userId = self.userId;
     complete.priority = QCloudAbstractRequestPriorityHigh;
+    
+    
     if (self.confirmKey) {
         complete.confirmKey = self.confirmKey;
     }else{
-        complete.confirmKey = self.uploadInitInfo.confirmKey;
+        if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+            QCloudSMHInitUploadInfo * partInfo = self.uploadHeaders.allValues.lastObject;
+            complete.confirmKey = partInfo.confirmKey;
+        }else{
+            complete.confirmKey = self.uploadInitInfo.confirmKey;
+        }
+        
     }
     
     __weak typeof(complete) weakRequest = complete;
@@ -755,17 +787,19 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     }];
     [[QCloudSMHService defaultSMHService] complelteUploadPartObject:complete];
     
-    
     [self.requestCacheArray addPointer:(__bridge void *_Nullable)(complete)];
 }
 
 - (void)cancel {
-    [super cancel];
+    
     if (self.ownerQueue) {
         [self.ownerQueue cancelByRequestID:self.requestID];
     }
-    [self.requestCacheArray addPointer:(__bridge void *_Nullable)([NSObject new])];
-    [self.requestCacheArray compact];
+    @synchronized (self) {
+        [self.requestCacheArray addPointer:(__bridge void *_Nullable)([NSObject new])];
+        [self.requestCacheArray compact];
+    }
+    
     if (NULL != _queueSource) {
         dispatch_source_cancel(_queueSource);
     }
@@ -779,6 +813,8 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     }
 
     [[QCloudHTTPSessionManager shareClient] cancelRequestsWithID:cancelledRequestIDs];
+    
+    [super cancel];
 }
 
 + (nullable NSArray<NSString *> *)modelPropertyBlacklist {
@@ -805,7 +841,6 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             deleteRequest.timeoutInterval = self.timeoutInterval;
             [[QCloudSMHService defaultSMHService] deleteUploadPartObject:deleteRequest];
             self.existParts = nil;
-            self.uploadInitInfo = nil;
         } else {
             if (finishBlock) {
                 finishBlock(@{}, nil);
@@ -824,71 +859,167 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 }
 
 -(NSString *)getUploadDomain{
-    if (self.existParts != nil) {
-        return [NSString stringWithFormat:@"https://%@",self.existParts.uploadPartInfo.domain];
-    }else if(self.uploadInitInfo != nil){
-        return [NSString stringWithFormat:@"https://%@",self.uploadInitInfo.domain];
+    
+    if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        QCloudSMHInitUploadInfo * partInfo = self.uploadHeaders.allValues.firstObject;
+        return [NSString stringWithFormat:@"%@://%@",QCloudSMHBaseRequest.isHttps?@"https":@"http",partInfo.domain];
     }else{
-        return nil;
+        if (self.existParts != nil) {
+            return [NSString stringWithFormat:@"https://%@",self.existParts.uploadPartInfo.domain];
+        }else if(self.uploadInitInfo != nil){
+            return [NSString stringWithFormat:@"https://%@",self.uploadInitInfo.domain];
+        }else{
+            return nil;
+        }
     }
 }
 
 -(NSString *)getSMHUploadPath{
-    if (self.existParts != nil) {
-        return self.existParts.uploadPartInfo.path;
-    }else if(self.uploadInitInfo != nil){
-        return self.uploadInitInfo.path;
+    if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        QCloudSMHInitUploadInfo * partInfo = self.uploadHeaders.allValues.firstObject;
+        return partInfo.path;
     }else{
-        return nil;
+        if (self.existParts != nil) {
+            return self.existParts.uploadPartInfo.path;
+        }else if(self.uploadInitInfo != nil){
+            return self.uploadInitInfo.path;
+        }else{
+            return nil;
+        }
     }
 }
 
--(NSString *)uploadId{
-    
-    if (self.existParts != nil) {
-        return self.existParts.uploadPartInfo.uploadId;
-    }else if(self.uploadInitInfo != nil){
-        return self.uploadInitInfo.uploadId;
+-(NSString *)uploadIdWithIndex:(NSInteger)index{
+    if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        QCloudSMHInitUploadInfo * partInfo = self.uploadHeaders.allValues.firstObject;
+        return partInfo.uploadId;
     }else{
-        return nil;
+        if (self.existParts != nil) {
+            return self.existParts.uploadPartInfo.uploadId;
+        }else if(self.uploadInitInfo != nil){
+            return self.uploadInitInfo.uploadId;
+        }else{
+            return nil;
+        }
+
     }
+    
 }
 
--(NSMutableDictionary *)getHeader{
-    
-    
+-(NSDictionary *)getHeaderWithIndex:(NSInteger)index{
     
     QCloudSMHInitUploadInfo * partInfo;
-    
-    if (self.existParts) {
-        partInfo = self.existParts.uploadPartInfo;
+    NSDictionary * header;
+    if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        for (NSString * key in self.uploadHeaders.allKeys) {
+            NSArray * num = [key componentsSeparatedByString:@"-"];
+            if([num.firstObject integerValue] <= index && [num.lastObject integerValue] >= index){
+                partInfo = self.uploadHeaders[key];
+                header = [partInfo.parts objectForKey:@(index).stringValue];
+            }
+        }
     }else{
-        partInfo = self.uploadInitInfo;
+        if(self.existParts){
+            header = self.existParts.uploadPartInfo.headers;
+            partInfo = self.existParts.uploadPartInfo;
+        }else if(self.uploadInitInfo){
+            header = self.uploadInitInfo.headers;
+            partInfo = self.uploadInitInfo;
+        }
+        
     }
     
-    [self refeshUploadInfo:partInfo];
-    
-    return partInfo.headers.mutableCopy;
-  
+    if(header != nil){
+        [self refeshUploadInfo:partInfo withIndex:index];
+    }else{
+        if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+            header = [self syncGetUploadHeaderIndex:index];
+        }
+    }
+    if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        if(header[@"headers"]){
+            return header[@"headers"];
+        }
+    }else{
+        return header;
+    }
+    return nil;
 }
 
-- (void)refeshUploadInfo:(QCloudSMHInitUploadInfo *)partInfo {
+- (NSDictionary *)syncGetUploadHeaderIndex:(NSInteger)index{
+    NSString * partRange = [NSString stringWithFormat:@"%ld-%ld",100 * ((index - 1) / 100) + 1,100 * (((index - 1) / 100) + 1)] ;
+    __block QCloudSMHInitUploadInfo * uploadInfo;
+    
+    if(![self.uploadHeaders objectForKey:partRange]){
+        
+        dispatch_semaphore_t semp = dispatch_semaphore_create(0);
+        
+        QCloudSMHPutObjectRenewRequest *request = [[QCloudSMHPutObjectRenewRequest alloc] init];
+        if (self.confirmKey) {
+            request.confirmKey = self.confirmKey;
+        }else{
+            QCloudSMHInitUploadInfo * partInfo = self.uploadHeaders.allValues.lastObject;
+            request.confirmKey = partInfo.confirmKey;
+        }
+        request.partNumberRange = partRange;
+        request.priority = QCloudAbstractRequestPriorityHigh;
+        request.libraryId = self.libraryId;
+        request.spaceId = self.spaceId;
+        request.userId = self.userId;
+        __weak typeof(self) weakSelf = self;
+        [request setFinishBlock:^(QCloudSMHInitUploadInfo *_Nullable result, NSError *_Nullable error) {
+            if (error) {
+                [weakSelf onError:error];
+            } else {
+                weakSelf.serverTimeOffset = [self getServerTimeOffsetWithLocal:[result __originHTTPURLResponse__]];
+                uploadInfo = result;
+            }
+            dispatch_semaphore_signal(semp);
+        }];
+        [[QCloudSMHService defaultSMHService] renewUploadInfo:request];
+        
+        dispatch_semaphore_wait(semp, dispatch_time(DISPATCH_TIME_NOW, 15 * NSEC_PER_SEC));
+    }
+
+    if(uploadInfo){
+        if(![self.uploadHeaders objectForKey:partRange]){
+            [_HeadersLock tryLock];
+            [self.uploadHeaders setObject:uploadInfo forKey:partRange];
+            [_HeadersLock unlock];
+        }
+    }
+    uploadInfo = [self.uploadHeaders objectForKey:partRange];
+    return uploadInfo.parts[@(index).stringValue];
+}
+
+- (void)refeshUploadInfo:(QCloudSMHInitUploadInfo *)partInfo withIndex:(NSInteger)index{
 
     if (![partInfo shouldRefreshWithOffest:self.serverTimeOffset]) {
         return;
     }
-    
+    NSString * partRange = [NSString stringWithFormat:@"%ld-%ld",100 * ((index - 1) / 100) + 1,100 * (((index - 1) / 100) + 1)];
     QCloudSMHPutObjectRenewRequest *request = [[QCloudSMHPutObjectRenewRequest alloc] init];
     request.confirmKey = partInfo.confirmKey;
+    if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+        request.partNumberRange = partRange;
+    }
     request.priority = QCloudAbstractRequestPriorityHigh;
     request.libraryId = self.libraryId;
     request.spaceId = self.spaceId;
     request.userId = self.userId;
     [request setFinishBlock:^(QCloudSMHInitUploadInfo *_Nullable result, NSError *_Nullable error) {
-        if (self.existParts) {
-            self.existParts.uploadPartInfo = result;
+        if([QCloudSMHBaseRequest getServerType] == QCloudSMHServerPrivateCloud){
+            if(result){
+                [self.uploadHeaders setObject:result forKey:partRange];
+            }
+        }else{
+            if (self.existParts) {
+                self.existParts.uploadPartInfo = result;
+            }
+            self.uploadInitInfo = result;
+
         }
-        self.uploadInitInfo = result;
+        
     }];
     [[QCloudSMHService defaultSMHService] renewUploadInfo:request];
 }

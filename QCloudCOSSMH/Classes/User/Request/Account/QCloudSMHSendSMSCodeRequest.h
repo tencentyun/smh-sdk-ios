@@ -14,6 +14,7 @@ typedef NS_ENUM(NSUInteger, QCloudSMHSendSMSCodeType) {
     QCloudSMHSendSMSCodeBindMeetingPhone, // 会议绑定手机
     QCloudSMHSendSMSCodeBindWechatPhone, // 微信账号绑定手机
     QCloudSMHSendSMSCodeBindYufuPhone, // 玉符账号绑定手机
+    QCloudSMHSendSMSCodeBindAccountPhone, // 
 };
 
 /**

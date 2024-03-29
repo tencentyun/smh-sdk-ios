@@ -15,9 +15,9 @@
 #import "QCloudSMHDeleteDirectoryRequest.h"
 #import "QCloudSMHDownloadFileRequest.h"
 #import "QCloudSMHGetUploadStateRequest.h"
-#import "QCloudPutObjectRequest.h"
+#import "QCloudCOSSMHPutObjectRequest.h"
 #import "QCloudSMHUploadPartRequest.h"
-#import "QCloudUploadPartRequest.h"
+#import "QCloudCOSSMHUploadPartRequest.h"
 #import "QCloudSMHCompleteUploadRequest.h"
 #import "QCloudCOSSMHUploadObjectRequest.h"
 
@@ -54,6 +54,13 @@
 #import "QCloudSMHCrossSpaceCopyDirectoryRequest.h"
 #import "QCloudSMHCreateFileRequest.h"
 #import "QCloudSMHEditFileOnlineRequest.h"
+#import "QCloudSMHCheckHostRequest.h"
+#import "QCloudSMHDetailDirectoryRequest.h"
+#import "QCloudSMHSpaceAuthorizeRequest.h"
+#import "QCloudSMHAPIListHistoryVersionRequest.h"
+#import "QCloudSMHGetFileCountRequest.h"
+#import "QCloudSMHGetINodeDetailRequest.h"
+#import "QCloudSMHGetRecentlyUsedFileRequest.h"
 
 @interface QCloudSMHService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
@@ -100,11 +107,11 @@ static QCloudSMHService *_service;
     [self performRequest:request];
 }
 
--(void)putObject:(QCloudPutObjectRequest *)request{
+-(void)putObject:(QCloudCOSSMHPutObjectRequest *)request{
     [[QCloudHTTPSessionManager shareClient] performRequest:request];
 }
 
--(void)uploadPartObject:(QCloudUploadPartRequest *)request{
+-(void)uploadPartObject:(QCloudCOSSMHUploadPartRequest *)request{
     [[QCloudHTTPSessionManager shareClient] performRequest:request];
 }
 
@@ -429,4 +436,31 @@ static QCloudSMHService *_service;
     [self performRequest:request];
 }
 
+-(void)checkHost:(QCloudSMHCheckHostRequest *)request{
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest*)request];
+}
+
+-(void)detailDirectory:(QCloudSMHDetailDirectoryRequest *)request{
+    [self performRequest:request];
+}
+
+-(void)spaceAuthorize:(QCloudSMHSpaceAuthorizeRequest *)request{
+    [self performRequest:request];
+}
+
+-(void)listHistoryVersion:(QCloudSMHAPIListHistoryVersionRequest *)request{
+    [self performRequest:request];
+}
+
+- (void)getCloudFileCount:(QCloudSMHGetFileCountRequest *)requset {
+    [self performRequest:requset];
+}
+
+-(void)getINodeDetail:(QCloudSMHGetINodeDetailRequest *)request{
+    [self performRequest:request];
+}
+
+-(void)getRecentlyUsedFile:(QCloudSMHGetRecentlyUsedFileRequest *)request{
+    [self performRequest:request];
+}
 @end

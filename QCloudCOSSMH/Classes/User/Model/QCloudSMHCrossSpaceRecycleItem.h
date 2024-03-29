@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 ///  允许操作的权限；
 @property (nonatomic, strong) QCloudSMHRoleInfo *authorityList;
+@property (nonatomic, strong)  QCloudSMHButtonAuthority*authorityButtonList;
 
 /// : 删除者姓名；
 @property (nonatomic, strong) NSString *removedByNickname;

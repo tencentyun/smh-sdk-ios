@@ -71,7 +71,7 @@
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass
 
 {
-    return @{@"contents" : QCloudSMHRecycleObjectItemInfo.class,@"authorityList":QCloudSMHRoleInfo.class};
+    return @{@"contents" : QCloudSMHRecycleObjectItemInfo.class,@"authorityList":QCloudSMHRoleInfo.class,@"authorityButtonList":QCloudSMHButtonAuthority.class};
 }
 - (BOOL)isEqual:(id)object{
     return [self smh_isEqual:object];

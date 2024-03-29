@@ -39,6 +39,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 可选参数，文件夹 path，搜索文件夹动态时传入；
 @property (nonatomic,copy)NSString *dirPath;
 
+/// 是否同步查询，新方式使用true，可选参数，默认为异步；
+@property (nonatomic,assign)BOOL isSync;
+
+/// 加载更多数据的标识，可选参数，isSync = true 时使用，不传为首次加载，传则为上次响应中newNextMarker字段
+@property (nonatomic,copy)NSString * marker;
+
 
 -(void)setFinishBlock:(void (^_Nullable)(QCloudSMHSpaceDynamicList *  _Nullable result , NSError * _Nullable error))QCloudRequestFinishBlock;
 @end

@@ -57,6 +57,9 @@
     [__pathComponents addObject:self.filePath];
     
     [self.requestData setParameter:QCloudSMHConflictStrategyByTransferToString(self.conflictStrategy) withKey:@"conflict_resolution_strategy"];
+    if (self.fileSize) {
+        [self.requestData setQueryStringParamter:self.fileSize withKey:@"filesize"];
+    }
     self.requestData.URIComponents = __pathComponents;
    
     for (NSString *key in self.customHeaders.allKeys.copy) {
