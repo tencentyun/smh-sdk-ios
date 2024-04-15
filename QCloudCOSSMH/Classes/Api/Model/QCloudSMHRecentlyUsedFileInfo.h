@@ -34,5 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 // 操作时间
 @property (nonatomic, strong) NSString * operationTime;
 
+// 路径
+@property (nonatomic, strong) NSArray <NSString *> * path;
+
 @end
 NS_ASSUME_NONNULL_END
