@@ -23,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// FilterActionBy: 筛选操作方式，可选，不传返回全部，preview 只返回预览操作，modify 返回编辑操作；
 @property (nonatomic,strong)NSString * filterActionBy;
 
+
+/// 是否带文件路径，true|false，默认为 false，可选参数
+@property (nonatomic,assign)BOOL withPath;
+
 /// 筛选文件类型，可选参数，字符串数组，当前支持的类型包括：
 /// all: 刷选所有类型文档
 /// pdf: 仅搜索 PDF 文档，对应的文件扩展名为 .pdf；

@@ -56,6 +56,8 @@
         [body setObject:self.type forKey:@"type"];
     }
     
+    [body setObject:self.withPath?@"true":@"false" forKey:@"withPath"];
+    
     if (body.allKeys.count > 0) {
         NSData * data = [body qcloud_modelToJSONData];
         self.requestData.directBody = data;

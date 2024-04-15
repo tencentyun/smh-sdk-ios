@@ -247,12 +247,16 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 }
 - (void)fakeStart {
     [self.benchMarkMan benginWithKey:kTaskTookTime];
-    if (self.confirmKey) {
-        startPartNumber = 0;
-        uploadedSize = 0;
-        [self resumeUpload];
-        return;
-    }
+//    if (self.confirmKey) {
+//        startPartNumber = 0;
+//        uploadedSize = 0;
+//        if ([self.body isKindOfClass:[NSData class]]) {
+//            [self startSimpleUpload];
+//        }else{
+//            [self resumeUpload];
+//        }
+//        return;
+//    }
     self.totalBytesSent = 0;
 
     if ([self.body isKindOfClass:[NSData class]]) {
@@ -267,12 +271,16 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         }
         self.dataContentLength = QCloudFileSize(url.path);
         if(_mutilThreshold<kQCloudCOSXMLUploadLengthLimit){
-            @throw [NSException
-                exceptionWithName:QCloudErrorDomain
-                           reason:[NSString
-                                      stringWithFormat:
-                                   @"分块接口的阈值不能小于 1MB ，当前阈值为 %ld", (long)_mutilThreshold]
-                         userInfo:nil];
+//            @throw [NSException
+//                exceptionWithName:QCloudErrorDomain
+//                           reason:[NSString
+//                                      stringWithFormat:
+//                                   @"分块接口的阈值不能小于 1MB ，当前阈值为 %ld", (long)_mutilThreshold]
+//                         userInfo:nil];
+            NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"分块接口的阈值不能小于 1MB ，当前阈值为 %ld"];
+            [self onError:error];
+            [self cancel];
+            return;
         }
         if (self.dataContentLength >= _mutilThreshold) {
             //开始分片上传的时候，上传的起始位置是0
@@ -283,9 +291,13 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             [self startSimpleUpload];
         }
     } else {
-        @throw [NSException exceptionWithName:QCloudErrorDomain
-                                       reason:@"不支持设置该类型的body，支持的类型为NSData、QCloudFileOffsetBody"
-                                     userInfo:@{}];
+//        @throw [NSException exceptionWithName:QCloudErrorDomain
+//                                       reason:@"不支持设置该类型的body，支持的类型为NSData、QCloudFileOffsetBody"
+//                                     userInfo:@{}];
+        NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"不支持设置该类型的body，支持的类型为NSData、QCloudFileOffsetBody"];
+        [self onError:error];
+        [self cancel];
+        return;
     }
 }
 - (void)startSimpleUpload {
@@ -425,8 +437,12 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         if (code == 202) {
             [self continueQuickUpload:beginningHash beginString:beginningHashString];
         }else{
-            /// 普通分块上传
-            [self startMultiUpload];
+            if (self.confirmKey) {
+                [self resumeUpload];
+            }else{
+                /// 普通分块上传
+                [self startMultiUpload];
+            }
         }
     };
     [self.requestCacheArray addPointer:(__bridge void *_Nullable)(request)];
