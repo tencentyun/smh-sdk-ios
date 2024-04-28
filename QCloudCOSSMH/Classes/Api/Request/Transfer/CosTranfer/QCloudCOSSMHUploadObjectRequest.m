@@ -247,16 +247,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 }
 - (void)fakeStart {
     [self.benchMarkMan benginWithKey:kTaskTookTime];
-//    if (self.confirmKey) {
-//        startPartNumber = 0;
-//        uploadedSize = 0;
-//        if ([self.body isKindOfClass:[NSData class]]) {
-//            [self startSimpleUpload];
-//        }else{
-//            [self resumeUpload];
-//        }
-//        return;
-//    }
+
     self.totalBytesSent = 0;
 
     if ([self.body isKindOfClass:[NSData class]]) {
@@ -271,12 +262,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         }
         self.dataContentLength = QCloudFileSize(url.path);
         if(_mutilThreshold<kQCloudCOSXMLUploadLengthLimit){
-//            @throw [NSException
-//                exceptionWithName:QCloudErrorDomain
-//                           reason:[NSString
-//                                      stringWithFormat:
-//                                   @"分块接口的阈值不能小于 1MB ，当前阈值为 %ld", (long)_mutilThreshold]
-//                         userInfo:nil];
+
             NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"分块接口的阈值不能小于 1MB ，当前阈值为 %ld"];
             [self onError:error];
             [self cancel];
@@ -291,9 +277,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             [self startSimpleUpload];
         }
     } else {
-//        @throw [NSException exceptionWithName:QCloudErrorDomain
-//                                       reason:@"不支持设置该类型的body，支持的类型为NSData、QCloudFileOffsetBody"
-//                                     userInfo:@{}];
+
         NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"不支持设置该类型的body，支持的类型为NSData、QCloudFileOffsetBody"];
         [self onError:error];
         [self cancel];
@@ -305,7 +289,6 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     QCloudSMHPutObjectRequest * putRequest = [[QCloudSMHPutObjectRequest alloc]init];
     putRequest.libraryId = self.libraryId;
     putRequest.priority = self.priority;
-    putRequest.conflictStrategy = QCloudSMHConflictStrategyEnumRename;
     putRequest.spaceId = self.spaceId;
     putRequest.spaceOrgId = self.spaceOrgId;
     putRequest.userId = self.userId;
@@ -363,6 +346,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             complete.spaceId = strongSelf.spaceId;
             complete.userId = strongSelf.userId;
             complete.spaceOrgId = self.spaceOrgId;
+            complete.conflictStrategy = self.conflictStrategy;
             if (self.putInitInfo) {
                 complete.confirmKey = strongSelf.putInitInfo.confirmKey;
             }
@@ -417,7 +401,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.createionDate = [self createDate];
     request.libraryId = self.libraryId;
     request.priority = self.priority;
-    request.conflictStrategy = QCloudSMHConflictStrategyEnumRename;
+    request.conflictStrategy = self.conflictStrategy;
     request.spaceId = self.spaceId;
     request.spaceOrgId = self.spaceOrgId;
     request.userId = self.userId;
@@ -473,7 +457,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.createionDate = [self createDate];
     request.libraryId = self.libraryId;
     request.priority = self.priority;
-    request.conflictStrategy = QCloudSMHConflictStrategyEnumRename;
+    request.conflictStrategy = self.conflictStrategy;
     request.spaceId = self.spaceId;
     request.spaceOrgId = self.spaceOrgId;
     request.userId = self.userId;
@@ -770,7 +754,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     complete.spaceOrgId = self.spaceOrgId;
     complete.userId = self.userId;
     complete.priority = QCloudAbstractRequestPriorityHigh;
-    
+    complete.conflictStrategy = self.conflictStrategy;
     
     if (self.confirmKey) {
         complete.confirmKey = self.confirmKey;
