@@ -7,7 +7,7 @@
 
 #import "QCloudSMHService.h"
 #import "QCloudSMHGetAccessTokenRequest.h"
-#import <QcloudCore/QCloudConfiguration_Private.h>
+#import <QCloudCore/QCloudConfiguration_Private.h>
 #import "QCloudSMHListContentsRequest.h"
 #import "QCloudSMHBaseRequest.h"
 #import "QCloudSMHHeadDirectoryRequest.h"

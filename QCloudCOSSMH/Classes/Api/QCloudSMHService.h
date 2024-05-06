@@ -6,7 +6,7 @@
 //
 
 #import <QCloudCore/QCloudCore.h>
-#include <QcloudCore/QCloudConfiguration.h>
+#include <QCloudCore/QCloudConfiguration.h>
 #import "QCloudSMHAccessTokenProvider.h"
 
 @class QCloudSMHListContentsRequest;
