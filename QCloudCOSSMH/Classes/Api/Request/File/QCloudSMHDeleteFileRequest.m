@@ -53,7 +53,4 @@
     return YES;
 }
 
--(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHDeleteResult * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock{
-    [super setFinishBlock:QCloudRequestFinishBlock];
-}
 @end
