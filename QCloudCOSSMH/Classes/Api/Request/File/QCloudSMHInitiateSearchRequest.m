@@ -89,6 +89,16 @@
     if (self.creators) {
         [bodyDic setObject:self.creators forKey:@"creators"];
     }
+    
+    if (self.sortType > QCloudSMHSortTypeNone) {
+        [bodyDic setObject:QCloudSMHOrderByTransferToString(self.sortType%100) forKey:@"orderBy"];
+        if(self.sortType<100){
+            [bodyDic setObject:@"asc" forKey:@"orderByType"];
+        }else{
+            [bodyDic setObject:@"desc" forKey:@"orderByType"];
+        }
+    }
+    
     self.requestData.directBody = [bodyDic qcloud_modelToJSONData];
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     return YES;

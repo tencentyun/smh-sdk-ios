@@ -8,6 +8,7 @@
 #import "QCloudSMHBizRequest.h"
 #import "QCloudSMHSearchTypeEnum.h"
 #import "QCloudSMHSearchListInfo.h"
+#import "QCloudSMHSortTypeEnum.h"
 NS_ASSUME_NONNULL_BEGIN
 
 
@@ -45,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 搜索更新时间范围，时间戳字符串，与时区无关，均可选参数
 @property (nonatomic,strong)NSString *modificationTimeStart;
 @property (nonatomic,strong)NSString *modificationTimeEnd;
+
+@property (nonatomic,assign)QCloudSMHSortType sortType;
 
 -(void)setFinishBlock:(void (^_Nullable)(QCloudSMHSearchListInfo * _Nullable result , NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end
