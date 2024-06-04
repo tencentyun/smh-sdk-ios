@@ -481,8 +481,9 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             QCloudSMHContentInfo * info = QCloudSMHContentInfo.new;
             [info qcloud_modelSetWithDictionary:infoDic];
             info.isQuickUpload = YES;
-            self.finishBlock(info, error);
-            
+            if (self.finishBlock) {
+                self.finishBlock(info, error);
+            }
         }else{
             [self startMultiUpload];
         }
@@ -670,8 +671,9 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             
             __strong typeof(weakSelf) strongSelf = weakSelf;
             __strong typeof(weakRequest) strongRequst = weakRequest;
-            [weakSelf.requstMetricArray addObject:@{ [NSString stringWithFormat:@"%@", weakRequest] : weakRequest.benchMarkMan.tastMetrics }];
-
+            @synchronized (self) {
+                [weakSelf.requstMetricArray addObject:@{ [NSString stringWithFormat:@"%@", weakRequest] : weakRequest.benchMarkMan.tastMetrics }];
+            }
             if (error && error.code != QCloudNetworkErrorCodeCanceled) {
                 __strong typeof(weakSelf) strongSelf = weakSelf;
                 [weakSelf onError:error];
