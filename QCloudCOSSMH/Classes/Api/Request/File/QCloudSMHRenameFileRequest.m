@@ -52,7 +52,7 @@
     self.requestData.URIComponents = __pathComponents;
     [self.requestData setParameter:QCloudSMHConflictStrategyByTransferToString(self.conflictStrategy) withKey:@"conflict_resolution_strategy"];
     [self.requestData setQueryStringParamter:self.moveAuthority?@"true":@"false" withKey:@"move_authority"];
-    NSDictionary * dic = @{@"from":self.from};
+    NSDictionary * dic = @{@"from":self.from?:@""};
     NSData * data = [dic qcloud_modelToJSONData];
     self.requestData.directBody = data;
 

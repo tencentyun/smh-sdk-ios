@@ -48,7 +48,7 @@
         [__pathComponents addObject:self.dirPath];
     }
     NSError *_error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{@"from":self.from} options:0 error:&_error];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{@"from":self.from?:@""} options:0 error:&_error];
     NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     self.requestData.directBody = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     self.requestData.URIComponents = __pathComponents;
