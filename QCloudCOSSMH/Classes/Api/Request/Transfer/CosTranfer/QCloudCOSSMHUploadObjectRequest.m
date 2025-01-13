@@ -492,9 +492,11 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 }
 
 -(NSString *)createDate{
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd 'T' HH:mm:ss Z"];
-    return [dateFormatter stringFromDate:NSDate.new];
+    NSISO8601DateFormatter *isoFormatter = [[NSISO8601DateFormatter alloc] init];
+    isoFormatter.formatOptions = NSISO8601DateFormatWithInternetDateTime | NSISO8601DateFormatWithFractionalSeconds;
+    NSDate *currentDate = [NSDate date];
+    NSString *iso8601String = [isoFormatter stringFromDate:currentDate];
+    return iso8601String;
 }
 
 -(NSInteger)getFileSize{
