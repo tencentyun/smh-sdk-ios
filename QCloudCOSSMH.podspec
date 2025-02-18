@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "QCloudCOSSMH"
-s.version              = "1.0.1"
+s.version              = "1.0.2"
   s.summary          = "QCloudCOSSMH 腾讯云iOS-SDK组件"
 
   s.homepage         = "https://cloud.tencent.com/"
