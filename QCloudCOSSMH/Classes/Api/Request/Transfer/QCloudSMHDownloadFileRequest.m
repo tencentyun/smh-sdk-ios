@@ -85,9 +85,9 @@
 
 - (void)setFinishBlock:(void (^)(id _Nonnull result, NSError *_Nonnull error))finishBlock {
     if (finishBlock) {
-        WeakSelf(self);
+        QCloudWeakSelf(self);
         [super setFinishBlock:^(id outputObject, NSError *error) {
-            StrongSelf(self);
+            QCloudStrongSelf(self);
             if ([strongself respondsToSelector:NSSelectorFromString(@"downloadingTempURL")]) {
                 NSError * lError;
                 NSURL * downloadingTempURL = [strongself performSelector:NSSelectorFromString(@"downloadingTempURL")];

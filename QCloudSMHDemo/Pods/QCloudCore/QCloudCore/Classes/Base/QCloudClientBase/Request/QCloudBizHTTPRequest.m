@@ -19,6 +19,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import "NSObject+QCloudModelTool.h"
 #import "QCloudLogger.h"
+#import "QCloudAuthentationV5Creator.h"
 NS_ASSUME_NONNULL_BEGIN
 
 QCloudResponseSerializerBlock QCloudResponseObjectSerilizerBlock(Class modelClass) {
@@ -124,15 +125,36 @@ QCloudResponseSerializerBlock QCloudResponseCOSNormalRSPSerilizerBlock
 
 - (BOOL)prepareInvokeURLRequest:(NSMutableURLRequest *)urlRequest error:(NSError *__autoreleasing *)error {
     
+    if (self.credential && self.credential.secretID.length > 0 && self.credential.secretKey.length > 0) {
+        QCloudAuthentationV5Creator *creator = [[QCloudAuthentationV5Creator alloc] initWithCredential:self.credential];
+        QCloudSignature *signature = [creator signatureForData:(NSMutableURLRequest *)urlRequest];
+        if (!self.isSignedInURL) {
+            [urlRequest setValue:signature.signature forHTTPHeaderField:@"Authorization"];
+        } else {
+            NSString *urlStr;
+            NSRange rangeOfQ = [urlStr rangeOfString:@"?"];
+            if (rangeOfQ.location == NSNotFound) {
+                urlStr = [NSString stringWithFormat:@"%@?%@", urlRequest.URL.absoluteString, signature.signature];
+            } else {
+                urlStr = [NSString stringWithFormat:@"%@&%@", urlRequest.URL.absoluteString, signature.signature];
+            }
+            if (signature.token) {
+                urlStr = [NSString stringWithFormat:@"%@&x-cos-security-token=%@", urlStr, signature.token];
+            }
+            urlRequest.URL = [[NSURL URLWithString:urlStr] copy];
+        }
+        return YES;
+    }
+    
     if(!self.signatureProvider){
         return YES;
     }
     
-    //    NSAssert(self.runOnService, @"RUN ON SERVICE is nil%@", self.runOnService);
     self.semaphore = dispatch_semaphore_create(0);
     self.semp_flag = 1;
     __block NSError *localError;
     __block BOOL isSigned;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self.signatureProvider
             signatureWithFields:self.signatureFields
@@ -225,6 +247,20 @@ NSString *EncrytNSDataMD5Base64(NSData *data) {
     self.customHeaders[@"x-cos-server-side-encryption-customer-key-MD5"] = base64md5key;
 }
 
+- (NSString *)simplifyPath:(NSString *)path {
+    NSArray *names = [path componentsSeparatedByString:@"/"];
+    NSMutableArray *stack = [NSMutableArray array];
+    for (NSString *name in names) {
+        if ([name isEqualToString:@".."]) {
+            if (stack.count > 0) {
+                [stack removeLastObject];
+            }
+        } else if (name.length > 0 && ![name isEqualToString:@"."]) {
+            [stack addObject:name];
+        }
+    }
+    return [@"/" stringByAppendingString:[stack componentsJoinedByString:@"/"]];
+}
 @end
 
 NS_ASSUME_NONNULL_END

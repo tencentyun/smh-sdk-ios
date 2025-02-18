@@ -20,7 +20,7 @@ s.version              = "1.0.1"
   s.subspec 'Default' do |default|
     default.source_files = 'QCloudCOSSMH/Classes/**/*'
     default.exclude_files = 'QCloudCOSSMH/Classes/Api/QCloudCOSSMHApi.h','QCloudCOSSMH/Classes/User/QCloudCOSSMHUser.h'
-    default.dependency "QCloudCore",'6.3.7'
+    default.dependency "QCloudCore",'6.4.5'
   end
   
   s.subspec 'WithoutCoreVersion' do |withoutCoreVersion|
@@ -32,7 +32,7 @@ s.version              = "1.0.1"
   s.subspec 'Slim' do |slim|
     slim.source_files = 'QCloudCOSSMH/Classes/**/*'
     slim.exclude_files = 'QCloudCOSSMH/Classes/Api/QCloudCOSSMHApi.h','QCloudCOSSMH/Classes/User/QCloudCOSSMHUser.h'
-    slim.dependency "QCloudCore/WithoutMTA",'6.3.7'
+    slim.dependency "QCloudCore/WithoutMTA",'6.4.5'
   end
 
   s.subspec 'Api' do |api|
@@ -41,7 +41,7 @@ s.version              = "1.0.1"
                        'QCloudCOSSMH/Classes/QCloudCOSSMHVersion.*',
                        'QCloudCOSSMH/Classes/Common/*',
                        'QCloudCOSSMH/Classes/Common/**/*'
-    api.dependency "QCloudCore/WithoutMTA",'6.3.7'
+    api.dependency "QCloudCore/WithoutMTA",'6.4.5'
   end
 
 end

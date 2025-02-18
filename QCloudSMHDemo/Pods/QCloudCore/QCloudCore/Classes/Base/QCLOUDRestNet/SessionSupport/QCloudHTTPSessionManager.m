@@ -227,10 +227,15 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
         
        #endif
     }
-}
+} 
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest * _Nullable))completionHandler{
+    
     QCloudURLSessionTaskData *taskData = [self taskDataForTask:task];
+    if (!taskData.httpRequest.runOnService.configuration.enableGlobalRedirection) {
+        completionHandler(nil);
+        return;
+    }
     if(![taskData.httpRequest needChangeHost] || taskData.httpRequest.runOnService.configuration.disableChangeHost == YES || [response.allHeaderFields.allKeys containsObject:@"x-cos-request-id"] || [request.URL.absoluteURL.host rangeOfString:@"tencentcos.cn"].length > 0){
         completionHandler(request);
     }else{
@@ -313,7 +318,7 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
                       object:nil
                     userInfo:@{
                         @"url" : task.originalRequest.URL ? task.originalRequest.URL
-                                                          : [NSURL URLWithString:@"http://nullurl.error.com.tencent.qcloud.network"]
+                                                          : [NSURL URLWithString:@"https://nullurl.error.com.tencent.qcloud.network"]
 
                     }];
 
@@ -359,8 +364,12 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
 
                         QCloudURLSessionTaskData *taskData = [weakSelf taskDataForTask:task];
                         if (taskData.httpRequest.sendProcessBlock) {
-                            [taskData.httpRequest notifySendProgressBytesSend:-(task.countOfBytesSent)
-                                                               totalBytesSend:task.countOfBytesSent
+                            int64_t countOfBytesSent = 0;
+                            if ([task respondsToSelector:@selector(countOfBytesSent)]) {
+                                countOfBytesSent = task.countOfBytesSent;
+                            }
+                            [taskData.httpRequest notifySendProgressBytesSend:-(countOfBytesSent)
+                                                               totalBytesSend:countOfBytesSent
                                                      totalBytesExpectedToSend:task.countOfBytesExpectedToSend];
                         }
                         QCloudHTTPRequest *httpRequset = taskData.httpRequest;
@@ -397,7 +406,7 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
     NSURLCredential *credential = nil;
     if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-        if (!IS_QCloud_NORMAL_ENV || !taskData.httpRequest.requestSerializer.shouldAuthentication) {
+        if (!IS_QCloud_NORMAL_ENV || !taskData.httpRequest.requestSerializer.shouldAuthentication || taskData.httpRequest.runOnService.configuration.disableGlobalAuthentication) {
             SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
             credential = [NSURLCredential credentialForTrust:serverTrust];
             disposition = NSURLSessionAuthChallengeUseCredential;
