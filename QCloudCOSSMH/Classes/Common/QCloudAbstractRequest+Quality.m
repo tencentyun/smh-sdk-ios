@@ -122,7 +122,7 @@ NSString * const kSMHQCloudQualityrequestNameKey = @"request_name";
     params[kQCloudRequestAppkeyKey] = kSMHQCloudUploadAppReleaseKey;
     params[@"pName"] = @"smh";
     params[@"sdkVersion"] = QCloudCOSSMHModuleVersion;
-    params[@"sdkVersionName"] = @(QCloudCOSSMHVersionNumber);
+    params[@"sdkVersionName"] = @(QCloudCOSSMHModuleVersionNumber);
     return params;
 }
 @end
