@@ -185,6 +185,9 @@ static NSString * _releaseApiHost;
     if (_targetType == QCloudECDTargetRelease) {
         host = _releaseHost;
     }
+    if (!host) {
+        host = DEFAULT_API_HOST;
+    }
     return [[host lowercaseString] hasPrefix:@"https://"];
 }
 
