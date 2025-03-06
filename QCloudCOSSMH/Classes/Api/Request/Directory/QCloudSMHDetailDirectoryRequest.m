@@ -49,6 +49,8 @@
     for (NSString *key in self.customHeaders.allKeys.copy) {
         [self.requestData setValue:self.customHeaders[key] forHTTPHeaderField:key];
     }
+    [self.requestData setQueryStringParamter:self.withInode?@"1":@"0" withKey:@"with_inode"];
+    [self.requestData setQueryStringParamter:self.withFavoriteStatus?@"1":@"0" withKey:@"with_favorite_status"];
     return YES;
 }
 

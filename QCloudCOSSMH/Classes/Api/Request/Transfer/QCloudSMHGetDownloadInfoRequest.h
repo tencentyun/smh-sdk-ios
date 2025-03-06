@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface QCloudSMHGetDownloadInfoRequest : QCloudSMHBizRequest
 
-///  完整文件路径，例如 /api/v1/file/smhxxx/-/foo/bar/file.docx 
+///  完整文件路径，例如 /api/v1/file/smhxxx/-/foo/bar/file.docx
 @property (nonatomic,strong)NSString *filePath;
 
 /// 历史版本
@@ -32,6 +32,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// 用来缩略图就传 list
 @property (nonatomic,assign)QCloudSMHPurposeType purpose;
 
+/**
+ 为可选参数（类型number），单链接下载限速，范围100KB/s-100MB/s，单位B；
+ */
+@property (nonatomic,assign)NSInteger trafficLimit;
+
+/**
+ 可选参数，是否只用于校验文件是否可预览和下载，设置该参数后返回结果中不包含cosUrl
+ */
+@property (nonatomic,assign)BOOL preCheck;
+
+- (void)setFinishBlock:(void (^_Nullable)(QCloudSMHDownloadInfoModel *_Nullable result, NSError *_Nullable error))QCloudRequestFinishBlock;
 @end
 
 NS_ASSUME_NONNULL_END

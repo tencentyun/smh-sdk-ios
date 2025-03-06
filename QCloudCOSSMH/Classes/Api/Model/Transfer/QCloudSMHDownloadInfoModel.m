@@ -8,19 +8,6 @@
 #import "QCloudSMHDownloadInfoModel.h"
 
 @implementation QCloudSMHDownloadInfoModel
-
-+ (NSDictionary *)modelCustomPropertyMapper {
-    return @{
-        @"xSmhMetaFoo" : @"x-smh-meta-foo",
-    };
-}
-
-+ (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass
-
-{
-    return @{@"metaData":QCloudSMHMetaData.class};
-}
-
 - (BOOL)modelCustomTransformToDictionary:(NSMutableDictionary *)dic {
     NSString *SMHContentInfoTypeValue = dic[@"type"];
     if (SMHContentInfoTypeValue) {
@@ -62,10 +49,6 @@
     
     return transfromDic;
 }
-
-@end
-
-@implementation QCloudSMHMetaData
 
 @end
 

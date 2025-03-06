@@ -68,8 +68,24 @@
     }
     self.requestData.URIMethod = @"confirm";
 
+    NSMutableDictionary * params = [NSMutableDictionary new];
     if (self.crc64) {
-        NSData * data = [@{@"crc64":self.crc64} qcloud_modelToJSONData];
+        [params setObject:self.crc64 forKey:@"crc64"];
+    }
+    if (self.labels) {
+        [params setObject:self.labels forKey:@"labels"];
+    }
+    if (self.category) {
+        [params setObject:self.category forKey:@"category"];
+    }
+    if (self.localCreationTime) {
+        [params setObject:self.localCreationTime forKey:@"localCreationTime"];
+    }
+    if (self.localModificationTime) {
+        [params setObject:self.localModificationTime forKey:@"localModificationTime"];
+    }
+    if (params.allKeys.count > 0) {
+        NSData * data = [params qcloud_modelToJSONData];
         self.requestData.directBody = data;
     }
     

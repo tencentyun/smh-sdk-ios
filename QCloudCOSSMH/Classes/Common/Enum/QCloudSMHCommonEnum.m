@@ -246,3 +246,32 @@ NSString *  QCloudSMHAppleStatusTypeTransferToString( QCloudSMHAppleStatusType f
             break;
     }
 }
+NSString *  QCloudSMHDirectoryFilterTransferToString( QCloudSMHDirectoryFilter filter){
+    switch (filter) {
+        case QCloudSMHDirectoryOnlyDir:
+            return @"onlyDir";
+            break;
+
+        case QCloudSMHDirectoryOnlyFile:
+            return @"onlyFile";
+            break;
+        default:
+            return @"onlyDir";
+            break;
+    }
+}
+NSString *  QCloudSMHSearchModeTransferToString( QCloudSMHSearchMode model){
+    switch (model) {
+        case QCloudSMHSearchModeFast:
+            return @"fast";
+            break;
+
+        case QCloudSMHSearchModeNormal:
+            return @"normal";
+            break;
+        default:
+            return @"normal";
+            break;
+    }
+}
+

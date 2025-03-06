@@ -68,6 +68,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 
 @property (nonatomic, assign) NSInteger serverTimeOffset;
 
+
 @end
 
 @implementation QCloudCOSSMHUploadObjectRequest
@@ -247,7 +248,6 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 }
 - (void)fakeStart {
     [self.benchMarkMan benginWithKey:kTaskTookTime];
-
     self.totalBytesSent = 0;
 
     if ([self.body isKindOfClass:[NSData class]]) {
@@ -262,7 +262,6 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         }
         self.dataContentLength = QCloudFileSize(url.path);
         if(_mutilThreshold<kQCloudCOSXMLUploadLengthLimit){
-
             NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"分块接口的阈值不能小于 1MB ，当前阈值为 %ld"];
             [self onError:error];
             [self cancel];
@@ -277,7 +276,6 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             [self startSimpleUpload];
         }
     } else {
-
         NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"不支持设置该类型的body，支持的类型为NSData、QCloudFileOffsetBody"];
         [self onError:error];
         [self cancel];
@@ -295,6 +293,10 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     putRequest.filePath = self.uploadPath;
     putRequest.conflictStrategy = self.conflictStrategy;
     putRequest.fileSize = @([self getFileSize]).stringValue;
+    putRequest.category = self.category;
+    putRequest.labels = self.labels;
+    putRequest.localCreationTime = self.localCreationTime;
+    putRequest.localModificationTime = self.localModificationTime;
     __weak typeof(putRequest) weakRequest = putRequest;
     __weak typeof(self) weakSelf = self;
     [putRequest setFinishBlock:^(QCloudSMHInitUploadInfo * _Nullable info, NSError * _Nullable error) {
@@ -347,6 +349,11 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             complete.userId = strongSelf.userId;
             complete.spaceOrgId = self.spaceOrgId;
             complete.conflictStrategy = self.conflictStrategy;
+            complete.category = self.category;
+            complete.labels = self.labels;
+            complete.localCreationTime = self.localCreationTime;
+            complete.localModificationTime = self.localModificationTime;
+            
             if (self.putInitInfo) {
                 complete.confirmKey = strongSelf.putInitInfo.confirmKey;
             }
@@ -407,7 +414,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.userId = self.userId;
     request.filePath = self.uploadPath;
     request.beginningHash = beginningHashString;
-    request.size = @(self.dataContentLength).stringValue;
+    request.fileSize = @(self.dataContentLength).stringValue;
     request.finishBlock = ^(id outputObject, NSError *error) {
         [handler closeFile];
         if (error) {
@@ -464,7 +471,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.filePath = self.uploadPath;
     request.beginningHash = beginningHashString;
     request.fullHash = [NSData qcloudSha256BytesTostring:fullHash];
-    request.size = @(self.dataContentLength).stringValue;
+    request.fileSize = @(self.dataContentLength).stringValue;
     request.finishBlock = ^(id outputObject, NSError *error) {
         [handler closeFile];
         if (error) {

@@ -19,6 +19,9 @@ typedef NS_ENUM(uint8_t, QCloudSMHSortType) {
     QCloudSMHSortTypeVisitTime             = 7,  /**< 访问时间 */
     QCloudSMHSortTypeRemainingTime         = 8,  /**< 剩余时间 */
     QCloudSMHSortTypeRemovalTime           = 9,   /**< 删除时间 */
+    QCloudSMHSortTypeUploadTime            = 10,   /**< 上传时间 */
+    QCloudSMHSortTypeLocalCreationTime           = 11,   /**< 本地创建时间 */
+    QCloudSMHSortTypeLocalModificationTime           = 12,   /**< 本地修改时间 */
     
     QCloudSMHSortTypeMTimeReverse          = 101,  /**< 修改时间*/
     QCloudSMHSortTypeCTimeReverse          = 102,  /**< 创建时间*/
@@ -29,6 +32,9 @@ typedef NS_ENUM(uint8_t, QCloudSMHSortType) {
     QCloudSMHSortTypeVisitTimeReverse      = 107,  /**< 访问时间 */
     QCloudSMHSortTypeRemainingTimeReverse  = 108,  /**< 剩余时间 */
     QCloudSMHSortTypeRemovalTimeReverse    = 109,  /**< 删除时间 */
+    QCloudSMHSortTypeUploadTimeReverse            = 110,   /**< 上传时间 */
+    QCloudSMHSortTypeLocalCreationTimeReverse           = 111,   /**< 本地创建时间 */
+    QCloudSMHSortTypeLocalModificationTimeReverse           = 112,   /**< 本地修改时间 */
 
 };
 

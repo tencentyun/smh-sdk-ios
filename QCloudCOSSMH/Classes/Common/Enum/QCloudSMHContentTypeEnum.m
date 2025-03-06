@@ -30,6 +30,8 @@ QCloudSMHContentInfoType QCloudSMHContentInfoTypeDumpFromString(NSString *key) {
         return QCloudSMHContentInfoTypeArchive;
     } else if ([key isEqualToString:@"image"]) {
         return QCloudSMHContentInfoTypeImage;
+    }else if ([key isEqualToString:@"symlink"]) {
+        return QCloudSMHContentInfoTypeSymlink;
     }
     return QCloudSMHContentInfoTypeOther;
 }
@@ -67,6 +69,9 @@ NSString * QCloudSMHContentInfoTypeTransferToString(QCloudSMHContentInfoType typ
             
         case QCloudSMHContentInfoTypePDF:{
             return @"portable";
+        }
+        case QCloudSMHContentInfoTypeSymlink:{
+            return @"symlink";
         }
         default:
             return @"other";

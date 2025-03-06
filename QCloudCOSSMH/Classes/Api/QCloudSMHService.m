@@ -61,6 +61,16 @@
 #import "QCloudSMHGetFileCountRequest.h"
 #import "QCloudSMHGetINodeDetailRequest.h"
 #import "QCloudSMHGetRecentlyUsedFileRequest.h"
+#import "QCloudUpdateDirectoryTagRequest.h"
+#import "QCloudSMHGetSpaceHomeFileRequest.h"
+#import "QCloudUpdateFileTagRequest.h"
+#import "QCloudSMHGetRecyclePresignedURLRequest.h"
+#import "QCloudSMHGetRecycleFileDetailReqeust.h"
+#import "QCloudSetSpaceTrafficLimitRequest.h"
+#import "QCloudSMHListFavoriteSpaceFileRequest.h"
+#import "QCloudSMHFavoriteSpaceFileRequest.h"
+#import "QCloudSMHDeleteFavoriteSpaceFileRequest.h"
+#import "QCloudGetSpaceUsageRequest.h"
 
 @interface QCloudSMHService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
@@ -463,4 +473,69 @@ static QCloudSMHService *_service;
 -(void)getRecentlyUsedFile:(QCloudSMHGetRecentlyUsedFileRequest *)request{
     [self performRequest:request];
 }
+
+-(void)updateDirectoryTag:(QCloudUpdateDirectoryTagRequest *)request{
+    [self performRequest:request];
+}
+
+
+-(void)getSpaceHomeFile:(QCloudSMHGetSpaceHomeFileRequest *)request{
+    [self performRequest:request];
+}
+
+-(void)updateFileTag:(QCloudUpdateFileTagRequest *)request{
+    [self performRequest:request];
+}
+
+-(void)getRecyclePresignedURL:(QCloudSMHGetRecyclePresignedURLRequest *)request{
+    request.accessTokenProvider = self.accessTokenProvider;
+    NSError *error;
+    NSURLRequest *urlRequest = [request buildURLRequest:&error];
+    if (nil != error) {
+        [request onError:error];
+        return;
+    }
+    __block NSString *requestURLString = urlRequest.URL.absoluteString;
+    [request.accessTokenProvider accessTokenWithRequest:request urlRequest:urlRequest compelete:^(QCloudSMHSpaceInfo *spaceInfo, NSError *error) {
+        if ([requestURLString hasSuffix:@"&"] || [requestURLString hasSuffix:@"?"]) {
+            requestURLString = [requestURLString stringByAppendingFormat:@"access_token=%@",spaceInfo.accessToken];
+        } else {
+            requestURLString = [requestURLString stringByAppendingFormat:@"&access_token=%@", spaceInfo.accessToken];
+        }
+        if (spaceInfo.libraryId != nil) {
+            if (request.libraryId) {
+                requestURLString = [requestURLString stringByReplacingOccurrencesOfString:request.libraryId withString:spaceInfo.libraryId];
+            }else{
+                requestURLString = [requestURLString stringByReplacingOccurrencesOfString:@"emptyLibraryId" withString:spaceInfo.libraryId];
+            }
+        }
+        
+        if (request.finishBlock) {
+            request.finishBlock(requestURLString, nil);
+        }
+    }];
+}
+-(void)getRecycleFileDetail:(QCloudSMHGetRecycleFileDetailReqeust *)request{
+    [self performRequest:request];
+}
+-(void)setSpaceTrafficLimit:(QCloudSetSpaceTrafficLimitRequest *)request{
+    [self performRequest:request];
+}
+-(void)listFavoriteSpaceFile:(QCloudSMHListFavoriteSpaceFileRequest *)request{
+    [self performRequest:request];
+}
+-(void)favoriteSpaceFile:(QCloudSMHFavoriteSpaceFileRequest *)request{
+    [self performRequest:request];
+}
+-(void)deleteFavoriteSpaceFile:(QCloudSMHDeleteFavoriteSpaceFileRequest *)request{
+    [self performRequest:request];
+}
+
+
+-(void)getSpaceUsage:(QCloudGetSpaceUsageRequest *)request{
+    [self performRequest:request];
+}
+
+
+
 @end

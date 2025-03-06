@@ -103,6 +103,17 @@
 @class QCloudSMHGetFileCountRequest;
 @class QCloudSMHGetINodeDetailRequest;
 @class QCloudSMHGetRecentlyUsedFileRequest;
+@class QCloudUpdateDirectoryTagRequest;
+@class QCloudSMHGetSpaceHomeFileRequest;
+@class QCloudUpdateFileTagRequest;
+
+@class QCloudSMHGetRecyclePresignedURLRequest;
+@class QCloudSMHGetRecycleFileDetailReqeust;
+@class QCloudSetSpaceTrafficLimitRequest;
+@class QCloudSMHListFavoriteSpaceFileRequest;
+@class QCloudSMHFavoriteSpaceFileRequest;
+@class QCloudSMHDeleteFavoriteSpaceFileRequest;
+@class QCloudGetSpaceUsageRequest;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHService : NSObject
@@ -457,6 +468,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 查询最近使用的文件列表
 -(void)getRecentlyUsedFile:(QCloudSMHGetRecentlyUsedFileRequest *)request;
+
+/// 更新目录自定义标签
+-(void)updateDirectoryTag:(QCloudUpdateDirectoryTagRequest *)request;
+
+/// 用于列出空间首页内容，会忽略目录的层级关系，列出空间下所有文件
+-(void)getSpaceHomeFile:(QCloudSMHGetSpaceHomeFileRequest *)request;
+
+/// 用于更新文件的标签（Labels）或分类（Category）
+-(void)updateFileTag:(QCloudUpdateFileTagRequest *)request;
+
+///  用于预览回收站项目
+-(void)getRecyclePresignedURL:(QCloudSMHGetRecyclePresignedURLRequest *)request;
+
+/// 用于查看回收站文件详情，以便进行预览
+-(void)getRecycleFileDetail:(QCloudSMHGetRecycleFileDetailReqeust *)request;
+
+///  设置租户空间限速
+-(void)setSpaceTrafficLimit:(QCloudSetSpaceTrafficLimitRequest *)request;
+
+///  查看指定空间收藏列表
+-(void)listFavoriteSpaceFile:(QCloudSMHListFavoriteSpaceFileRequest *)request;
+
+/// 收藏文件目录
+-(void)favoriteSpaceFile:(QCloudSMHFavoriteSpaceFileRequest *)request;
+
+///  删除指定空间收藏
+-(void)deleteFavoriteSpaceFile:(QCloudSMHDeleteFavoriteSpaceFileRequest *)request;
+
+-(void)getSpaceUsage:(QCloudGetSpaceUsageRequest *)request;
 
 @end
 

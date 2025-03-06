@@ -85,6 +85,26 @@ typedef void (^QCloudSMHRequestsConfirmKeyBlock)(NSString *_Nullable confirmKey)
 
 @property (assign, nonatomic) bool uploadBodyIsCompleted;
 
+/**
+ 文件自定义的分类,string类型,最大长度16字节， 可选，用户可通过更新文件接口修改文件的分类，也可以根据文件后缀预定义文件的分类信息。
+ */
+@property (nonatomic,strong)NSString * category;
+
+/**
+ 文件对应的本地创建时间，时间戳字符串，可选参数；
+ */
+@property (nonatomic,strong)NSString * localCreationTime;
+
+/**
+ 文件对应的本地修改时间，时间戳字符串，可选参数；
+ */
+@property (nonatomic,strong)NSString * localModificationTime;
+
+/**
+ 文件标签列表, 比如 ["动物", "大象", "亚洲象"]
+ */
+@property (nonatomic,strong)NSArray <NSString *> * labels;
+
 //自定义分片大小
 @property (nonatomic, assign) NSUInteger sliceSize;
 //自定义分片阈值

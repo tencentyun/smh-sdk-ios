@@ -47,7 +47,7 @@
     [__pathComponents addObject:@"authorized-directory"];
     
     if (self.dirPath){
-  
+        [__pathComponents addObject:self.dirPath];
     }
     if(self.limit>0){
         [self.requestData setQueryStringParamter:@(self.limit).stringValue withKey:@"limit"];

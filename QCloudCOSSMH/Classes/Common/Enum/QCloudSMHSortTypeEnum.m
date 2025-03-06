@@ -27,6 +27,12 @@ NSString * QCloudSMHOrderByTransferToString(QCloudSMHSortType type){
             return @"removalTime";
         case QCloudSMHSortTypeRemainingTime:
             return @"remainingTime";
+        case QCloudSMHSortTypeUploadTime:
+            return @"uploadTime";
+        case QCloudSMHSortTypeLocalCreationTime:
+            return @"localCreationTime";
+        case QCloudSMHSortTypeLocalModificationTime:
+            return @"localModificationTime";
         default:
             break;
     }

@@ -49,6 +49,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,assign)QCloudSMHSortType sortType;
 
+/**
+ 搜索方式，快速为 fast，普通为 normal，可选参数，默认 normal。
+ */
+@property (nonatomic,assign)QCloudSMHSearchMode searchMode;
+/**
+ 文件自定义分类信息，字符串数组；
+ */
+@property (nonatomic,strong)NSArray <NSString *> *categories;
+/**
+ 简易文件标签，字符串数组；
+ */
+@property (nonatomic,strong)NSArray <NSString *> *labels;
+
+
+/**
+ 是否返回 inode，即文件目录 ID，可选，默认不返回；
+ */
+@property (nonatomic,assign)BOOL withInode;
+/**
+ 是否返回收藏状态，可选，默认不返回；
+ */
+@property (nonatomic,assign)BOOL withFavoriteStatus;
+
 -(void)setFinishBlock:(void (^_Nullable)(QCloudSMHSearchListInfo * _Nullable result , NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end
 

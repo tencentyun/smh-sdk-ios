@@ -74,6 +74,36 @@
         [self.requestData setValue:self.customHeaders[key] forHTTPHeaderField:key];
     }
 
+    NSMutableDictionary * params = NSMutableDictionary.new;
+    if (self.fullHash) {
+        [params setObject:self.fullHash forKey:@"fullHash"];
+    }
+    
+    if (self.beginningHash) {
+        [params setObject:self.beginningHash forKey:@"beginningHash"];
+    }
+    
+    if (self.fileSize) {
+        [params setObject:self.fileSize forKey:@"size"];
+    }
+    
+    if (self.labels) {
+        [params setObject:self.labels forKey:@"labels"];
+    }
+    if (self.category) {
+        [params setObject:self.category forKey:@"category"];
+    }
+    if (self.localCreationTime) {
+        [params setObject:self.localCreationTime forKey:@"localCreationTime"];
+    }
+    if (self.localModificationTime) {
+        [params setObject:self.localModificationTime forKey:@"localModificationTime"];
+    }
+    
+    if (params.allKeys.count > 0) {
+        self.requestData.directBody = [params qcloud_modelToJSONData];
+    }
+    
     return YES;
 }
 

@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- 查询 inode 文件信息（返回路径）
+ 根据文件ID查询文件信息
  */
 @interface QCloudSMHGetINodeDetailRequest : QCloudSMHBizRequest
 

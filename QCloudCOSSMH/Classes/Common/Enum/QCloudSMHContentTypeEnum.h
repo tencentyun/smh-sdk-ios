@@ -1,5 +1,5 @@
 //
-//  QCloudContentTypeEnum.h
+//  
 //  AOPKit
 //
 //  Created by karisli(李雪) on 2021/7/15.
@@ -21,7 +21,8 @@ typedef NS_ENUM(NSUInteger, QCloudSMHContentInfoType) {
     QCloudSMHContentInfoTypeVideo,
     QCloudSMHContentInfoTypeFile,
     QCloudSMHContentInfoTypeArchive,
-    QCloudSMHContentInfoTypeDir
+    QCloudSMHContentInfoTypeDir,
+    QCloudSMHContentInfoTypeSymlink,
    
    
 };

@@ -54,6 +54,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong)NSString *modificationTimeEnd;
 
 
+/**
+ orderBy：排序字段，可选参数，当前支持按名称、修改时间、文件大小、创建时间排序具体类型如下：
+ name：按名称排序
+ modificationTime：按修改时间排序
+ size：按文件大小排序
+ creationTime：按创建时间排序
+ localCreationTime：按照文件对应的本地创建时间排序
+ localModificationTime：按照文件对应的本地修复时间排序
+ */
 @property (nonatomic,assign)QCloudSMHSortType sortType;
 
 /// 是否为精准搜索，"true"表示精准搜索，"false"表示模糊搜索

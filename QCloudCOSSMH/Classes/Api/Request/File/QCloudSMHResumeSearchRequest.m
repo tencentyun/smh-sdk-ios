@@ -60,6 +60,9 @@
         [self.requestData setQueryStringParamter:self.nextMarker withKey:@"marker"];
     }
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
+    
+    [self.requestData setQueryStringParamter:self.withInode?@"1":@"0" withKey:@"with_inode"];
+    [self.requestData setQueryStringParamter:self.withFavoriteStatus?@"1":@"0" withKey:@"with_favorite_status"];
     return YES;
 }
 

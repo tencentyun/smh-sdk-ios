@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) QCloudSMHContentInfoType type;
 
 @property (nonatomic, strong) NSString* cosUrl;
+@property (nonatomic, strong) NSDictionary* metaData;
 
 /**
  病毒详细名称信息
@@ -72,11 +73,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) QCloudSMHContentInfoType fileType;
 @property (nonatomic,copy) NSArray * paths;
 @property (nonatomic,copy) NSArray * detailPaths;
-
+@property (nonatomic, strong) NSString* cosUrlExpiration;
 /// 删除人昵称；
 @property (nonatomic, strong) NSString* removalPerson;
 @property (nonatomic, strong) NSString *versionId;
-
+@property (nonatomic, strong) NSArray<NSString *> *availableCosUrls;
 /// 当该文件夹是同步盘，或是同步盘的子级文件目录时，返回该字段
 @property (nonatomic, strong) QCloudSMHLocalSync * localSync;
 

@@ -40,7 +40,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 团队空间信息； 和共享群组空间信息、用户空间信息三选一返回
 @property (nonatomic, strong)  QCloudSMHTeamInfo *team;
-
+/**
+ 文件分类，比如image、video、doc等
+ */
+@property (nonatomic, strong)NSString * category;
+/**
+ 简易文件标签，字符串数组
+ */
+@property (nonatomic, strong)NSArray <NSString *> * labels;
+/**
+ 文件对应的本地创建时间
+ */
+@property (nonatomic, strong)NSString * localCreationTime;
+/**
+ 文件对应的本地修改时间
+ */
+@property (nonatomic, strong)NSString * localModificationTime;
 
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass;
 

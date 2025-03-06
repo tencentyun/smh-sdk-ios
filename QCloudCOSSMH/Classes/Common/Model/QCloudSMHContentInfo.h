@@ -159,9 +159,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign)BOOL inRecycledDirectory;
 
+@property (nonatomic, assign)BOOL isFavorite;
+@property (nonatomic, strong)NSString * inode;
 /// 字符串，自定义水印信息，可选参数，仅当企业配置使用自定义水印时才生效；
-@property (nonatomic,strong)NSDictionary * watermarkText;
+@property (nonatomic,strong) NSDictionary * watermarkText;
+@property (nonatomic, strong)NSString * favoriteTime;
 
+/// 是否因为配额超限而被删除文件（仅非目录或相簿返回）；
+@property (nonatomic, assign)BOOL removedByQuota;
 @end
 
 

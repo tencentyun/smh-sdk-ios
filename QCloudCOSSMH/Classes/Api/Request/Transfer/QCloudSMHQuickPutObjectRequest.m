@@ -50,8 +50,8 @@
     
     [self.requestData setParameter:QCloudSMHConflictStrategyByTransferToString(self.conflictStrategy) withKey:@"conflict_resolution_strategy"];
     
-    if (self.size) {
-        [self.requestData setParameter:self.size withKey:@"filesize"];
+    if (self.fileSize) {
+        [self.requestData setParameter:self.fileSize withKey:@"filesize"];
     }
     
     self.requestData.URIComponents = __pathComponents;
@@ -73,8 +73,21 @@
         [params setObject:self.beginningHash forKey:@"beginningHash"];
     }
     
-    if (self.size) {
-        [params setObject:self.size forKey:@"size"];
+    if (self.fileSize) {
+        [params setObject:self.fileSize forKey:@"size"];
+    }
+    
+    if (self.labels) {
+        [params setObject:self.labels forKey:@"labels"];
+    }
+    if (self.category) {
+        [params setObject:self.category forKey:@"category"];
+    }
+    if (self.localCreationTime) {
+        [params setObject:self.localCreationTime forKey:@"localCreationTime"];
+    }
+    if (self.localModificationTime) {
+        [params setObject:self.localModificationTime forKey:@"localModificationTime"];
     }
     
     if (params.allKeys.count > 0) {

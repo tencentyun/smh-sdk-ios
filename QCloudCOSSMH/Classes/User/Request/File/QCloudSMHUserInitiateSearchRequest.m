@@ -102,7 +102,6 @@
     }
     
     [bodyDic setObject:QCloudSMHSearchByTypeByTransferToString(self.searchBy) forKey:@"searchBy"];
-    
     [bodyDic setObject:@(self.accurate) forKey:@"accurate"];
     
     
@@ -114,6 +113,7 @@
             [bodyDic setObject:@"desc" forKey:@"orderByType"];
         }
     }
+    
     
     self.requestData.directBody = [bodyDic qcloud_modelToJSONData];
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];

@@ -55,13 +55,15 @@
     self.requestData.serverURL = serverHost.absoluteString;
     self.requestData.URIMethod = @"info";
     
-    if (QCloudSMHPurposeTypeTransferToString(self.purpose).length > 0) {
-        [self.requestData setQueryStringParamter:QCloudSMHPurposeTypeTransferToString(self.purpose) withKey:@"purpose"];
-    }
 
     if (self.historyId > 0) {
         [self.requestData setQueryStringParamter:@(self.historyId).stringValue withKey:@"history_id"];
     }
+    if (self.trafficLimit > 0) {
+        [self.requestData setQueryStringParamter:@(self.trafficLimit).stringValue withKey:@"traffic_limit"];
+    }
+    
+    [self.requestData setQueryStringParamter:@(self.preCheck).stringValue withKey:@"pre_check"];
     
     [self.requestData setQueryStringParamter:QCloudSMHPurposeTypeTransferToString(self.purpose) withKey:@"purpose"];
     
@@ -73,6 +75,10 @@
     //这里不能设置host，因为请求是重定向到 cos的，这样会导致重定向后的request的host有问题，导致400
 //    [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     return YES;
+}
+
+- (void)setFinishBlock:(void (^_Nullable)(QCloudSMHDownloadInfoModel *_Nullable result, NSError *_Nullable error))QCloudRequestFinishBlock {
+    [super setFinishBlock:QCloudRequestFinishBlock];
 }
 
 @end

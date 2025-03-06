@@ -89,7 +89,13 @@
     if (self.creators) {
         [bodyDic setObject:self.creators forKey:@"creators"];
     }
-    
+    if (self.categories.count > 0) {
+        [bodyDic setObject:self.categories forKey:@"categories"];
+    }
+    if (self.labels.count > 0) {
+        [bodyDic setObject:self.labels forKey:@"labels"];
+    }
+    [bodyDic setObject:QCloudSMHSearchModeTransferToString(self.searchMode) forKey:@"searchMode"];
     if (self.sortType > QCloudSMHSortTypeNone) {
         [bodyDic setObject:QCloudSMHOrderByTransferToString(self.sortType%100) forKey:@"orderBy"];
         if(self.sortType<100){
@@ -98,7 +104,8 @@
             [bodyDic setObject:@"desc" forKey:@"orderByType"];
         }
     }
-    
+    [self.requestData setQueryStringParamter:self.withInode?@"1":@"0" withKey:@"with_inode"];
+    [self.requestData setQueryStringParamter:self.withFavoriteStatus?@"1":@"0" withKey:@"with_favorite_status"];
     self.requestData.directBody = [bodyDic qcloud_modelToJSONData];
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     return YES;

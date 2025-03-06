@@ -45,7 +45,9 @@
         URLString=  [URLString stringByAppendingFormat:@"&frame_number=%ld", self.frameNumber];
     }
     
-    URLString =[URLString stringByAppendingFormat:@"&user_id=%@", self.userId];
+    if (self.userId) {
+        URLString =[URLString stringByAppendingFormat:@"&user_id=%@", self.userId];
+    }
     
     if (self.historyId > 0) {
         URLString =[URLString stringByAppendingFormat:@"&history_id=%ld", self.historyId];

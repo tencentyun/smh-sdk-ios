@@ -37,8 +37,8 @@
                 qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
                              message:[NSString stringWithFormat:
                                                    @"InvalidArgument:paramter[iNode] is invalid (nil), it must have some value. please check it"]];
-            return NO;
         }
+        return NO;
     }
     
     NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"api/v1/inode"]];

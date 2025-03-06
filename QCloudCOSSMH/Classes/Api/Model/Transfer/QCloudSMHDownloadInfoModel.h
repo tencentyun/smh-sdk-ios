@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 #import "QCloudSMHContentTypeEnum.h"
-@class QCloudSMHMetaData;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHDownloadInfoModel : NSObject
@@ -49,11 +48,20 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL previewAsIcon;
 
 /// 元数据，如果没有元数据则不存在该字段；
-@property (strong, nonatomic) QCloudSMHMetaData * metaData;
+@property (strong, nonatomic) NSDictionary * metaData;
 
-@end
+/**
+ 字符串数组，简易文件标签列表，跟tagList不同，它是通过上传、修改文件时指定的；;
+ */
+@property (nonatomic, strong) NSArray<NSString *> *labels;
+/**
+ 文件对应的本地创建时间（仅非目录或相簿返回）；
+ */
+@property (nonatomic, strong) NSString *localCreationTime;
+/**
+ 文件对应的本地修改时间（仅非目录或相簿返回）
+ */
+@property (nonatomic, strong) NSString *localModificationTime;
 
-@interface QCloudSMHMetaData : NSObject
-@property (strong, nonatomic) NSString * xSmhMetaFoo;
 @end
 NS_ASSUME_NONNULL_END
