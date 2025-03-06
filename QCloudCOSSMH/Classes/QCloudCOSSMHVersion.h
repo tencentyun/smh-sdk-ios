@@ -9,7 +9,7 @@
 
 #ifndef QCloudCOSSMHVersion_h
 #define QCloudCOSSMHVersion_h
-#define QCloudCOSSMHModuleVersionNumber 100002
+#define QCloudCOSSMHModuleVersionNumber 100003
 
 // dependency
 
