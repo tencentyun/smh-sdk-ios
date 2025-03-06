@@ -27,7 +27,7 @@
     NSArray *responseSerializers = @[
         QCloudAcceptRespnseCodeBlock([NSSet setWithObjects:@(200), @(201), @(202), @(203), @(204), @(205), @(206), @(207), @(208), @(226), nil], nil),
         QCloudResponseJSONSerilizerBlock,
-//        QCloudResponseObjectSerilizerBlock([QCloudSMHSpaceUsageInfo class])
+        QCloudResponseObjectSerilizerBlock([QCloudSMHSpaceUsageInfo class])
     ];
     [requestSerializer setSerializerBlocks:customRequestSerilizers];
     [responseSerializer setSerializerBlocks:responseSerializers];
