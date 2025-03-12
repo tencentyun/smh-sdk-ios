@@ -165,8 +165,9 @@ typedef NS_ENUM(NSUInteger, QCloudSMHApplyAuditStatusCause) {
     QCloudSMHApplyAuditCauseUserDeleteFromGroup,  //5 用户被移除群组
 };
 typedef NS_ENUM(NSUInteger, QCloudSMHDirectoryFilter) {
-    QCloudSMHDirectoryOnlyDir = 0,  //0 只返回文件夹
-    QCloudSMHDirectoryOnlyFile = 1,  //1 只返回文件
+    QCloudSMHDirectoryAll = 0, //0 全部
+    QCloudSMHDirectoryOnlyDir = 1,  //1 只返回文件夹
+    QCloudSMHDirectoryOnlyFile = 2,  //2 只返回文件
 };
 NSString *  QCloudSMHDirectoryFilterTransferToString( QCloudSMHDirectoryFilter filter);
 

@@ -54,7 +54,10 @@
             [self.requestData setQueryStringParamter:@"desc" withKey:@"order_by_type"];
         }
     }
-    [self.requestData setQueryStringParamter:QCloudSMHDirectoryFilterTransferToString(self.directoryFilter) withKey:@"filter"];
+    
+    if (self.directoryFilter != QCloudSMHDirectoryAll) {
+        [self.requestData setQueryStringParamter:QCloudSMHDirectoryFilterTransferToString(self.directoryFilter) withKey:@"filter"];
+    }
     [self.requestData setQueryStringParamter:self.withPath?@"true":@"false" withKey:@"with_path"];
     if (self.category) {
         [self.requestData setQueryStringParamter:self.category withKey:@"category"];

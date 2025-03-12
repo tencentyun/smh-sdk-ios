@@ -81,7 +81,10 @@
         }
     }
    
-    [self.requestData setQueryStringParamter:QCloudSMHDirectoryFilterTransferToString(self.directoryFilter) withKey:@"filter"];
+    if (self.directoryFilter != QCloudSMHDirectoryAll) {
+        [self.requestData setQueryStringParamter:QCloudSMHDirectoryFilterTransferToString(self.directoryFilter) withKey:@"filter"];
+    }
+    
     [self.requestData setQueryStringParamter:self.withInode?@"1":@"0" withKey:@"with_inode"];
     [self.requestData setQueryStringParamter:self.withFavoriteStatus?@"1":@"0" withKey:@"with_favorite_status"];
     
