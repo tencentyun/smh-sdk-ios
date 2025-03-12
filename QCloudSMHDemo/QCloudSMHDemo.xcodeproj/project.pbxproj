@@ -19,6 +19,9 @@
 		D2534742282BB65400B48D2A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D2534741282BB65400B48D2A /* main.m */; };
 		D2534756282BB65400B48D2A /* QCloudSMHDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = D2534755282BB65400B48D2A /* QCloudSMHDemoUITests.m */; };
 		D2534758282BB65400B48D2A /* QCloudSMHDemoUITestsLaunchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D2534757282BB65400B48D2A /* QCloudSMHDemoUITestsLaunchTests.m */; };
+		D2F2E6FB2D7985780093F72D /* QCloudSMHDemo00UserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F2E6F72D7985780093F72D /* QCloudSMHDemo00UserTests.m */; };
+		D2F2E6FC2D7985780093F72D /* QCloudSMHDemo01FileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F2E6F82D7985780093F72D /* QCloudSMHDemo01FileTests.m */; };
+		D2F2E6FD2D7985780093F72D /* QCloudSMHTestTools.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F2E6FA2D7985780093F72D /* QCloudSMHTestTools.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +66,10 @@
 		D2534751282BB65400B48D2A /* QCloudSMHDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QCloudSMHDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2534755282BB65400B48D2A /* QCloudSMHDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QCloudSMHDemoUITests.m; sourceTree = "<group>"; };
 		D2534757282BB65400B48D2A /* QCloudSMHDemoUITestsLaunchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QCloudSMHDemoUITestsLaunchTests.m; sourceTree = "<group>"; };
+		D2F2E6F72D7985780093F72D /* QCloudSMHDemo00UserTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QCloudSMHDemo00UserTests.m; sourceTree = "<group>"; };
+		D2F2E6F82D7985780093F72D /* QCloudSMHDemo01FileTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QCloudSMHDemo01FileTests.m; sourceTree = "<group>"; };
+		D2F2E6F92D7985780093F72D /* QCloudSMHTestTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QCloudSMHTestTools.h; sourceTree = "<group>"; };
+		D2F2E6FA2D7985780093F72D /* QCloudSMHTestTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QCloudSMHTestTools.m; sourceTree = "<group>"; };
 		FB66BDA84462E8E17877ABF5 /* Pods-QCloudSMHDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QCloudSMHDemoTests.release.xcconfig"; path = "Target Support Files/Pods-QCloudSMHDemoTests/Pods-QCloudSMHDemoTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -147,6 +154,10 @@
 		D253474A282BB65400B48D2A /* QCloudSMHDemoTests */ = {
 			isa = PBXGroup;
 			children = (
+				D2F2E6F72D7985780093F72D /* QCloudSMHDemo00UserTests.m */,
+				D2F2E6F82D7985780093F72D /* QCloudSMHDemo01FileTests.m */,
+				D2F2E6F92D7985780093F72D /* QCloudSMHTestTools.h */,
+				D2F2E6FA2D7985780093F72D /* QCloudSMHTestTools.m */,
 			);
 			path = QCloudSMHDemoTests;
 			sourceTree = "<group>";
@@ -386,6 +397,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2F2E6FB2D7985780093F72D /* QCloudSMHDemo00UserTests.m in Sources */,
+				D2F2E6FC2D7985780093F72D /* QCloudSMHDemo01FileTests.m in Sources */,
+				D2F2E6FD2D7985780093F72D /* QCloudSMHTestTools.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
