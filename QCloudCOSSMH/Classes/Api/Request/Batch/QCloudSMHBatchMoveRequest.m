@@ -51,7 +51,7 @@
         NSMutableDictionary * mdic = [info qcloud_modelToJSONObject];
         [mdic setObject:QCloudSMHConflictStrategyByTransferToString(info.conflictStrategy) forKey:@"conflictResolutionStrategy"];
         [mdic removeObjectForKey:@"conflictStrategy"];
-        [mdic setObject:info.moveAuthority ?@"true" : @"false" forKey:@"moveAuthority"];
+        [mdic setObject:@(info.moveAuthority) forKey:@"moveAuthority"];
         [array addObject:mdic];
     }
     NSData * data = [array qcloud_modelToJSONData];
