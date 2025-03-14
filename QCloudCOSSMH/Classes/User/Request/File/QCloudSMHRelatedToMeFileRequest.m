@@ -8,8 +8,7 @@
 #import "QCloudSMHRelatedToMeFileRequest.h"
 
 @implementation QCloudSMHRelatedToMeFileRequest
-- (void)dealloc {
-}
+
 - (instancetype)init {
     self = [super init];
     if (!self) {

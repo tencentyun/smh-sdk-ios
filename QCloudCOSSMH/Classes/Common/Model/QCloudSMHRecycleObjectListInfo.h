@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSArray* originalPath;
 
 /// 数字，回收站id；
-@property (nonatomic, strong) NSString* recycledItemId;
+@property (nonatomic,assign) NSInteger recycledItemId;
 
 /// 数字，剩余天数，不足一天的部分不计入；
 @property (nonatomic, strong) NSString* remainingTime;

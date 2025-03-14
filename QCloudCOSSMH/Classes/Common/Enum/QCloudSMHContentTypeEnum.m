@@ -73,6 +73,9 @@ NSString * QCloudSMHContentInfoTypeTransferToString(QCloudSMHContentInfoType typ
         case QCloudSMHContentInfoTypeSymlink:{
             return @"symlink";
         }
+        case QCloudSMHContentInfoTypeAudio:{
+            return @"audio";
+        }
         default:
             return @"other";
     }

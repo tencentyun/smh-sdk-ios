@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHDeleteResult : NSObject
-@property (nonatomic)NSString *recycledItemId;
+@property (nonatomic,assign) NSInteger recycledItemId;
 @end
 
 NS_ASSUME_NONNULL_END

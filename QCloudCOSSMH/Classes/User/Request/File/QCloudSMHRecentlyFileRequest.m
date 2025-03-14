@@ -8,8 +8,7 @@
 #import "QCloudSMHRecentlyFileRequest.h"
 
 @implementation QCloudSMHRecentlyFileRequest
-- (void)dealloc {
-}
+
 - (instancetype)init {
     self = [super init];
     if (!self) {

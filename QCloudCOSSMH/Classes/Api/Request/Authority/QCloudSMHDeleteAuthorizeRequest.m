@@ -8,16 +8,8 @@
 #import "QCloudSMHDeleteAuthorizeRequest.h"
 
 @implementation QCloudSMHDeleteAuthorizeRequest
-- (void)dealloc {
-    
-}
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    return self;
-}
+
+
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseURIMethodASURLParamters
@@ -58,9 +50,9 @@
     NSMutableArray * temps = [NSMutableArray new];
     for (QCloudSMHSelectRoleInfo * selectInfo in self.selectRoles) {
         if (selectInfo.type == QCloudSMHRoleMember) {
-            [temps addObject:@{@"userId":selectInfo.targetId ?: @"",@"roleId":@(selectInfo.roleId.integerValue) ?: @1 ,@"name":selectInfo.name}];
+            [temps addObject:@{@"userId":selectInfo.targetId ?: @"",@"roleId":@(selectInfo.roleId) ?: @1 ,@"name":selectInfo.name}];
         }else{
-            [temps addObject:@{@"spaceId":selectInfo.targetId ?: @"",@"roleId":@(selectInfo.roleId.integerValue) ?: @1 ,@"name":selectInfo.name}];
+            [temps addObject:@{@"spaceId":selectInfo.targetId ?: @"",@"roleId":@(selectInfo.roleId) ?: @1 ,@"name":selectInfo.name}];
         }
     }
     

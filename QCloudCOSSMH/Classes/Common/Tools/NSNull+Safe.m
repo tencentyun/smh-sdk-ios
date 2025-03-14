@@ -48,9 +48,8 @@
 - (BOOL)hasPrefix:(NSString *)str{
     return NO;
 }
+
 - (BOOL)hasSuffix:(NSString *)str{
     return NO;
 }
-
-
 @end

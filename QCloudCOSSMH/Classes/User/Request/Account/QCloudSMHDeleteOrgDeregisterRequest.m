@@ -8,16 +8,8 @@
 #import "QCloudSMHDeleteOrgDeregisterRequest.h"
 
 @implementation QCloudSMHDeleteOrgDeregisterRequest
-- (void)dealloc {
-    
-}
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    return self;
-}
+
+
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseSimple,

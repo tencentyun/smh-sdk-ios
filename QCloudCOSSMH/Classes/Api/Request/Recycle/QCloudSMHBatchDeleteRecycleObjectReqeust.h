@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QCloudSMHBatchDeleteRecycleObjectReqeust : QCloudSMHBizRequest
 
 /// 回收站项目 ID，必选参数；
-@property (nonatomic,copy)NSArray * recycledItemIds;
+@property (nonatomic,copy)NSArray<NSNumber *> * recycledItemIds;
 
 @end
 

@@ -11,5 +11,6 @@ typedef NS_ENUM(NSUInteger, QCloudSMHFavoriteType) {
     QCloudSMHFavoriteTypeFile = 1,
     QCloudSMHFavoriteTypeDirectory,
 };
-QCloudSMHFavoriteType  QCloudSMHFavoriteTypeDumpFromString(NSString *key);
-NSString *  QCloudSMHFavoriteTypeTransferToString( QCloudSMHFavoriteType type);
+
+QCloudSMHFavoriteType QCloudSMHFavoriteTypeDumpFromString(NSString *key);
+NSString *  QCloudSMHFavoriteTypeTransferToString(QCloudSMHFavoriteType type);

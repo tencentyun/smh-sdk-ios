@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong)NSString *name;
 
 /// 退出授权的角色 ID，操作者 or 上传者等，必选参数；
-@property (nonatomic,strong)NSString *roleId;
+@property (nonatomic,assign)NSInteger roleId;
 @end
 
 NS_ASSUME_NONNULL_END

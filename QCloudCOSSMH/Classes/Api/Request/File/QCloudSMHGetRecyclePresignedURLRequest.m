@@ -19,7 +19,7 @@
     
     NSString *uriMethod = @"preview";
     
-    URLString = [URLString stringByAppendingFormat:@"%@/%@/%@/%@?%@",api,self.libraryId,self.spaceId,self.recycledItemId,uriMethod];
+    URLString = [URLString stringByAppendingFormat:@"%@/%@/%@/%ld?%@",api,self.libraryId,self.spaceId,self.recycledItemId,uriMethod];
     
     if(self.size){
         URLString=  [URLString stringByAppendingFormat:@"&size=%ld", self.size];

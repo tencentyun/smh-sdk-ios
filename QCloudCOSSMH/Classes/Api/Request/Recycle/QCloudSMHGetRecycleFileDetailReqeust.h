@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QCloudSMHGetRecycleFileDetailReqeust : QCloudSMHBizRequest
 
 ///  回收站 ID，必选参数；
-@property (nonatomic,copy)NSString *recycledItemId;
+@property (nonatomic,assign) NSInteger recycledItemId;
 
 -(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHRecycleObjectItemInfo * _Nullable result , NSError * _Nullable error))QCloudRequestFinishBlock;
 @end

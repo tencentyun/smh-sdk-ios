@@ -6,7 +6,7 @@
 //
 
 #import "QCloudSMHService.h"
-#import "QCloudSMHGetAccessTokenRequest.h"
+#import "QCloudSMHSpaceInfo.h"
 #import <QCloudCore/QCloudConfiguration_Private.h>
 #import "QCloudSMHListContentsRequest.h"
 #import "QCloudSMHBaseRequest.h"
@@ -71,7 +71,7 @@
 #import "QCloudSMHFavoriteSpaceFileRequest.h"
 #import "QCloudSMHDeleteFavoriteSpaceFileRequest.h"
 #import "QCloudGetSpaceUsageRequest.h"
-
+#import "QCloudSMHPutObjectLinkRequest.h"
 @interface QCloudSMHService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
 @property (nonatomic, strong, readonly) QCloudOperationQueue *uploadFileQueue;
@@ -536,6 +536,8 @@ static QCloudSMHService *_service;
     [self performRequest:request];
 }
 
-
+-(void)putObjectLink:(QCloudSMHPutObjectLinkRequest *)request{
+    [self performRequest:request];
+}
 
 @end

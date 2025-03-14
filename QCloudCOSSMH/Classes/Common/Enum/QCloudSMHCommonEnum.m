@@ -256,7 +256,7 @@ NSString *  QCloudSMHDirectoryFilterTransferToString( QCloudSMHDirectoryFilter f
             return @"onlyFile";
             break;
         default:
-            return @"onlyDir";
+            return @"";
             break;
     }
 }

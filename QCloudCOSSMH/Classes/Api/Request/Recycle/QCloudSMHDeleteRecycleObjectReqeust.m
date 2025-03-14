@@ -8,16 +8,8 @@
 #import "QCloudSMHDeleteRecycleObjectReqeust.h"
 @implementation QCloudSMHDeleteRecycleObjectReqeust
 
-- (void)dealloc {
-    
-}
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    return self;
-}
+
+
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseSimple,
@@ -37,7 +29,7 @@
         return NO;
     }
     
-    if (!self.recycledItemId || ([self.recycledItemId isKindOfClass:NSString.class] && ((NSString *)self.recycledItemId).length == 0)) {
+    if (!self.recycledItemId) {
         if (error != NULL) {
             *error = [NSError
                 qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
@@ -50,7 +42,7 @@
     NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"api/v1/recycled"]];
     self.requestData.serverURL = serverHost.absoluteString;
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
-    [__pathComponents addObject:self.recycledItemId];
+    [__pathComponents addObject:@(self.recycledItemId).stringValue];
     self.requestData.URIComponents = __pathComponents;
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     return YES;

@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface QCloudSMHGetFileCountRequest : QCloudSMHBizRequest
 
+- (void)setFinishBlock:(void (^)(QCloudSMHFileCountInfo * _Nullable result, NSError * _Nullable error))QCloudRequestFinishBlock;
 @end
 
 NS_ASSUME_NONNULL_END

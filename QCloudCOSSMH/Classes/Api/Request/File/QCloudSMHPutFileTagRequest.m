@@ -15,7 +15,8 @@
 
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
-        QCloudURLFuseSimple,
+        QCloudURLFuseURIMethodASURLParamters,
+        QCloudURLFuseWithURLEncodeParamters
     ];
 
     NSArray *responseSerializers = @[
@@ -51,13 +52,13 @@
     NSMutableArray * tags = [NSMutableArray new];
     
     if(self.tags.count > 0){
-        [tags enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.tags enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [tags addObject:@{@"tagName":obj}];
         }];
     }
     
     if(self.kvTags.count > 0){
-        [tags enumerateObjectsUsingBlock:^(QCloudSMHTagModel *  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.kvTags enumerateObjectsUsingBlock:^(QCloudSMHTagModel *  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [tags addObject:obj.qcloud_modelToJSONObject];
         }];
     }

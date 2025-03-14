@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign)QCloudSMHConflictStrategyEnum conflictStrategy;
 
 /// 回收站项目 ID，必选参数；
-@property (nonatomic,strong)NSString * recycledItemId;
+@property (nonatomic,assign) NSInteger recycledItemId;
 
 - (void)setFinishBlock:(void (^ _Nullable)(NSDictionary * _Nullable result , NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end

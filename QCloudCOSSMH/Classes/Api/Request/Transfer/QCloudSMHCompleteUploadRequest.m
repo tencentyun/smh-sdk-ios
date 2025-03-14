@@ -9,9 +9,7 @@
 
 
 @implementation QCloudSMHCompleteUploadRequest
-- (void)dealloc {
-    
-}
+
 - (instancetype)init {
     self = [super init];
     if (!self) {

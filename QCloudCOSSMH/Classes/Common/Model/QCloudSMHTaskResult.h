@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  删除相关
  */
 //回收站的id
-@property (nonatomic,strong) NSString *recycledItemId;
+@property (nonatomic,assign) NSInteger recycledItemId;
 /**
  错误信息
  */

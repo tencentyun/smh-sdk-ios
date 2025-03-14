@@ -8,16 +8,8 @@
 #import "QCloudSMHSpaceAuthorizeRequest.h"
 
 @implementation QCloudSMHSpaceAuthorizeRequest
-- (void)dealloc {
-    
-}
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    return self;
-}
+
+
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseURIMethodASURLParamters
@@ -55,7 +47,7 @@
     }
     
     if(self.roleId){
-        [params setObject:self.roleId forKey:@"roleId"];
+        [params setObject:@(self.roleId) forKey:@"roleId"];
     }
 
     NSData * data = [@{@"authorizeTo":params} qcloud_modelToJSONData];

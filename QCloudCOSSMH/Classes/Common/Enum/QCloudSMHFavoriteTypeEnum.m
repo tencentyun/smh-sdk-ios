@@ -7,7 +7,7 @@
 
 #import "QCloudSMHFavoriteTypeEnum.h"
 
-QCloudSMHFavoriteType  QCloudSMHFavoriteTypeDumpFromString(NSString *key){
+QCloudSMHFavoriteType QCloudSMHFavoriteTypeDumpFromString(NSString *key){
     if ([key isEqualToString:@"file"]) {
         return QCloudSMHFavoriteTypeFile;
     }else if ([key isEqualToString:@"dir"]){
@@ -15,6 +15,7 @@ QCloudSMHFavoriteType  QCloudSMHFavoriteTypeDumpFromString(NSString *key){
     }
     return QCloudSMHFavoriteTypeFile;
 }
+
 NSString *  QCloudSMHFavoriteTypeTransferToString( QCloudSMHFavoriteType type){
 switch (type) {
         case QCloudSMHFavoriteTypeFile:

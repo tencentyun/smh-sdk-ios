@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  历史版本 ID
  */
-@property (nonatomic)NSArray <NSString *>*historyIds;
+@property (nonatomic)NSArray *historyIds;
 @end
 
 NS_ASSUME_NONNULL_END

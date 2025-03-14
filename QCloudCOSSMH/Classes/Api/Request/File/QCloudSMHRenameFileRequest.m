@@ -8,16 +8,8 @@
 #import "QCloudSMHRenameFileRequest.h"
 
 @implementation QCloudSMHRenameFileRequest
-- (void)dealloc {
-    
-}
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    return self;
-}
+
+
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseSimple,
@@ -52,6 +44,11 @@
     self.requestData.URIComponents = __pathComponents;
     [self.requestData setParameter:QCloudSMHConflictStrategyByTransferToString(self.conflictStrategy) withKey:@"conflict_resolution_strategy"];
     [self.requestData setQueryStringParamter:self.moveAuthority?@"true":@"false" withKey:@"move_authority"];
+    
+    if (self.from.length > 1 && [[self.from substringToIndex:1] isEqualToString:@"/"]) {
+        self.from = [self.from substringFromIndex:1];
+    }
+    
     NSDictionary * dic = @{@"from":self.from?:@""};
     NSData * data = [dic qcloud_modelToJSONData];
     self.requestData.directBody = data;

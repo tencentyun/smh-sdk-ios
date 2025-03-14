@@ -8,9 +8,7 @@
 #import "QCloudSMHGetTeamAllMemberDetailRequest.h"
 
 @implementation QCloudSMHGetTeamAllMemberDetailRequest
-- (void)dealloc {
-    
-}
+
 - (instancetype)init {
     self = [super init];
     if (!self) {

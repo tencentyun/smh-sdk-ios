@@ -169,8 +169,6 @@
 #import "QCloudTagModel.h"
 #import "QCloudSMHAccessTokenFenceQueue.h"
 #import "QCloudSMHAccessTokenProvider.h"
-#import "QCloudSMHGetAccessTokenRequest.h"
-#import "QCloudSMHGetSpaceAccessTokenRequest.h"
 #import "NSData+SHA256.h"
 #import "NSNull+Safe.h"
 #import "NSObject+Equal.h"
@@ -184,4 +182,6 @@
 #import "QCloudSMHAbortSearchTeamRequest.h"
 #import "QCloudSMHBeginSearchTeamRequest.h"
 #import "QCloudSMHGetTemporaryUserRequest.h"
+#import "QCloudSMHGetAccessTokenRequest.h"
+#import "QCloudSMHGetSpaceAccessTokenRequest.h"
 #endif /* QCloudCOSSMHUser_h */

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,assign)BOOL isOwner;
 @property (nonatomic,assign)BOOL isDefault;
-@property (nonatomic,strong)NSString * roleId;
+@property (nonatomic,assign)NSInteger roleId;
 @property (nonatomic,strong)NSString * libraryId;
 @property (nonatomic,strong)NSString * name;
 @property (nonatomic,strong)NSString * roleDesc;

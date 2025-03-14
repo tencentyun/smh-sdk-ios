@@ -22,12 +22,12 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong)NSString *targetId;
 
 /// 角色id
-@property (nonatomic, strong)NSString *roleId;
+@property (nonatomic, assign)NSInteger roleId;
 
 /// 角色名称
 @property (nonatomic, strong)NSString *name;
 
--(id)initWithType:(QCloudSMHRoleType)type targetId:(NSString *)targetId roleId:(NSString *)roleId name:(NSString *)name;
+-(id)initWithType:(QCloudSMHRoleType)type targetId:(NSString *)targetId roleId:(NSInteger)roleId name:(NSString *)name;
 
 @end
 

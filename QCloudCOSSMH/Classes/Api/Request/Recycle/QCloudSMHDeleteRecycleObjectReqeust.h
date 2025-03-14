@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QCloudSMHDeleteRecycleObjectReqeust : QCloudSMHBizRequest
 
 /// 回收站项目 ID，必选参数；
-@property (nonatomic,strong)NSString * recycledItemId;
+@property (nonatomic,assign) NSInteger recycledItemId;
 
 @end
 

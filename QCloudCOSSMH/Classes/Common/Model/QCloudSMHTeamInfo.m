@@ -7,7 +7,7 @@
 
 #import "QCloudSMHTeamInfo.h"
 
-@implementation QCloudSMHTeamInfo
+@implementation QCloudSMHTeamInfo 
 
 + (nullable NSDictionary<NSString *, id> *)modelCustomPropertyMapper{
     return @{@"teamId" : @"id",@"paths":@"path"};
@@ -33,14 +33,14 @@
 
 
 
-@implementation QCloudSMHTeamInfoPathNode
+@implementation QCloudSMHTeamInfoPathNode 
 + (nullable NSDictionary<NSString *, id> *)modelCustomPropertyMapper{
     return @{@"teamId" : @"id"};
 
 }
 @end
 
-@implementation QCloudSMHSearchTeamInfo
+@implementation QCloudSMHSearchTeamInfo 
 + (nullable NSDictionary<NSString *, id> *)modelContainerPropertyGenericClass{
     return @{@"contents" : QCloudSMHTeamInfo.class};
 }

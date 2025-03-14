@@ -10,13 +10,7 @@
 
 @implementation QCloudSMHGetFileCountRequest
 
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    return self;
-}
+
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseURIMethodASURLParamters,
@@ -47,6 +41,11 @@
     self.requestData.URIComponents = __pathComponents;
     [__pathComponents addObject:@"file-count"];
     return YES;
+}
+
+- (void)setFinishBlock:(void (^)(QCloudSMHFileCountInfo * _Nullable result, NSError * _Nullable error))QCloudRequestFinishBlock{
+    
+    [super setFinishBlock:QCloudRequestFinishBlock];
 }
 
 @end

@@ -44,7 +44,6 @@
 @class QCloudSMHBatchRestoreRecycleObjectReqeust;
 @class QCloudSMHBatchDeleteSpaceRecycleObjectReqeust;
 @class QCloudSMHBatchRestoreSpaceRecycleObjectReqeust;
-@class QCloudSMHListHistoryVersionRequest;
 @class QCloudSMHDeleteHistoryVersionRequest;
 
 @class QCloudSMHCompleteUploadAvatarRequest;
@@ -114,6 +113,7 @@
 @class QCloudSMHFavoriteSpaceFileRequest;
 @class QCloudSMHDeleteFavoriteSpaceFileRequest;
 @class QCloudGetSpaceUsageRequest;
+@class QCloudSMHPutObjectLinkRequest;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHService : NSObject
@@ -498,6 +498,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)getSpaceUsage:(QCloudGetSpaceUsageRequest *)request;
 
+-(void)putObjectLink:(QCloudSMHPutObjectLinkRequest *)request;
 @end
 
 NS_ASSUME_NONNULL_END

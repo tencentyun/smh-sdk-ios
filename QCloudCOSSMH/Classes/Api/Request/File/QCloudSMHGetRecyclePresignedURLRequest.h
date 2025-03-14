@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  回收站 ID，必选参数；
  */
-@property (nonatomic,strong)NSString *recycledItemId;
+@property (nonatomic,assign) NSInteger recycledItemId;
 
 /**
  缩放大小

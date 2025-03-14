@@ -54,7 +54,6 @@
             [self.requestData setQueryStringParamter:@"desc" withKey:@"order_by_type"];
         }
     }
-    
     if (self.directoryFilter != QCloudSMHDirectoryAll) {
         [self.requestData setQueryStringParamter:QCloudSMHDirectoryFilterTransferToString(self.directoryFilter) withKey:@"filter"];
     }

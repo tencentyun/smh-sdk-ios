@@ -1,23 +1,15 @@
 //
-//  QCloudSMHGetAccessTokenRequest.m
+//  QCloudSMHGetSpaceAccessTokenRequest.m
 //  QCloudCOSSMH
 //
-//  Created by karisli(李雪) on 2021/7/14.
+//  Created by karisli(李雪) on 2021/8/21.
 //
 
-#import "QCloudSMHGetAccessTokenRequest.h"
+#import "QCloudSMHGetSpaceAccessTokenRequest.h"
+#import "QCloudSMHSpaceInfo.h"
+@implementation QCloudSMHGetSpaceAccessTokenRequest
 
-@implementation QCloudSMHGetAccessTokenRequest
-- (void)dealloc {
-    
-}
-- (instancetype)init {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    return self;
-}
+
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[
         QCloudURLFuseSimple,
@@ -57,6 +49,16 @@
             return NO;
         }
     }
+    if (!self.spaceId || ([self.spaceId isKindOfClass:NSString.class] && ((NSString *)self.spaceId).length == 0)) {
+        if (error != NULL) {
+            *error = [NSError
+                qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid
+                             message:[NSString stringWithFormat:
+                                                   @"InvalidArgument:paramter[spaceId] is invalid (nil), it must have some value. please check it"]];
+            return NO;
+        }
+    }
+    
     NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"user/v1/space"]];
     self.requestData.serverURL = serverHost.absoluteString;
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
@@ -64,10 +66,14 @@
     self.requestData.serverURL = serverHost.absoluteString;
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
     [__pathComponents addObject:self.organizationId];
-    [__pathComponents addObject:@"personal"];
+    [__pathComponents addObject:@"token"];
+    [__pathComponents addObject:self.spaceId];
     self.requestData.URIComponents = __pathComponents;
     [self.requestData setParameter:self.userToken withKey:@"user_token"];
     
+    if (self.spaceOrgId) {
+        self.requestData.directBody = [@{@"spaceOrgId":@(self.spaceOrgId.integerValue)} qcloud_modelToJSONData];
+    }
     return YES;
 }
 

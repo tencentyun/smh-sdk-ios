@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong)NSString *name;
 
 ///  授权的角色：操作者 or 上传者等
-@property (nonatomic,strong)NSString *roleId;
+@property (nonatomic,assign)NSInteger roleId;
  
 @end
 

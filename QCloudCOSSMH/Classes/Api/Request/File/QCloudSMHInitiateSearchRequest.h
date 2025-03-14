@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong)NSString *scope;
 
 /**
- 搜索类型，字符串或字符串数组 QCloudSMHSearchType
+ 搜索类型，字符串或字符串数组，具体请查看 QCloudSMHSearchType 枚举
  */
 @property (nonatomic,strong)NSArray<NSNumber *> *searchTypes;
 
