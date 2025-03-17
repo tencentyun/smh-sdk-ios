@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,assign)int permanent;
 
+-(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHDeleteResult * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -19,6 +19,8 @@
 
     NSArray *responseSerializers = @[
         QCloudAcceptRespnseCodeBlock([NSSet setWithObjects:@(200), @(201), @(202), @(203), @(204), @(205), @(206), @(207), @(208), @(226), nil], nil),
+        QCloudResponseJSONSerilizerBlock,
+        QCloudResponseObjectSerilizerBlock([QCloudSMHDeleteResult class])
     ];
     [requestSerializer setSerializerBlocks:customRequestSerilizers];
     [responseSerializer setSerializerBlocks:responseSerializers];
@@ -40,6 +42,11 @@
     [self.requestData setQueryStringParamter:@(self.permanent).stringValue withKey:@"permanent"];
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     return YES;
+}
+
+
+-(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHDeleteResult * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock{
+    [super setFinishBlock:QCloudRequestFinishBlock];
 }
 
 @end
