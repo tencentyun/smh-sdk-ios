@@ -47,6 +47,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong)NSString *modificationTimeStart;
 @property (nonatomic,strong)NSString *modificationTimeEnd;
 
+/// name：按名称排序。
+/// modificationTime：按修改时间排序。
+/// size：按文件大小排序。
+/// creationTime：按创建时间排序。
 @property (nonatomic,assign)QCloudSMHSortType sortType;
 
 /**
