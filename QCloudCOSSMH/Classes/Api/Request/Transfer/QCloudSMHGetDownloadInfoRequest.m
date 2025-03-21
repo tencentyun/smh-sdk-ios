@@ -55,7 +55,9 @@
         [self.requestData setQueryStringParamter:@(self.trafficLimit).stringValue withKey:@"traffic_limit"];
     }
     
-    [self.requestData setQueryStringParamter:@(self.preCheck).stringValue withKey:@"pre_check"];
+    if (self.preCheck) {
+        [self.requestData setQueryStringParamter:@(self.preCheck).stringValue withKey:@"pre_check"];
+    }
     
     [self.requestData setQueryStringParamter:QCloudSMHPurposeTypeTransferToString(self.purpose) withKey:@"purpose"];
     
