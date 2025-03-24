@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong)NSString *filePath;
 
 
-/// 预览pdf：type=pic。
+/// 文档获取预览缩略图：type=pic。
 @property (nonatomic,strong)NSString *type;
 
 /**
