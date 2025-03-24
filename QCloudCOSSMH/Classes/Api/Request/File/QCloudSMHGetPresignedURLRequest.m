@@ -37,6 +37,10 @@
         URLString=  [URLString stringByAppendingFormat:@"&height_size=%ld", self.heightSize];
     }
     
+    if (self.type) {
+        URLString=  [URLString stringByAppendingFormat:@"&type=%@", self.type];
+    }
+    
     if(self.widthSize){
         URLString=  [URLString stringByAppendingFormat:@"&width_size=%ld", self.widthSize];
     }
