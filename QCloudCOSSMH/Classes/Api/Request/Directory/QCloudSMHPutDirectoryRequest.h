@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,strong)NSString *dirPath;
 
+@property (nonatomic,assign)BOOL withInode;
+
 -(void)setFinishBlock:(void (^ _Nullable)( QCloudSMHContentInfo * _Nullable result , NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end
 

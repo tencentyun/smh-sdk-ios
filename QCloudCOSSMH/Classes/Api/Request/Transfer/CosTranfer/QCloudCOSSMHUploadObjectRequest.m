@@ -353,7 +353,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             complete.labels = self.labels;
             complete.localCreationTime = self.localCreationTime;
             complete.localModificationTime = self.localModificationTime;
-            
+            complete.withInode = self.withInode;
             if (self.putInitInfo) {
                 complete.confirmKey = strongSelf.putInitInfo.confirmKey;
             }
@@ -766,7 +766,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     complete.userId = self.userId;
     complete.priority = QCloudAbstractRequestPriorityHigh;
     complete.conflictStrategy = self.conflictStrategy;
-    
+    complete.withInode = self.withInode;
     if (self.confirmKey) {
         complete.confirmKey = self.confirmKey;
     }else{

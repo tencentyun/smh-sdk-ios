@@ -58,6 +58,7 @@ typedef void (^QCloudSMHRequestsConfirmKeyBlock)(NSString *_Nullable confirmKey)
 
 @property (nonatomic,strong)NSString * uploadPath;
 
+@property (nonatomic,assign)BOOL withInode;
 /**
  文件名冲突时的处理方式，默认为 rename
  */

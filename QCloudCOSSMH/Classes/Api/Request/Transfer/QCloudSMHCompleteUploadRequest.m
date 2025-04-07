@@ -86,7 +86,7 @@
         NSData * data = [params qcloud_modelToJSONData];
         self.requestData.directBody = data;
     }
-    
+    [self.requestData setQueryStringParamter:self.withInode?@"1":@"0" withKey:@"with_inode"];
     return YES;
 }
 

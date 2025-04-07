@@ -48,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,strong)NSArray <NSString *> * labels;
 
+@property (nonatomic,assign)BOOL withInode;
+
 -(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHContentInfo * _Nullable result , NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end
 
