@@ -3,7 +3,7 @@ PODS:
     - QCloudCore/Default (= 6.4.5)
   - QCloudCore/Default (6.4.5):
     - QCloudTrack/Beacon (= 6.4.5)
-  - QCloudCOSSMH/WithoutCoreVersion (1.0.3):
+  - QCloudCOSSMH/WithoutCoreVersion (1.0.4):
     - QCloudCore
   - QCloudTrack/Beacon (6.4.5)
 
@@ -21,7 +21,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   QCloudCore: a1c543624fe34c5e98c92b7faf421a23f57ad5e3
-  QCloudCOSSMH: 74b3d1286901aa002c013c475c208f7eb542411c
+  QCloudCOSSMH: 3b8df83ee6f3fb10108c256fa4b5ec34535c75c1
   QCloudTrack: 6bf7aaa7e870d72fb4c9c88455dc63c7c65073b7
 
 PODFILE CHECKSUM: 91efc64246e548aa276c9919677ae4f440febd61

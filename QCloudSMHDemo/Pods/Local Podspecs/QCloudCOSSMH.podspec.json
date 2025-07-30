@@ -1,6 +1,6 @@
 {
   "name": "QCloudCOSSMH",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "summary": "QCloudCOSSMH 腾讯云iOS-SDK组件",
   "homepage": "https://cloud.tencent.com/",
   "license": "MIT",
@@ -9,7 +9,7 @@
   },
   "source": {
     "git": "https://github.com/tencentyun/smh-sdk-ios.git",
-    "tag": "1.0.3"
+    "tag": "1.0.4"
   },
   "pod_target_xcconfig": {
     "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
