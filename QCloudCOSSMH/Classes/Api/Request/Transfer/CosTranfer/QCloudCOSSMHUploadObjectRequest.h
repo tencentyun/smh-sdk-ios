@@ -58,7 +58,6 @@ typedef void (^QCloudSMHRequestsConfirmKeyBlock)(NSString *_Nullable confirmKey)
 
 @property (nonatomic,strong)NSString * uploadPath;
 
-@property (nonatomic,assign)BOOL withInode;
 /**
  文件名冲突时的处理方式，默认为 rename
  */
@@ -112,6 +111,8 @@ typedef void (^QCloudSMHRequestsConfirmKeyBlock)(NSString *_Nullable confirmKey)
 @property (nonatomic, assign) NSInteger mutilThreshold;
 
 @property (strong, nonatomic) QCloudHTTPRetryHanlder *_Nullable retryHandler;
+
+@property (nonatomic,assign)BOOL withInode;
 
 - (void)abort:(QCloudRequestFinishBlock _Nullable)finishBlock;
 

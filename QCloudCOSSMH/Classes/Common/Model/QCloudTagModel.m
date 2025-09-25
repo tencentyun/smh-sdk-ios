@@ -18,7 +18,6 @@
 @implementation QCloudFileTagItemModel
 + (nullable NSDictionary<NSString *, id> *)modelCustomPropertyMapper{
     return @{@"tagId" : @"id"};
-
 }
 @end
 

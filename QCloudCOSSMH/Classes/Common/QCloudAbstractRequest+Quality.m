@@ -7,7 +7,7 @@
 
 #import "QCloudAbstractRequest+Quality.h"
 #import <objc/runtime.h>
-#import "QualityDataUploader.h"
+#import <QCloudCore/QualityDataUploader.h>
 #import "QCloudCOSSMHVersion.h"
 #import "QCloudSMHBizRequest.h"
 #import "QCloudSMHUserBizRequest.h"

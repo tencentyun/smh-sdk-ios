@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,strong)NSString *dirPath;
 
+/**
+ 是否返回 inode，即文件目录 ID，可选，默认不返回；
+ */
 @property (nonatomic,assign)BOOL withInode;
 
 -(void)setFinishBlock:(void (^ _Nullable)( QCloudSMHContentInfo * _Nullable result , NSError * _Nullable error ))QCloudRequestFinishBlock;

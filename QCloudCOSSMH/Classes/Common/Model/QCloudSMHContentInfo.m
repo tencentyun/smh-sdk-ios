@@ -85,11 +85,6 @@
 - (BOOL)modelCustomTransformToDictionary:(NSMutableDictionary *)dic{
     [dic setObject:[dic[@"isDirectory"] boolValue]?@"dir":@"file" forKey:@"type"];
     [dic removeObjectForKey:@"isDirectory"];
-    
-    if ([dic objectForKey:@"spaceOrgId"]) {
-        [dic setObject:@"spaceOrgId" forKey:@([[dic valueForKey:@"spaceOrgId"] integerValue])];
-    }
-    
     return YES;
 }
 

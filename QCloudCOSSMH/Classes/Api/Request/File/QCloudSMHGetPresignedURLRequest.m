@@ -6,7 +6,7 @@
 //
 
 #import "QCloudSMHGetPresignedURLRequest.h"
-#import "QCloudURLHelper.h"
+#import <QCloudCore/QCloudURLHelper.h>
 @implementation QCloudSMHGetPresignedURLRequest
 
 -(NSURLRequest *)buildURLRequest:(NSError * _Nullable __autoreleasing *)error{

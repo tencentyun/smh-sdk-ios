@@ -18,7 +18,7 @@
 #import <QCloudCore/QCloudUniversalPathFactory.h>
 #import <QCloudCore/QCloudSupervisoryRecord.h>
 #import <QCloudCore/QCloudHTTPRetryHanlder.h>
-#import "QualityDataUploader.h"
+#import <QCloudCore/QualityDataUploader.h>
 #import "QCloudSMHUploadStateInfo.h"
 #import "QCloudSMHGetUploadStateRequest.h"
 #import "QCloudSMHService.h"

@@ -54,7 +54,6 @@
     if (self.trafficLimit > 0) {
         [self.requestData setQueryStringParamter:@(self.trafficLimit).stringValue withKey:@"traffic_limit"];
     }
-    
     if (self.preCheck) {
         [self.requestData setQueryStringParamter:@(self.preCheck).stringValue withKey:@"pre_check"];
     }

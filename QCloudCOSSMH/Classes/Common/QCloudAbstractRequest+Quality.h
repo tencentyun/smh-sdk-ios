@@ -5,7 +5,7 @@
 //  Created by garenwang on 2021/9/29.
 //
 
-#import "QCloudAbstractRequest.h"
+#import <QCloudCore/QCloudAbstractRequest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

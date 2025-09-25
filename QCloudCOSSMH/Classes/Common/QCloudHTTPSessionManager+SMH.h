@@ -5,7 +5,7 @@
 //  Created by garenwang on 2022/4/19.
 //
 
-#import "QCloudHTTPSessionManager.h"
+#import <QCloudCore/QCloudHTTPSessionManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
