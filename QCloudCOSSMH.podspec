@@ -12,7 +12,7 @@ s.version              = "1.0.4"
   s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
   s.ios.deployment_target = '10.0'
-  s.osx.deployment_target = "10.12"
+  # s.osx.deployment_target = "10.12"
 
   s.static_framework = true
   
