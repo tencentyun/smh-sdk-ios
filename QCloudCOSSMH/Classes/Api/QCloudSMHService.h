@@ -98,6 +98,7 @@
 @class QCloudSMHCheckHostRequest;
 @class QCloudSMHDetailDirectoryRequest;
 @class QCloudSMHSpaceAuthorizeRequest;
+@class QCloudSMHSpaceAuthorizeRequest;
 @class QCloudSMHAPIListHistoryVersionRequest;
 @class QCloudSMHGetFileCountRequest;
 @class QCloudSMHGetINodeDetailRequest;
@@ -114,6 +115,8 @@
 @class QCloudSMHDeleteFavoriteSpaceFileRequest;
 @class QCloudGetSpaceUsageRequest;
 @class QCloudSMHPutObjectLinkRequest;
+
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QCloudSMHService : NSObject
@@ -186,6 +189,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)listContents:(QCloudSMHListContentsRequest *)request;
 
+/**
+ 获取目录内容（在队列中执行）
+ */
+- (void)batchListContents:(QCloudSMHListContentsRequest *)request;
 /**
  搜索文件
  */
@@ -308,7 +315,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  刷新上传信息
  */
-- (void)renewUploadInfo:(QCloudSMHPutObjectRenewRequest *)request;
+-(void)renewUploadInfo:(QCloudSMHPutObjectRenewRequest *)request;
 /**
  复制文件
  */
@@ -370,7 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  获取下载文件信息
  */
-- (void)getDonwloadInfo:(QCloudSMHGetDownloadInfoRequest *)request;
+- (void)getDownloadInfo:(QCloudSMHGetDownloadInfoRequest *)request;
 
 /**
  用于查询历史版本配置信息
@@ -499,6 +506,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)getSpaceUsage:(QCloudGetSpaceUsageRequest *)request;
 
 -(void)putObjectLink:(QCloudSMHPutObjectLinkRequest *)request;
+
 @end
 
 NS_ASSUME_NONNULL_END

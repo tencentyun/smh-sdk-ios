@@ -72,17 +72,19 @@
 #import "QCloudSMHDeleteFavoriteSpaceFileRequest.h"
 #import "QCloudGetSpaceUsageRequest.h"
 #import "QCloudSMHPutObjectLinkRequest.h"
+
 @interface QCloudSMHService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
 @property (nonatomic, strong, readonly) QCloudOperationQueue *uploadFileQueue;
+@property (nonatomic, strong, readonly) QCloudOperationQueue *contentListQueue;
+
 @end
 static QCloudSMHService *_service;
 @implementation QCloudSMHService
 + (QCloudSMHService *)defaultSMHService{
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        QCloudConfiguration *config = [QCloudConfiguration new
-                                       ];
+        QCloudConfiguration *config = [QCloudConfiguration new];
         _service = [[QCloudSMHService alloc] init];
         _service.configuration = config;
     });
@@ -92,6 +94,8 @@ static QCloudSMHService *_service;
 - (instancetype)init{
     if(self  = [super init]){
         _uploadFileQueue = [QCloudOperationQueue new];
+        _contentListQueue = [QCloudOperationQueue new];
+        
     }
     return self;
 }
@@ -136,6 +140,11 @@ static QCloudSMHService *_service;
 
 - (void)listContents:(QCloudSMHListContentsRequest *)request{
     [self performRequest:request];
+}
+
+- (void)batchListContents:(QCloudSMHListContentsRequest *)request {
+    QCloudFakeRequestOperation *operation = [[QCloudFakeRequestOperation alloc] initWithRequest:request];
+    [self.contentListQueue addOpreation:operation];
 }
 
 - (void)initSearch:(QCloudSMHInitiateSearchRequest *)request{
@@ -428,6 +437,9 @@ static QCloudSMHService *_service;
     request.ownerQueue = self.uploadFileQueue;
     [self.uploadFileQueue addOpreation:operation];
 }
+
+
+
 
 -(void)crossSpaceAsyncCopyDirectory:(QCloudSMHCrossSpaceAsyncCopyDirectoryRequest *)request{
     QCloudFakeRequestOperation *operation = [[QCloudFakeRequestOperation alloc] initWithRequest:(QCloudAbstractRequest *)request];

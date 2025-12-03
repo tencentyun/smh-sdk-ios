@@ -6,10 +6,13 @@
 //
 
 #import "QCloudSMHListContentsRequest.h"
+#import "QCloudSMHService.h"
 
 @implementation QCloudSMHListContentsRequest
 
-
+- (void)fakeStart {
+    [[QCloudSMHService defaultSMHService] listContents:self];
+}
 
 - (void)configureReuqestSerializer:(QCloudRequestSerializer *)requestSerializer responseSerializer:(QCloudResponseSerializer *)responseSerializer {
     NSArray *customRequestSerilizers = @[

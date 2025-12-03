@@ -177,5 +177,49 @@ typedef NS_ENUM(NSUInteger, QCloudSMHSearchMode) {
 };
 NSString *  QCloudSMHSearchModeTransferToString( QCloudSMHSearchMode model);
 
+/**
+ * 任务状态枚举
+ */
+typedef NS_ENUM(NSInteger, QCloudSMHTaskState) {
+    QCloudSMHTaskStateIdle = 0,          // 空闲
+    QCloudSMHTaskStateScanning,          // 扫描中（仅文件夹任务）
+    QCloudSMHTaskStateDownloading,       // 下载中
+    QCloudSMHTaskStatePaused,            // 已暂停
+    QCloudSMHTaskStateCompleted,         // 已完成
+    QCloudSMHTaskStateFailed,            // 失败
+};
+
+/**
+ * 任务类型枚举
+ */
+typedef NS_ENUM(NSInteger, QCloudSMHTaskType) {
+    QCloudSMHTaskTypeFolder = 0,         // 文件夹任务
+    QCloudSMHTaskTypeFile                // 文件任务
+};
+
+/**
+ * 排序字段枚举
+ */
+typedef NS_ENUM(NSInteger, QCloudSMHSortField) {
+    QCloudSMHSortFieldCreatedAt = 0,  // 按创建时间排序
+    QCloudSMHSortFieldUpdatedAt = 1   // 按更新时间排序
+};
+
+/**
+ * 排序顺序枚举
+ */
+typedef NS_ENUM(NSInteger, QCloudSMHSortOrder) {
+    QCloudSMHSortOrderAscending = 0,   // 升序
+    QCloudSMHSortOrderDescending = 1   // 倒序
+};
+
+/**
+ * 任务记录分组方式枚举
+ */
+typedef NS_ENUM(NSInteger, QCloudSMHGroup) {
+    QCloudSMHGroupFlat = 0,            // 平铺（不分组）
+    QCloudSMHGroupByType = 1           // 按类型分组（文件夹和文件分离）
+};
+
 NS_ASSUME_NONNULL_END
 

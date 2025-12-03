@@ -18,6 +18,8 @@
 
 @property (strong, nonatomic) NSString *resumableTaskFile;
 @property (nonatomic, assign) int64_t localCacheDownloadOffset;
+
+@property (nonatomic, assign) BOOL isRemove;
 @end
   
 @implementation QCloudCOSSMHDownloadObjectRequest
@@ -33,6 +35,7 @@
         return nil;
     }
     self.resumableDownload = YES;
+    self.isRemove = NO;
     _requestCacheArray = [NSPointerArray weakObjectsPointerArray];
     return self;
 }
@@ -130,7 +133,7 @@
     [request setDownProcessBlock:^(int64_t bytesDownload, int64_t totalBytesDownload, int64_t totalBytesExpectedToDownload) {
         __strong typeof(weakSelf) strongSelf = self;
         currentTotalBytesDownload = totalBytesDownload + self.localCacheDownloadOffset;
-        QCloudLogInfo(@"🔽🔽🔽🔽🔽downProcess %lld %lld %ld",bytesDownload,totalBytesDownload + self.localCacheDownloadOffset,totalBytesExpectedToDownload + self.localCacheDownloadOffset);
+        QCloudLogInfo(@"%@ downProcess %lld %lld %ld",self.filePath,bytesDownload,totalBytesDownload + self.localCacheDownloadOffset,totalBytesExpectedToDownload + self.localCacheDownloadOffset);
         if(strongSelf.downProcessBlock){
             strongSelf.downProcessBlock(bytesDownload, totalBytesDownload + self.localCacheDownloadOffset, totalBytesExpectedToDownload + self.localCacheDownloadOffset);
         }
@@ -171,6 +174,9 @@
             
             if(writeDataError){
                 error = writeDataError;
+            }
+            if (error.code == QCloudNetworkErrorCodeCanceled && self.isRemove) {
+                [self removeTempDownloadFile];
             }
             if(strongSelf.finishBlock && error.code != QCloudNetworkErrorCodeCanceled){
                 strongSelf.finishBlock(outputObject, error);
@@ -247,15 +253,25 @@
 }
 
 - (void)remove{
+    self.isRemove = YES;
+    [self cancel];
+}
+
+/**
+ * 移除下载的临时文件
+ * 清理断点续传文件和已下载的文件
+ */
+- (void)removeTempDownloadFile {
     if(self.downloadingURL){
         self.resumableTaskFile = [NSString stringWithFormat:@"%@.cosresumabletask",self.downloadingURL.relativePath];
         BOOL exist = [[NSFileManager defaultManager] fileExistsAtPath:self.resumableTaskFile];
         if (exist) {
             QCloudRemoveFileByPath(self.resumableTaskFile);
         }
+            
     }
     QCloudRemoveFileByPath(self.downloadingURL.relativePath);
-    [self cancel];
+    
 }
 
 @end
