@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46AAD38A2EE02298005B098B /* QCloudSMHDownloadFolderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AAD3892EE02298005B098B /* QCloudSMHDownloadFolderTest.m */; };
 		6915E70FFB44C4722F6BD3A5 /* Pods_QCloudSMHDemo_QCloudSMHDemoUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48C9C2EE4AD10D08EAE25B7C /* Pods_QCloudSMHDemo_QCloudSMHDemoUITests.framework */; };
 		9FFDF05631D3E9FA2F4C45A9 /* Pods_QCloudSMHDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 029612519F1CD527C25B935D /* Pods_QCloudSMHDemoTests.framework */; };
 		BBB8C4A686AAE898AD2480D5 /* Pods_QCloudSMHDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 416695837DAE3F36FB2E738A /* Pods_QCloudSMHDemo.framework */; };
@@ -46,6 +47,7 @@
 		029612519F1CD527C25B935D /* Pods_QCloudSMHDemoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QCloudSMHDemoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		33B4DFC83762AC666299C210 /* Pods-QCloudSMHDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QCloudSMHDemoTests.debug.xcconfig"; path = "Target Support Files/Pods-QCloudSMHDemoTests/Pods-QCloudSMHDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		416695837DAE3F36FB2E738A /* Pods_QCloudSMHDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QCloudSMHDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		46AAD3892EE02298005B098B /* QCloudSMHDownloadFolderTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QCloudSMHDownloadFolderTest.m; sourceTree = "<group>"; };
 		48C9C2EE4AD10D08EAE25B7C /* Pods_QCloudSMHDemo_QCloudSMHDemoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QCloudSMHDemo_QCloudSMHDemoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B30521579F5D98D575B7CA81 /* Pods-QCloudSMHDemo-QCloudSMHDemoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QCloudSMHDemo-QCloudSMHDemoUITests.release.xcconfig"; path = "Target Support Files/Pods-QCloudSMHDemo-QCloudSMHDemoUITests/Pods-QCloudSMHDemo-QCloudSMHDemoUITests.release.xcconfig"; sourceTree = "<group>"; };
 		C141E0C87799C0F165F62516 /* Pods-QCloudSMHDemo-QCloudSMHDemoUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QCloudSMHDemo-QCloudSMHDemoUITests.debug.xcconfig"; path = "Target Support Files/Pods-QCloudSMHDemo-QCloudSMHDemoUITests/Pods-QCloudSMHDemo-QCloudSMHDemoUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 		D253474A282BB65400B48D2A /* QCloudSMHDemoTests */ = {
 			isa = PBXGroup;
 			children = (
+				46AAD3892EE02298005B098B /* QCloudSMHDownloadFolderTest.m */,
 				D2F2E6F72D7985780093F72D /* QCloudSMHDemo00UserTests.m */,
 				D2F2E6F82D7985780093F72D /* QCloudSMHDemo01FileTests.m */,
 				D2F2E6F92D7985780093F72D /* QCloudSMHTestTools.h */,
@@ -397,6 +400,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46AAD38A2EE02298005B098B /* QCloudSMHDownloadFolderTest.m in Sources */,
 				D2F2E6FB2D7985780093F72D /* QCloudSMHDemo00UserTests.m in Sources */,
 				D2F2E6FC2D7985780093F72D /* QCloudSMHDemo01FileTests.m in Sources */,
 				D2F2E6FD2D7985780093F72D /* QCloudSMHTestTools.m in Sources */,
