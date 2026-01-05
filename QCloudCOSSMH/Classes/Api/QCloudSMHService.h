@@ -377,7 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  获取下载文件信息
  */
-- (void)getDownloadInfo:(QCloudSMHGetDownloadInfoRequest *)request;
+- (void)getDonwloadInfo:(QCloudSMHGetDownloadInfoRequest *)request;
 
 /**
  用于查询历史版本配置信息
