@@ -220,6 +220,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.confirmKey = self.confirmKey;
     request.retryPolicy.delegate = self;
     request.priority = self.priority;
+    
     __weak typeof(request) weakRequest = request;
     __weak typeof(self) weakSelf = self;
     
@@ -415,6 +416,10 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.filePath = self.uploadPath;
     request.beginningHash = beginningHashString;
     request.fileSize = @(self.dataContentLength).stringValue;
+    request.labels = self.labels;
+    request.category = self.category;
+    request.localCreationTime = self.localCreationTime;
+    request.localModificationTime = self.localModificationTime;
     request.finishBlock = ^(id outputObject, NSError *error) {
         [handler closeFile];
         if (error) {
@@ -472,6 +477,10 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     request.beginningHash = beginningHashString;
     request.fullHash = [NSData qcloudSha256BytesTostring:fullHash];
     request.fileSize = @(self.dataContentLength).stringValue;
+    request.labels = self.labels;
+    request.category = self.category;
+    request.localCreationTime = self.localCreationTime;
+    request.localModificationTime = self.localModificationTime;
     request.finishBlock = ^(id outputObject, NSError *error) {
         [handler closeFile];
         if (error) {
@@ -530,6 +539,10 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     uploadRequet.conflictStrategy = self.conflictStrategy;
     uploadRequet.priority = QCloudAbstractRequestPriorityNormal;
     uploadRequet.retryPolicy.delegate = self;
+    uploadRequet.labels = self.labels;
+    uploadRequet.category = self.category;
+    uploadRequet.localCreationTime = self.localCreationTime;
+    uploadRequet.localModificationTime = self.localModificationTime;
     __weak typeof(uploadRequet) weakRequest = uploadRequet;
     __weak typeof(self) weakSelf = self;
     [uploadRequet setFinishBlock:^(QCloudSMHInitUploadInfo * _Nullable result, NSError * _Nullable error) {
@@ -767,6 +780,10 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     complete.priority = QCloudAbstractRequestPriorityHigh;
     complete.conflictStrategy = self.conflictStrategy;
     complete.withInode = self.withInode;
+    complete.category = self.category;
+    complete.labels = self.labels;
+    complete.localCreationTime = self.localCreationTime;
+    complete.localModificationTime = self.localModificationTime;
     if (self.confirmKey) {
         complete.confirmKey = self.confirmKey;
     }else{
