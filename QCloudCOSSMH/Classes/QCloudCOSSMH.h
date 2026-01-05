@@ -12,6 +12,7 @@
 
 #import <Foundation/Foundation.h>
 #import "QCloudSMHService.h"
+#import "QCloudSMHService+FolderDownload.h"
 #import "QCloudSMHUserService.h"
 #import "QCloudSMHBatchCopyInfo.h"
 #import "QCloudSMHBatchDeleteInfo.h"
@@ -322,3 +323,6 @@
 #import "QCloudSMHSearchTeamDetailRequest.h"
 #import "QCloudSMHGetVirusDetectionListRequest.h"
 #import "QCloudSMHVirusDetectionRestoreRequest.h"
+#import "QCloudSMHTaskManagerConfig.h"
+#import "QCloudSMHDownloadDetail.h"
+#import "QCloudSMHDownloadRequest.h"

@@ -9,6 +9,7 @@
 #define QCloudCOSSMHApi_h
 
 #import "QCloudSMHService.h"
+#import "QCloudSMHService+FolderDownload.h"
 #import "QCloudSMHBatchCopyInfo.h"
 #import "QCloudSMHBatchDeleteInfo.h"
 #import "QCloudSMHBatchMoveInfo.h"
@@ -156,4 +157,7 @@
 #import "NSData+SHA256.h"
 #import "NSNull+Safe.h"
 #import "NSObject+Equal.h"
+#import "QCloudSMHTaskManagerConfig.h"
+#import "QCloudSMHDownloadDetail.h"
+#import "QCloudSMHDownloadRequest.h"
 #endif /* QCloudCOSSMHApi_h */
