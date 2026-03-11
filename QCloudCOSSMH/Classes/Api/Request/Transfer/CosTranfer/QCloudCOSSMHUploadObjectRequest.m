@@ -34,6 +34,10 @@
 #import "NSData+SHA256.h"
 #import "QCloudSMHContentInfo.h"
 #import "QCloudSMHPutObjectRenewRequest.h"
+// 流式同步相关
+#import "QCloudSMHURLProbe.h"
+#import "QCloudStreamPipeline.h"
+#import "QCloudSMHExternalURLDownloadRequest.h"
 
 static NSUInteger kQCloudCOSXMLUploadLengthLimit = 1 * 1024 * 1024;
 static NSUInteger kQCloudCOSXMLUploadSliceLength = 1 * 1024 * 1024;
@@ -68,6 +72,13 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 
 @property (nonatomic, assign) NSInteger serverTimeOffset;
 
+#pragma mark - 流式同步私有属性
+
+/// 流管道（简单上传模式使用）
+@property (nonatomic, strong, nullable) QCloudStreamPipeline *streamPipeline;
+
+/// 是否为流式上传模式
+@property (nonatomic, assign) BOOL isStreamMode;
 
 @end
 
@@ -255,33 +266,176 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         [self startSimpleUpload];
     } else if ([self.body isKindOfClass:[NSURL class]]) {
         NSURL *url = (NSURL *)self.body;
-        if (!QCloudFileExist(url.relativePath)) {
-            NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"指定的上传路径不存在"];
-            [self onError:error];
-            [self cancel];
-            return;
-        }
-        self.dataContentLength = QCloudFileSize(url.path);
-        if(_mutilThreshold<kQCloudCOSXMLUploadLengthLimit){
-            NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"分块接口的阈值不能小于 1MB ，当前阈值为 %ld"];
-            [self onError:error];
-            [self cancel];
-            return;
-        }
-        if (self.dataContentLength >= _mutilThreshold) {
-            //开始分片上传的时候，上传的起始位置是0
-            uploadedSize = 0;
-            startPartNumber = 0;
-            [self startQuickUpload];
+        
+        if ([self isRemoteURL:url]) {
+            self.enableVerification = NO;
+            // 第三方 URL: 探测后选择模式
+            [self startURLProbe:url];
         } else {
-            [self startSimpleUpload];
+            // 本地文件: 现有逻辑
+            [self startLocalFileUpload:url];
         }
     } else {
-        NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"不支持设置该类型的body，支持的类型为NSData、QCloudFileOffsetBody"];
+        NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"不支持设置该类型的body，支持的类型为NSData、NSURL（本地文件或第三方URL）"];
         [self onError:error];
         [self cancel];
         return;
     }
+}
+
+#pragma mark - URL 类型判断
+
+- (BOOL)isRemoteURL:(NSURL *)url {
+    NSString *scheme = url.scheme.lowercaseString;
+    return [scheme isEqualToString:@"http"] || [scheme isEqualToString:@"https"];
+}
+
+#pragma mark - 本地文件上传
+
+- (void)startLocalFileUpload:(NSURL *)fileURL {
+    if (!QCloudFileExist(fileURL.relativePath)) {
+        NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"指定的上传路径不存在"];
+        [self onError:error];
+        [self cancel];
+        return;
+    }
+    
+    self.dataContentLength = QCloudFileSize(fileURL.path);
+    
+    if (_mutilThreshold < kQCloudCOSXMLUploadLengthLimit) {
+        NSError *error = [NSError qcloud_errorWithCode:QCloudNetworkErrorCodeParamterInvalid message:@"分块接口的阈值不能小于 1MB"];
+        [self onError:error];
+        [self cancel];
+        return;
+    }
+    
+    if (self.dataContentLength >= _mutilThreshold) {
+        uploadedSize = 0;
+        startPartNumber = 0;
+        [self startQuickUpload];
+    } else {
+        [self startSimpleUpload];
+    }
+}
+
+#pragma mark - 第三方 URL 流式同步
+
+- (id<QCloudSMHURLProbing>)urlProber {
+    if (!_urlProber) {
+        NSURL *sourceURL = (NSURL *)self.body;
+        _urlProber = [[QCloudSMHURLProbe alloc] initWithSourceURL:sourceURL headers:self.customHeaders];
+    }
+    return _urlProber;
+    
+}
+
+/// URL 探测
+- (void)startURLProbe:(NSURL *)url {
+    __weak typeof(self) weakSelf = self;
+    [self.urlProber probeWithCompletion:^(QCloudSMHURLProbeResult * _Nullable result, NSError * _Nullable error) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf || strongSelf.canceled) return;
+        
+        if (error) {
+            [strongSelf onError:error];
+            return;
+        }
+        if (!result.hasContentLength) {
+            NSError *error = [NSError errorWithDomain:kQCloudNetworkDomain
+                                                 code:QCloudNetworkErrorUnsupportOperationError
+                                             userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ 未获取到文件大小，不支持上传", url]}];
+            [strongSelf onError:error];
+            return;
+        }
+        
+        [strongSelf startStreamUpload:url probeResult:result];
+    }];
+}
+
+- (void)startStreamUpload:(NSURL *)sourceURL probeResult:(QCloudSMHURLProbeResult *)result {
+    // 1. 设置文件大小
+    self.dataContentLength = result.hasContentLength ? (NSUInteger)result.fileSize : 0;
+    
+    // 2. 判断模式
+    BOOL useChunkedMode = result.canUseChunkedTransfer && (int64_t)self.dataContentLength >= _mutilThreshold;
+    
+    // 3. 检查 5GB 限制
+    if (!useChunkedMode && result.fileSize >= 5LL * 1024 * 1024 * 1024) {
+        NSError *error = [NSError errorWithDomain:kQCloudNetworkDomain
+                                             code:QCloudNetworkErrorUnsupportOperationError
+                                         userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ 文件超过 5GB 限制，且源不支持 Range", sourceURL]}];
+        [self onError:error];
+        return;
+    }
+    
+    // 4. 标记流式模式
+    self.isStreamMode = YES;
+    
+    QCloudLogDebug(@" %@ 传输模式：%@", self.body, useChunkedMode ? @"流式分片传输" : @"流式简单传输");
+    // 5. 根据模式执行上传
+    if (useChunkedMode) {
+        // 分块模式：每个分块独立创建管道
+        uploadedSize = 0;
+        startPartNumber = 0;
+        
+        if (self.confirmKey) {
+            [self resumeUpload];
+        }else{
+            /// 普通分块上传
+            [self startMultiUpload];
+        }
+        
+    } else {
+        [self startSimpleUpload];
+    }
+}
+
+- (void)startStreamDownload:(NSURL *)sourceURL {
+    QCloudSMHExternalURLDownloadRequest *request = [[QCloudSMHExternalURLDownloadRequest alloc] init];
+    request.sourceURL = sourceURL;
+    request.customHeaders = self.customHeaders;
+    // 简单上传模式：不设置 rangeHeader，下载完整文件
+    __weak typeof(self) weakSelf = self;
+    
+    // 流式数据回调：每收到数据块就写入管道
+    __weak typeof(request) weakRequest = request;
+    [request setDownProcessWithDataBlock:^(int64_t bytesDownload,
+                                            int64_t totalBytesDownload,
+                                            int64_t totalBytesExpectedToDownload,
+                                            NSData * _Nullable receiveData) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf || strongSelf.canceled) {
+            [weakRequest cancel];
+            return;
+        }
+        
+        if (receiveData) {
+            NSError *writeError = nil;
+            [strongSelf.streamPipeline writeData:receiveData error:&writeError];
+            if (writeError) {
+                [weakRequest cancel];
+                [strongSelf.streamPipeline close];
+                [strongSelf onError:writeError];
+            }
+        }
+    }];
+    
+    // 完成回调
+    [request setFinishBlock:^(id _Nullable outputObject, NSError * _Nullable error) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        
+        if (error) {
+            [strongSelf.streamPipeline close];
+            [strongSelf onError:error];
+        } else {
+            [strongSelf.streamPipeline closeOutput];  // 标记写入完成
+        }
+    }];
+    
+    // 通过 QCloudSMHService 执行下载
+    [self.requestCacheArray addPointer:(__bridge void * _Nullable)(request)];
+    [[QCloudSMHService defaultSMHService] downloadExternalURL:request];
 }
 - (void)startSimpleUpload {
     
@@ -298,6 +452,9 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     putRequest.labels = self.labels;
     putRequest.localCreationTime = self.localCreationTime;
     putRequest.localModificationTime = self.localModificationTime;
+    if (self.isStreamMode) {
+        putRequest.priority = QCloudAbstractRequestPriorityHigh;
+    }
     __weak typeof(putRequest) weakRequest = putRequest;
     __weak typeof(self) weakSelf = self;
     [putRequest setFinishBlock:^(QCloudSMHInitUploadInfo * _Nullable info, NSError * _Nullable error) {
@@ -312,6 +469,19 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         
         if (self.getConfirmKey) {
             self.getConfirmKey(info.confirmKey);
+        }
+        if (weakSelf.isStreamMode) {
+            // 开启传输管道
+            QCloudStreamPipeline *pipeline = [[QCloudStreamPipeline alloc] initWithBufferSize:self.mutilThreshold];
+            self.streamPipeline = pipeline;
+            [pipeline open];
+            
+            NSURL *url = (NSURL *)self.body;
+            [self startStreamDownload:url];
+            
+            NSMutableDictionary *headers = [NSMutableDictionary dictionaryWithDictionary:info.headers];
+            [headers setValue:@([weakSelf getFileSize]).stringValue forKey:@"Content-Length"];
+            info.headers = headers;
         }
         [strongSelf startSimpleCOSUpload:info];
     }];
@@ -332,6 +502,9 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     __weak typeof(request) weakRequest = request;
     request.retryPolicy.delegate = self;
     request.timeoutInterval = self.timeoutInterval;
+    if (self.isStreamMode) {
+        request.priority = QCloudAbstractRequestPriorityHigh;
+    }
     request.finishBlock = ^(id outputObject, NSError *error) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         __strong typeof(weakRequest) strongRequst = weakRequest;
@@ -339,6 +512,13 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         if (strongSelf.requstsMetricArrayBlock) {
             strongSelf.requstsMetricArrayBlock(weakSelf.requstMetricArray);
         }
+        
+        // 清理流式资源
+        if (strongSelf.streamPipeline) {
+            [strongSelf.streamPipeline close];
+            strongSelf.streamPipeline = nil;
+        }
+        
         if (error) {
             [weakSelf onError:error];
             [strongSelf cancel];
@@ -386,7 +566,14 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         }
     };
     
-    request.body = self.body;
+    // 判断数据源：流式模式使用管道流，否则使用原始 body
+    if (self.streamPipeline) {
+        // 流式模式：body 为 NSInputStream
+        request.body = self.streamPipeline.inputStream;
+    } else {
+        request.body = self.body;
+    }
+    
     request.sendProcessBlock = self.sendProcessBlock;
     request.delegate = self.delegate;
     request.retryPolicy.delegate = self;
@@ -519,6 +706,9 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     if ([self.body isKindOfClass:[NSData class]]) {
         return ((NSData *)self.body).length;
     }else if ([self.body isKindOfClass:[NSURL class]]){
+        if ([self isRemoteURL:self.body]) {
+            return self.dataContentLength;
+        }
         NSURL *url = (NSURL *)self.body;
         return QCloudFileSize(url.relativePath);
     }
@@ -581,30 +771,34 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         return nil;
     }
     NSURL *url = (NSURL *)self.body;
-    if([self.body isKindOfClass:NSURL.class]){
+    
+    // 本地文件模式需要获取文件大小，流式模式已通过 URL 探测获得
+    if (!self.isStreamMode && [self.body isKindOfClass:NSURL.class]) {
         self.dataContentLength = QCloudFileSize(url.relativePath);
     }
+    
     int64_t restContentLength = self.dataContentLength - uploadedSize;
-    //便宜的起始位置
     int64_t offset = uploadedSize;
+    
+    NSUInteger maxSlice = ceil(self.dataContentLength * 1.0 / 10000);
+    NSUInteger uploadSliceLength = self.sliceSize > 10 ? self.sliceSize : kQCloudCOSXMLUploadSliceLength;
+    uploadSliceLength = self.dataContentLength * 1.0 / uploadSliceLength > 10000 ? maxSlice : uploadSliceLength;
+    
     for (NSInteger i = startPartNumber;; i++) {
-        int64_t slice = 0;
-        NSUInteger maxSlice = ceil(self.dataContentLength * 1.0 / (10000));
-        NSUInteger uploadSliceLength = self.sliceSize > 10 ? self.sliceSize : kQCloudCOSXMLUploadSliceLength;
-        uploadSliceLength = self.dataContentLength * 1.0 / uploadSliceLength > 10000 ? maxSlice : uploadSliceLength;
-        if (restContentLength >= uploadSliceLength) {
-            slice = uploadSliceLength;
-        } else {
-            slice = restContentLength;
-        }
-        if (!_uploadBodyIsCompleted && slice < kQCloudCOSXMLUploadSliceLength) {
+        int64_t slice = MIN(uploadSliceLength, restContentLength);
+        
+        // uploadBodyIsCompleted 检查仅适用于本地文件模式
+        if (!self.isStreamMode && !_uploadBodyIsCompleted && slice < kQCloudCOSXMLUploadSliceLength) {
             break;
         }
+        
         QCloudFileOffsetBody *body = [[QCloudFileOffsetBody alloc] initWithFile:url offset:offset slice:slice];
-        [allParts addObject:body];
-        offset += slice;
         body.index = i;
+        [allParts addObject:body];
+        
+        offset += slice;
         restContentLength -= slice;
+        
         if (restContentLength <= 0) {
             break;
         }
@@ -668,6 +862,7 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
         };
         request.retryPolicy.delegate = self;
         
+        request.isStreamMode = self.isStreamMode;
         __block int64_t partBytesSent = 0;
         int64_t partSize = body.sliceLength;
         [request setSendProcessBlock:^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
@@ -740,11 +935,11 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     }
 }
 
-- (void)uploadMultiParts{
-    NSArray *allParts = [self getFileLocalUploadParts];
-  
-    [self uploadOffsetBodys:allParts];
+- (void)uploadMultiParts {
+    // 统一使用 getFileLocalUploadParts 生成分块列表
+    NSArray<QCloudFileOffsetBody *> *allParts = [self getFileLocalUploadParts];
     
+    [self uploadOffsetBodys:allParts];
 }
 
 - (void)markPartFinish:(QCloudSMHMultipartInfo *)info {
@@ -819,6 +1014,12 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
 }
 
 - (void)cancel {
+    
+    // 清理流式资源
+    if (self.streamPipeline) {
+        [self.streamPipeline close];
+        self.streamPipeline = nil;
+    }
     
     if (self.ownerQueue) {
         [self.ownerQueue cancelByRequestID:self.requestID];

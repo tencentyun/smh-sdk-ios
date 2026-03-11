@@ -72,6 +72,7 @@
 #import "QCloudSMHDeleteFavoriteSpaceFileRequest.h"
 #import "QCloudGetSpaceUsageRequest.h"
 #import "QCloudSMHPutObjectLinkRequest.h"
+#import "QCloudSMHExternalURLDownloadRequest.h"
 
 @interface QCloudSMHService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
@@ -550,6 +551,13 @@ static QCloudSMHService *_service;
 
 -(void)putObjectLink:(QCloudSMHPutObjectLinkRequest *)request{
     [self performRequest:request];
+}
+
+#pragma mark - 第三方 URL 下载（内部使用）
+
+- (void)downloadExternalURL:(QCloudSMHExternalURLDownloadRequest *)request {
+    request.timeoutInterval = self.configuration.timeoutInterval;
+    [[QCloudHTTPSessionManager shareClient] performRequest:request];
 }
 
 @end

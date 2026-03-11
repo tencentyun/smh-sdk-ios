@@ -115,6 +115,7 @@
 @class QCloudSMHDeleteFavoriteSpaceFileRequest;
 @class QCloudGetSpaceUsageRequest;
 @class QCloudSMHPutObjectLinkRequest;
+@class QCloudSMHExternalURLDownloadRequest;
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -506,6 +507,16 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)getSpaceUsage:(QCloudGetSpaceUsageRequest *)request;
 
 -(void)putObjectLink:(QCloudSMHPutObjectLinkRequest *)request;
+
+#pragma mark - 第三方 URL 下载（内部使用）
+
+/**
+ * 执行第三方 URL 下载请求（内部使用）
+ *
+ * @param request 第三方 URL 下载请求
+ * @note 此方法为 SDK 内部使用，用于流式同步上传场景
+ */
+- (void)downloadExternalURL:(QCloudSMHExternalURLDownloadRequest *)request;
 
 @end
 

@@ -10,6 +10,8 @@
 #import "QCloudSMHBizRequest.h"
 #import "QCloudSMHConflictStrategyEnumType.h"
 #import "QCloudSMHContentInfo+Transfer.h"
+#import "QCloudSMHURLProbe.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class QCloudSMHConfirmInfo;
@@ -112,7 +114,12 @@ typedef void (^QCloudSMHRequestsConfirmKeyBlock)(NSString *_Nullable confirmKey)
 
 @property (strong, nonatomic) QCloudHTTPRetryHanlder *_Nullable retryHandler;
 
-@property (nonatomic,assign)BOOL withInode;
+@property (nonatomic, assign) BOOL withInode;
+
+#pragma mark - 第三方 URL 流式同步
+
+/// 业务方可设置的自定义 URL 探测器（可选，默认使用 QCloudSMHURLProbe）
+@property (nonatomic, strong, nullable) id<QCloudSMHURLProbing> urlProber;
 
 - (void)abort:(QCloudRequestFinishBlock _Nullable)finishBlock;
 

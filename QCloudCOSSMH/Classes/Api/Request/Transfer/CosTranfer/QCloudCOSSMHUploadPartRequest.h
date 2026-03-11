@@ -10,6 +10,10 @@ typedef NSMutableDictionary * _Nullable (^QCloudSMHRenewUploadInfoBlock)(void);
 
 /**
  分块上传
+ 
+ 支持两种模式：
+ 1. 本地文件模式：body 为 QCloudFileOffsetBody，fileURL 为本地文件路径
+ 2. 流式模式：body 为 QCloudFileOffsetBody，fileURL 为远程 HTTP URL，内部自动创建流管道
  */
 @interface QCloudCOSSMHUploadPartRequest<BodyType> : QCloudBizHTTPRequest
 @property (nonatomic, strong) BodyType body;
@@ -27,6 +31,9 @@ typedef NSMutableDictionary * _Nullable (^QCloudSMHRenewUploadInfoBlock)(void);
 @property (strong, nonatomic) NSString *uploadId;
 
 @property (strong, nonatomic) QCloudSMHRenewUploadInfoBlock renewUploadInfo;
+
+/// 是否是流式传输模式
+@property (nonatomic, assign) BOOL isStreamMode;
 
 - (void)setFinishBlock:(void (^_Nullable)(QCloudSMHUploadPartResult *_Nullable result, NSError *_Nullable error))QCloudRequestFinishBlock;
 @end
