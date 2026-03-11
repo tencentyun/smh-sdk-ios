@@ -87,11 +87,14 @@
             @try {
                 [_writeFileHandler writeData:data];
             } @catch (NSException *exception) {
-                QCloudLogError(@"no space left on device");
+                QCloudLogDebugE(@"Utils",@"no space left on device");
             }
         }
     } else {
         @synchronized(_cacheData) {
+            if (_forbidenWirteToCache) {
+                return;
+            }
             [_cacheData appendData:data];
         }
     }

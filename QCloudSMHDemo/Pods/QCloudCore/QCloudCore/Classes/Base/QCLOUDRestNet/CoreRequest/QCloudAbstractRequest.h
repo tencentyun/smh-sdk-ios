@@ -10,6 +10,8 @@
 #import "QCloudHTTPRequestDelegate.h"
 #import "QCloudHttpMetrics.h"
 #import "QCloudCredential.h"
+#import "QCloudEndPoint.h"
+#import "QCloudSignature.h"
 typedef double QCloudAbstractRequestPriority;
 
 #define QCloudAbstractRequestPriorityHigh 3.0
@@ -20,6 +22,12 @@ typedef void (^QCloudRequestSendProcessBlock)(int64_t bytesSent, int64_t totalBy
 typedef void (^QCloudRequestDownProcessBlock)(int64_t bytesDownload, int64_t totalBytesDownload, int64_t totalBytesExpectedToDownload);
 typedef void (^QCloudRequestDownProcessWithDataBlock)(int64_t bytesDownload, int64_t totalBytesDownload, int64_t totalBytesExpectedToDownload,
                                                       NSData * _Nullable receivedData);
+
+typedef NS_ENUM(NSUInteger, QCloudRequestNetworkType) {
+    QCloudRequestNetworkNone = 0,
+    QCloudRequestNetworkHttp,
+    QCloudRequestNetworkQuic,
+};
 /**
  请求的抽象基类，该类封装了用于进行request-response模式数据请求的通用属性和接口。包括发起请求，相应结果，优先级处理，性能监控能常见特性。
  */
@@ -31,8 +39,18 @@ typedef void (^QCloudRequestDownProcessWithDataBlock)(int64_t bytesDownload, int
  签名信息的回调接口，该委托必须实现。签名是腾讯云进行服务时进行用户身份校验的关键手段，同时也保障了用户访问的安全性。该委托中通过函数回调来提供签名信息。
  */
 
+/**
+ 指定接口级请求域名
+ */
+@property (nonatomic, strong, nullable) QCloudEndPoint * endpoint;
+
+/// 用于外部指定网络请求使用何种协议。默认QCloudRequestNetworkHttp。优先级高于config.enableQuic。
+@property (nonatomic, assign)QCloudRequestNetworkType networkType;
+
+/// sdk 内部使用，外部设置无效。
 @property (nonatomic, assign) BOOL enableQuic;
 @property (atomic, assign) BOOL forbidCancelled;
+@property (atomic, assign) BOOL requestRetry;
 @property (atomic, assign, readonly) BOOL canceled;
 @property (nonatomic, assign, readonly) int64_t requestID;
 @property (nonatomic, assign) QCloudAbstractRequestPriority priority;
@@ -44,8 +62,23 @@ typedef void (^QCloudRequestDownProcessWithDataBlock)(int64_t bytesDownload, int
  */
 @property (nonatomic, strong ,nullable) NSDictionary * payload;
 
-
+/**
+ 设置接口级参与签头部和参数。
+ 
+ 默认下方所有字段参与签名，无需设置，若指定某个字段不参与签名，则将相应的字段删除，然后将数组赋值给shouldSignedList即可。
+ @[@"Cache-Control", @"Content-Disposition", @"Content-Encoding", @"Content-Length", @"Content-MD5", @"Content-Type", @"Expect", @"Expires", @"If-Match" , @"If-Modified-Since" , @"If-None-Match" , @"If-Unmodified-Since" , @"Origin" , @"Range" , @"transfer-encoding" ,@"Host",@"Pic-Operations",@"ci-process"]
+ 
+ 示例：
+ 1、指定Host不参与签名(删除数组中的@"Host")。
+ shouldSignedList = @[@"Cache-Control", @"Content-Disposition", @"Content-Encoding", @"Content-Length", @"Content-MD5", @"Content-Type", @"Expect", @"Expires", @"If-Match" , @"If-Modified-Since" , @"If-None-Match" , @"If-Unmodified-Since" , @"Origin" , @"Range" , @"transfer-encoding" ,@"Pic-Operations",@"ci-process"];
+ 
+ 2、指定所有字段都不参与签名。
+ shouldSignedList = @[];
+ */
+@property (nonatomic, strong, nullable) NSArray *shouldSignedList;
 @property (nonatomic, strong, nullable) QCloudCredential * credential;
+
+@property (nonatomic, strong, nullable) QCloudSignature * signature;
 /**
   协议执行结果向外通知的委托（delegate）主要包括成功和失败两种情况。与Block方式并存，当两者都设置的时候都会通知。
  */

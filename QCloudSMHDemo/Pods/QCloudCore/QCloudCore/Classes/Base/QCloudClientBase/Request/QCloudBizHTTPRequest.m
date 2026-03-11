@@ -20,6 +20,7 @@
 #import "NSObject+QCloudModelTool.h"
 #import "QCloudLogger.h"
 #import "QCloudAuthentationV5Creator.h"
+#import "NSURLRequest+COS.h"
 NS_ASSUME_NONNULL_BEGIN
 
 QCloudResponseSerializerBlock QCloudResponseObjectSerilizerBlock(Class modelClass) {
@@ -125,8 +126,36 @@ QCloudResponseSerializerBlock QCloudResponseCOSNormalRSPSerilizerBlock
 
 - (BOOL)prepareInvokeURLRequest:(NSMutableURLRequest *)urlRequest error:(NSError *__autoreleasing *)error {
     
+    if (self.signature && self.signature.signature.length > 0) {
+        QCloudLogDebugP(@"Signature",@"本次请求使用单次签名signature:%@",self.signature.signature);
+        QCloudSignature *signature = self.signature;
+        if (!self.isSignedInURL) {
+            [urlRequest setValue:signature.signature forHTTPHeaderField:@"Authorization"];
+        } else {
+            NSString *urlStr;
+            NSRange rangeOfQ = [urlStr rangeOfString:@"?"];
+            if (rangeOfQ.location == NSNotFound) {
+                urlStr = [NSString stringWithFormat:@"%@?%@", urlRequest.URL.absoluteString, signature.signature];
+            } else {
+                urlStr = [NSString stringWithFormat:@"%@&%@", urlRequest.URL.absoluteString, signature.signature];
+            }
+            if (signature.token) {
+                urlStr = [NSString stringWithFormat:@"%@&x-cos-security-token=%@", urlStr, signature.token];
+            }
+            urlRequest.URL = [[NSURL URLWithString:urlStr] copy];
+        }
+        return YES;
+    }
+    
     if (self.credential && self.credential.secretID.length > 0 && self.credential.secretKey.length > 0) {
+        if (self.credential.token) {
+            QCloudLogDebugP(@"Signature",@"本次请求使用单次临时密钥:%@,secretID:%@",urlRequest.URL.absoluteString,self.credential.secretID);
+        }else{
+            QCloudLogDebugP(@"Signature",@"本次请求使用永久密钥:%@,secretID:%@",urlRequest.URL.absoluteString,self.credential.secretID);
+        }
+        
         QCloudAuthentationV5Creator *creator = [[QCloudAuthentationV5Creator alloc] initWithCredential:self.credential];
+        urlRequest.shouldSignedList = self.shouldSignedList;
         QCloudSignature *signature = [creator signatureForData:(NSMutableURLRequest *)urlRequest];
         if (!self.isSignedInURL) {
             [urlRequest setValue:signature.signature forHTTPHeaderField:@"Authorization"];
@@ -147,6 +176,7 @@ QCloudResponseSerializerBlock QCloudResponseCOSNormalRSPSerilizerBlock
     }
     
     if(!self.signatureProvider){
+        QCloudLogDebugP(@"Signature",@"本次请求使用匿名上传:%@",urlRequest.URL.absoluteString);
         return YES;
     }
     
@@ -156,11 +186,13 @@ QCloudResponseSerializerBlock QCloudResponseCOSNormalRSPSerilizerBlock
     __block BOOL isSigned;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        urlRequest.shouldSignedList = self.shouldSignedList;
         [self.signatureProvider
             signatureWithFields:self.signatureFields
                         request:self
                      urlRequest:urlRequest
                       compelete:^(QCloudSignature *signature, NSError *error) {
+                          QCloudLogDebugP(@"Signature",@"本次请求使用临时密钥上传:%@,signature:%@",urlRequest.URL.absoluteString,signature.signature);
                           if (error) {
                               localError = error;
                           } else {

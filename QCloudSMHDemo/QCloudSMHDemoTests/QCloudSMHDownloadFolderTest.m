@@ -91,7 +91,7 @@ static const NSTimeInterval kLongTimeout = 60 * 60 * 6;
     [super setUp];
     
     // 配置服务
-    [QCloudSMHBaseRequest setBaseRequestHost:@"https://xxxxx.api.tencentsmh.cn"
+    [QCloudSMHBaseRequest setBaseRequestHost:[NSString stringWithFormat:@"%@/", QCloudSMHTestTools.singleTool.getBaseUrlStrV2]
                                   targetType:QCloudECDTargetDevelop];
     [QCloudSMHBaseRequest setTargetType:QCloudECDTargetDevelop];
     
@@ -102,9 +102,9 @@ static const NSTimeInterval kLongTimeout = 60 * 60 * 6;
     // 初始化测试环境
     self.activeRequests = [NSMutableArray array];
     self.testDownloadPath = [self createTestDownloadDirectory];
-    self.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    self.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    self.userId = QCloudSMHTestTools.singleTool.getUserId;
+    self.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    self.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    self.userId = QCloudSMHTestTools.singleTool.getUserIdV2;
     self.rootRemotePath = kTestDirName;
     self.smallRemotePath = kTestSmallDirName;
     self.remoteFolderPath = kTestFolder1;
@@ -287,7 +287,7 @@ static const NSTimeInterval kLongTimeout = 60 * 60 * 6;
                     compelete:(QCloudSMHAuthentationContinueBlock)continueBlock {
     
     QCloudSMHSpaceInfo *spaceInfo = [QCloudSMHSpaceInfo new];
-    spaceInfo.accessToken = QCloudSMHTestTools.singleTool.getAccessToken;
+    spaceInfo.accessToken = QCloudSMHTestTools.singleTool.getAccessTokenV2;
     spaceInfo.libraryId = self.libraryId;
     spaceInfo.spaceId = self.spaceId;
     continueBlock(spaceInfo, nil);

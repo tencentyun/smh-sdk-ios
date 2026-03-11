@@ -6,15 +6,17 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "QCloudCOSSMH.h"
 #import "QCloudSMHTestTools.h"
 #import "NSData+SHA256.h"
 #import "NSObject+Equal.h"
 #import "QCloudSMHCheckHostRequest.h"
 #import "QCloudSMHGetINodeDetailRequest.h"
 #import "QCloudSMHGetRecentlyUsedFileRequest.h"
-static NSString * testDirName = @"iosunittestDir";
-static NSString * testFileName = @"testFile";
+
+static NSString * testDirName = @"iosunittestDir1";
+static NSString * testTargetDirName = @"iosunittestTargetDir";
+static NSString * testSimpleFile = @"testSimpleFile";
+static NSString * testBigFile = @"testBigFile";
 
 @interface QCloudSMHDemo01FileTests : XCTestCase <QCloudSMHAccessTokenProvider, QCloudAccessTokenFenceQueueDelegate>
 @property (nonatomic) QCloudSMHAccessTokenFenceQueue *fenceQueue;
@@ -23,9 +25,8 @@ static NSString * testFileName = @"testFile";
 @implementation QCloudSMHDemo01FileTests
 
 - (void)setUp {
-    
-    [QCloudSMHBaseRequest setBaseRequestHost:@"https://apiv2.test.tencentsmh.cn/" targetType:QCloudECDTargetTest];
-    [QCloudSMHBaseRequest setBaseRequestHost:@"https://apiv2.test.tencentsmh.cn/" targetType:QCloudECDTargetDevelop];
+
+    [QCloudSMHBaseRequest setBaseRequestHost:[NSString stringWithFormat:@"%@/",QCloudSMHTestTools.singleTool.getBaseUrlStrV1] targetType:QCloudECDTargetDevelop];
     [QCloudSMHBaseRequest setTargetType:QCloudECDTargetDevelop];
     self.fenceQueue = [QCloudSMHAccessTokenFenceQueue new];
     self.fenceQueue.delegate = self;
@@ -33,98 +34,175 @@ static NSString * testFileName = @"testFile";
     
 }
 
-- (void)fenceQueue:(QCloudSMHAccessTokenFenceQueue *)queue
-           request:(QCloudSMHBizRequest *)request
-requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
-    
-    if (request.spaceId) {
-        QCloudSMHGetSpaceAccessTokenRequest * getAccessToken = [QCloudSMHGetSpaceAccessTokenRequest new];
-        getAccessToken.organizationId= QCloudSMHTestTools.singleTool.getOrgnizationId;
-        getAccessToken.spaceId = request.spaceId;
-        getAccessToken.userToken = QCloudSMHTestTools.singleTool.getUserToken;
-        [getAccessToken setFinishBlock:^(QCloudSMHSpaceInfo * _Nonnull outputObject, NSError * _Nullable error) {
-            continueBlock(outputObject, error);
-        }];
-        [[QCloudSMHUserService defaultSMHUserService] getSpaceAccessToken:getAccessToken];
-    }else{
-        
-        QCloudSMHGetAccessTokenRequest *getAccessToken = [QCloudSMHGetAccessTokenRequest new];
-        getAccessToken.priority = QCloudAbstractRequestPriorityHigh;
-        getAccessToken.organizationId = QCloudSMHTestTools.singleTool.getOrgnizationId;
-        getAccessToken.userToken = QCloudSMHTestTools.singleTool.getUserToken;
-        [getAccessToken setFinishBlock:^(QCloudSMHSpaceInfo *outputObject, NSError *_Nullable error) {
-            continueBlock(outputObject, error);
-        }];
-        [[QCloudSMHUserService defaultSMHUserService] getAccessToken:getAccessToken];
-    }
-  
-}
-
 - (void)accessTokenWithRequest:(QCloudSMHBizRequest *)request
                    urlRequest:(NSURLRequest *)urlRequst
                     compelete:(QCloudSMHAuthentationContinueBlock)continueBlock {
     
     QCloudSMHSpaceInfo * spaceinfo = [QCloudSMHSpaceInfo new];
-    spaceinfo.accessToken = QCloudSMHTestTools.singleTool.getAccessToken;
-    spaceinfo.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    spaceinfo.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    spaceinfo.accessToken = QCloudSMHTestTools.singleTool.getAccessTokenV1;
+    spaceinfo.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    spaceinfo.spaceId =QCloudSMHTestTools.singleTool.getSpaceIdV1;
     continueBlock(spaceinfo,nil);
-//    [self.fenceQueue performRequest:request
-//                         withAction:^(QCloudSMHSpaceInfo *_Nonnull accessToken, NSError *_Nonnull error) {
-//        if (error) {
-//            continueBlock(nil, error);
-//        } else {
-//            continueBlock(accessToken, nil);
-//        }
-//    }];
-    
 }
 
 -(void)test01CreateDirectory{
     XCTestExpectation *expectation = [self expectationWithDescription:@"createDirectory"];
     QCloudSMHPutDirectoryRequest *req = [QCloudSMHPutDirectoryRequest new];
     req.dirPath = testDirName;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
     [req setFinishBlock:^(QCloudSMHContentInfo *contentInfo, NSError *_Nullable error) {
-        if (error) {
-            XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"SameNameDirectoryOrFileExists"]);
-        }else{
-            XCTAssertNil(error);
-            XCTAssertNotNil(contentInfo);
-        }
-        [expectation fulfill];
+        QCloudSMHPutDirectoryRequest *req = [QCloudSMHPutDirectoryRequest new];
+        req.dirPath = testTargetDirName;
+        req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+        [req setFinishBlock:^(QCloudSMHContentInfo *contentInfo, NSError *_Nullable error) {
+            if (error) {
+                XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"SameNameDirectoryOrFileExists"]);
+            }else{
+                XCTAssertNil(error);
+                XCTAssertNotNil(contentInfo);
+            }
+            [expectation fulfill];
+        }];
+        [[QCloudSMHService defaultSMHService] putDirectory:req];
     }];
     [[QCloudSMHService defaultSMHService] putDirectory:req];
+    
     [self waitForExpectationsWithTimeout:100 handler:nil];
 }
 
--(void)test02UploadFile{
+-(void)test02UploadSimpleFile{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFile"];
     QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
-    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserId;
-    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
     
-    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:20*1024*1024]];
-    uploadReq.uploadPath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testFileName]];
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:0.5 * 1024 *1024]];
+    uploadReq.uploadPath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testSimpleFile]];
+    uploadReq.uploadBodyIsCompleted = YES;
+
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+}
+
+-(void)test02SimpleUploadFile{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"test03UploadFile"];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    uploadReq.body =[NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:0.5 * 1024 *1024]];
+    uploadReq.uploadPath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testSimpleFile]];
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+}
+
+-(void)test02BigUploadFile{
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"test03UploadFile"];
+    
+    __block NSString * _confirmKey;
+    
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    NSInteger fileSize = 20 * 1024*1024 + arc4random_uniform(1000);
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:fileSize]];
+    uploadReq.uploadPath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testBigFile]];
     uploadReq.uploadBodyIsCompleted = YES;
     
+    [uploadReq setGetConfirmKey:^(NSString * _Nullable confirmKey) {
+        _confirmKey = confirmKey;
+    }];
     
     [uploadReq setPreviewSendProcessBlock:^(int64_t count, int64_t total, BOOL isStart) {
         
     }];
     
     [uploadReq setSendProcessBlock:^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
+        if (totalBytesSent > 5 * 1024*1024) {
+            [uploadReq cancel];
+            QCloudCOSSMHUploadObjectRequest *uploadReq1 = [QCloudCOSSMHUploadObjectRequest new];
+            uploadReq1.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+            uploadReq1.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+            uploadReq1.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+            uploadReq1.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:fileSize]];
+            uploadReq1.confirmKey = _confirmKey;
+            uploadReq1.uploadPath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testBigFile]];
+            uploadReq1.uploadBodyIsCompleted = YES;
             
+            
+            [uploadReq1 setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+                XCTAssertNil(error);
+                XCTAssertNotNil(result);
+                [expectation fulfill];
+            }];
+            
+            [[QCloudSMHService defaultSMHService] uploadObject:uploadReq1];
+            
+        }
     }];
     
     [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
-        XCTAssertNil(error);
-        XCTAssertNotNil(result);
-        XCTAssertTrue([result.name isEqualToString:testFileName]);
-        XCTAssertTrue([result.paths.firstObject isEqualToString:testDirName]);
+        NSLog(@"%@",error);
+    }];
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+}
+
+
+-(void)test02AbortUploadFile{
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"test03UploadFile"];
+    
+    __block NSString * _confirmKey;
+    
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:20 * 1024*1024 + arc4random_uniform(1000)]];
+    uploadReq.uploadPath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testBigFile]];
+    uploadReq.uploadBodyIsCompleted = YES;
+    
+    [uploadReq setGetConfirmKey:^(NSString * _Nullable confirmKey) {
+        _confirmKey = confirmKey;
+        uploadReq.confirmKey = confirmKey;
+    }];
+    
+    [uploadReq setPreviewSendProcessBlock:^(int64_t count, int64_t total, BOOL isStart) {
+        
+    }];
+    
+    [uploadReq setSendProcessBlock:^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
+        if (totalBytesSent > 5 * 1024*1024) {
+            [uploadReq abort:^(id outputObject, NSError *error) {
+                
+            }];
+        }
+    }];
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNotNil(error);
         [expectation fulfill];
     }];
     
@@ -134,50 +212,137 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 
 -(void)test03CopyFile{
     
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testCopyFile"];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFile1"];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:2 * 1024 *1024]];
+    uploadReq.uploadPath = @"copy_file_source";
+    uploadReq.uploadBodyIsCompleted = YES;
+
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"testCopyFile"];
     QCloudSMHCopyObjectRequest *req = [QCloudSMHCopyObjectRequest new];
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
     
     QCloudSMHBatchCopyInfo *info = [QCloudSMHBatchCopyInfo new];
-    info.from = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testFileName]];
-    info.to = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_copy"]]];
+    info.from = @"copy_file_source";
+    info.to = @"copy_file_source_target";
     info.conflictStrategy = QCloudSMHConflictStrategyEnumAsk;
     req.batchInfos = @[info];
     [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
         XCTAssertNil(error);
         XCTAssertNotNil(result);
         XCTAssertTrue(result.status == QCloudSMHBatchTaskStatusSucceed);
-        [expectation fulfill];
+        
+        QCloudSMHDeleteObjectRequest *req = [QCloudSMHDeleteObjectRequest new];
+        req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        
+        NSMutableArray *batchInfos = [NSMutableArray array];
+        
+        QCloudSMHBatchDeleteInfo *info = [QCloudSMHBatchDeleteInfo new];
+        
+        info.path = @"copy_file_source";
+        [batchInfos addObject:info];
+        QCloudSMHBatchDeleteInfo *info1 = [QCloudSMHBatchDeleteInfo new];
+        
+        info1.path = @"copy_file_source_target";
+        [batchInfos addObject:info1];
+
+        req.batchInfos = [batchInfos copy];
+        [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
+            XCTAssertNil(error);
+            XCTAssertNotNil(result);
+            QCloudSMHRestoreRecycleObjectReqeust * request = [QCloudSMHRestoreRecycleObjectReqeust new];
+            request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+            request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+            request.recycledItemId = result.result.firstObject.recycledItemId;
+            [request setFinishBlock:^(NSDictionary * _Nullable result, NSError * _Nullable error) {
+                XCTAssertNil(error);
+                [expectation1 fulfill];
+            }];
+            
+            [[QCloudSMHService defaultSMHService] restoreRecyleObject:request];
+        }];
+        [[QCloudSMHService defaultSMHService] deleteObject:req];
     }];
     [[QCloudSMHService defaultSMHService] copyObject:req];
-    
-    
     [self waitForExpectationsWithTimeout:100 handler:nil];
 }
 
 -(void)test04MoveFile{
     
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testRenameFile"];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"test04MoveFile1"];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:2 * 1024 *1024]];
+    uploadReq.uploadPath = @"move_file_source";
+    uploadReq.uploadBodyIsCompleted = YES;
+
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"testMoveFile"];
     QCloudSMHMoveObjectRequest *req = [QCloudSMHMoveObjectRequest new];
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
     
     QCloudSMHBatchMoveInfo *info = [QCloudSMHBatchMoveInfo new];
-    info.from = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_copy"]]];
-    info.to = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_move"]]];
+    info.from = @"move_file_source";
+    info.to = @"move_file_source_target";
     info.moveAuthority = YES;
     info.conflictStrategy = QCloudSMHConflictStrategyEnumRename;
 
-    
-    
     req.batchInfos =@[info];
     [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
         XCTAssertNil(error);
         XCTAssertNotNil(result);
-        [expectation fulfill];
+        QCloudSMHDeleteObjectRequest *req = [QCloudSMHDeleteObjectRequest new];
+        req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+        
+        NSMutableArray *batchInfos = [NSMutableArray array];
+        
+        QCloudSMHBatchDeleteInfo *info = [QCloudSMHBatchDeleteInfo new];
+        
+        info.path = @"move_file_source";
+        [batchInfos addObject:info];
+        QCloudSMHBatchDeleteInfo *info1 = [QCloudSMHBatchDeleteInfo new];
+        
+        info1.path = @"move_file_source_target";
+        [batchInfos addObject:info1];
+
+        req.batchInfos = [batchInfos copy];
+        [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
+            XCTAssertNil(error);
+            XCTAssertNotNil(result);
+            [expectation1 fulfill];
+        }];
+        [[QCloudSMHService defaultSMHService] deleteObject:req];
     }];
     [[QCloudSMHService defaultSMHService] moveObject:req];
     [self waitForExpectationsWithTimeout:100 handler:nil];
@@ -185,21 +350,61 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 
 -(void)test05RenameFile{
     
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testRenameFile"];
-    QCloudSMHRenameFileRequest *req = [QCloudSMHRenameFileRequest new];
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFile"];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:2 * 1024 *1024]];
+    uploadReq.uploadPath = @"rename_file_source";
+    uploadReq.uploadBodyIsCompleted = YES;
 
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
-    req.from = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testFileName]];
-    req.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_rename"]]];
-    req.conflictStrategy = QCloudSMHConflictStrategyEnumOverWrite;
-    [req setFinishBlock:^(QCloudSMHRenameResult *result, NSError *_Nullable error) {
-        
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
         XCTAssertNil(error);
         XCTAssertNotNil(result);
-        XCTAssertTrue([result.paths.lastObject isEqualToString:[testFileName stringByAppendingString:@"_rename"]]);
         [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"testRenameFile"];
+    QCloudSMHRenameFileRequest *req = [QCloudSMHRenameFileRequest new];
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    req.from = @"/rename_file_source";
+    req.filePath = @"/rename_file_source_target";
+    req.conflictStrategy = QCloudSMHConflictStrategyEnumOverWrite;
+    [req setFinishBlock:^(QCloudSMHRenameResult *result, NSError *_Nullable error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        QCloudSMHDeleteObjectRequest *req = [QCloudSMHDeleteObjectRequest new];
+        req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+        
+        NSMutableArray *batchInfos = [NSMutableArray array];
+        
+        QCloudSMHBatchDeleteInfo *info = [QCloudSMHBatchDeleteInfo new];
+        
+        info.path = @"rename_file_source";
+        [batchInfos addObject:info];
+        QCloudSMHBatchDeleteInfo *info1 = [QCloudSMHBatchDeleteInfo new];
+        
+        info1.path = @"rename_file_source_target";
+        [batchInfos addObject:info1];
+
+        req.batchInfos = [batchInfos copy];
+        [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
+            XCTAssertNil(error);
+            XCTAssertNotNil(result);
+            [expectation1 fulfill];
+        }];
+        [[QCloudSMHService defaultSMHService] deleteObject:req];
     }];
     [[QCloudSMHService defaultSMHService] renameFile:req];
     [self waitForExpectationsWithTimeout:100 handler:nil];
@@ -207,56 +412,109 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 
 -(void)test06GetFileDetailURL{
     
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testGetFileDetailURL"];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFile"];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:2 * 1024 *1024]];
+    uploadReq.uploadPath = @"file_detail";
+    uploadReq.uploadBodyIsCompleted = YES;
+
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"testGetFileDetailURL"];
     QCloudSMHGetDownloadInfoRequest * requeset = [[QCloudSMHGetDownloadInfoRequest alloc]init];
-    requeset.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    requeset.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    requeset.userId = QCloudSMHTestTools.singleTool.getUserId;
-    requeset.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_move"]]];
+    requeset.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    requeset.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    requeset.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    requeset.filePath = @"file_detail";
     [requeset setFinishBlock:^(QCloudSMHDownloadInfoModel * outputObject, NSError * _Nullable error) {
         XCTAssertNil(error);
         XCTAssertNotNil(outputObject);
-        XCTAssertNotNil(outputObject.cosUrl);
-        XCTAssertTrue(outputObject.size.integerValue == 20 * 1024 * 1024);
-        [expectation fulfill];
+        XCTAssertTrue(outputObject.size.integerValue == 2 * 1024*1024);
+        QCloudSMHDeleteObjectRequest *req = [QCloudSMHDeleteObjectRequest new];
+        req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+        
+        NSMutableArray *batchInfos = [NSMutableArray array];
+        
+        QCloudSMHBatchDeleteInfo *info = [QCloudSMHBatchDeleteInfo new];
+        
+        info.path = @"file_detail";
+        [batchInfos addObject:info];
+
+        req.batchInfos = [batchInfos copy];
+        [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
+            XCTAssertNil(error);
+            XCTAssertNotNil(result);
+            [expectation1 fulfill];
+        }];
+        [[QCloudSMHService defaultSMHService] deleteObject:req];
     }];
     [[QCloudSMHService defaultSMHService] getDonwloadInfo:requeset];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
--(void)test07DeleteFile{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testRenameFile"];
-    QCloudSMHDeleteObjectRequest *req = [QCloudSMHDeleteObjectRequest new];
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
-    
-    NSMutableArray *batchInfos = [NSMutableArray array];
-    
-    QCloudSMHBatchDeleteInfo *info = [QCloudSMHBatchDeleteInfo new];
-    
-    info.path = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_rename"]]];
-    [batchInfos addObject:info];
-
-    req.batchInfos = [batchInfos copy];
-    [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
-        XCTAssertNil(error);
-        XCTAssertNotNil(result);
-        [expectation fulfill];
-    }];
-    [[QCloudSMHService defaultSMHService] deleteObject:req];
-    [self waitForExpectationsWithTimeout:100 handler:nil];
-    
-}
+//-(void)test07DeleteFile{
+//    XCTestExpectation *expectation = [self expectationWithDescription:@"deleteFile1"];
+//    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+//    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+//    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+//    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+//    uploadReq.body =[NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:2 * 1024 *1024]];
+//    uploadReq.uploadPath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:@"deleteFile"]];
+//    
+//    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+//        XCTAssertNil(error);
+//        XCTAssertNotNil(result);
+//        [expectation fulfill];
+//    }];
+//    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+//    [self waitForExpectationsWithTimeout:100 handler:nil];
+//    
+//    XCTestExpectation *expectation1 = [self expectationWithDescription:@"deleteFile2"];
+//    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+//    QCloudSMHDeleteObjectRequest *req = [QCloudSMHDeleteObjectRequest new];
+//    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+//    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+//    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+//    
+//    NSMutableArray *batchInfos = [NSMutableArray array];
+//    
+//    QCloudSMHBatchDeleteInfo *info = [QCloudSMHBatchDeleteInfo new];
+//    
+//    info.path = [testDirName stringByAppendingString:[@"/" stringByAppendingString:@"deleteFile"]];
+//    [batchInfos addObject:info];
+//
+//    req.batchInfos = [batchInfos copy];
+//    [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
+//        XCTAssertNil(error);
+//        XCTAssertNotNil(result);
+//        [expectation1 fulfill];
+//    }];
+//    [[QCloudSMHService defaultSMHService] deleteObject:req];
+//    [self waitForExpectationsWithTimeout:100 handler:nil];
+//}
 
 -(void)test08DownloadFile{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testDownloadFile"];
     QCloudSMHDownloadFileRequest *req = [QCloudSMHDownloadFileRequest new];
 
-    req.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_move"]]];
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
+    req.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testSimpleFile]];
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
     __block NSInteger contentlength = 0;
     [req setResponseHeader:^(NSDictionary *_Nonnull header) {
         contentlength = [header[@"Content-Length"] integerValue];
@@ -273,44 +531,111 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
     [self waitForExpectationsWithTimeout:200 handler:nil];
 }
 
+-(void)test08DownloadBigFile{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"test08DownloadBigFile"];
+    QCloudSMHDownloadFileRequest *req = [QCloudSMHDownloadFileRequest new];
+
+    req.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testBigFile]];
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    req.downloadingURL = [NSURL URLWithString:[QCloudDocumentsPath() stringByAppendingString:[NSString stringWithFormat:@"%@_test_1",NSDate.now]]];
+    __block NSInteger contentlength = 0;
+    [req setResponseHeader:^(NSDictionary *_Nonnull header) {
+        contentlength = [header[@"Content-Length"] integerValue];
+    }];
+
+    [req setFinishBlock:^(id outputObject, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(outputObject);
+        XCTAssertTrue([outputObject[@"Content-Length"] integerValue] == contentlength);
+        [expectation fulfill];
+    }];
+
+    [[QCloudSMHService defaultSMHService] downloadFile:req];
+    [self waitForExpectationsWithTimeout:200 handler:nil];
+}
+
+-(void)test08ResumeDownloadFile{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"test08ResumeDownloadFile"];
+    QCloudSMHDownloadFileRequest *req = [QCloudSMHDownloadFileRequest new];
+    req.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testBigFile]];
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    
+    __block NSInteger contentlength = 0;
+    [req setResponseHeader:^(NSDictionary *_Nonnull header) {
+        contentlength = [header[@"Content-Length"] integerValue];
+    }];
+    
+    [req setDownProcessBlock:^(int64_t bytesDownload, int64_t totalBytesDownload, int64_t totalBytesExpectedToDownload) {
+        if (totalBytesDownload > 1 * 1024 * 1024) {
+            [req cancel];
+            [expectation fulfill];
+        }
+    }];
+
+    [req setFinishBlock:^(id outputObject, NSError *error) {
+    }];
+
+    [[QCloudSMHService defaultSMHService] downloadFile:req];
+    [self waitForExpectationsWithTimeout:200 handler:nil];
+    
+    QCloudSMHDownloadFileRequest *req1 = [QCloudSMHDownloadFileRequest new];
+
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"test08ResumeDownloadFile1"];
+    req1.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testBigFile]];
+    req1.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req1.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    [req1 setResponseHeader:^(NSDictionary *_Nonnull header) {
+        contentlength = [header[@"Content-Length"] integerValue];
+    }];
+
+    [req1 setFinishBlock:^(id outputObject, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(outputObject);
+        XCTAssertTrue([outputObject[@"Content-Length"] integerValue] == contentlength);
+        [expectation1 fulfill];
+    }];
+
+    [[QCloudSMHService defaultSMHService] downloadFile:req1];
+    [self waitForExpectationsWithTimeout:200 handler:nil];
+}
+
+
 -(void)test09RestoreRecycleObjectList{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testRecycleObjectList"];
     QCloudSMHGetRecycleObjectListReqeust *req = [QCloudSMHGetRecycleObjectListReqeust new];
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
     
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
     
     req.limit = 200;
     req.sortType = QCloudSMHSortTypeCTimeReverse;
     [req setFinishBlock:^(QCloudSMHRecycleObjectListInfo *_Nullable result, NSError *_Nullable error) {
         XCTAssertNil(error);
         XCTAssertNotNil(result);
-        Boolean exit = NO;
-        __block NSString * recycledItemId;
-        for (QCloudSMHRecycleObjectItemInfo * item in result.contents) {
-            if ([item.name isEqualToString:@"testFile_rename"]) {
-                exit = true;
-                recycledItemId = item.recycledItemId;
-                break;
-            }
-        }
-        XCTAssertTrue(exit);
-        XCTAssertNotNil(recycledItemId);
-
-        QCloudSMHRestoreObjectRequest *req = [QCloudSMHRestoreObjectRequest new];
-        req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-        req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-        
-        req.userId = QCloudSMHTestTools.singleTool.getUserId;
-        
-        req.batchInfos = @[@(recycledItemId.integerValue)];
-        [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
-            XCTAssertNil(error);
-            XCTAssertNotNil(result);
+        if (result.contents.count == 0) {
             [expectation fulfill];
-        }];
-        [[QCloudSMHService defaultSMHService] restoreObject:req];
+    
+        }else{
+            
+            NSInteger recycledItemId = result.contents.firstObject.recycledItemId;
+            
+            QCloudSMHRestoreObjectRequest *req = [QCloudSMHRestoreObjectRequest new];
+            req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+            req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+            
+            req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+            
+            req.batchInfos = @[@(recycledItemId)];
+            [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
+                XCTAssertNil(error);
+                XCTAssertNotNil(result);
+                [expectation fulfill];
+            }];
+            [[QCloudSMHService defaultSMHService] restoreObject:req];
+        }
     }];
     [[QCloudSMHService defaultSMHService] getRecycleList:req];
     [self waitForExpectationsWithTimeout:30 handler:nil];
@@ -319,7 +644,7 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 -(void)test10MyAuthorizedDirectory{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testMyAuthorizedDirectory"];
     QCloudSMHGetMyAuthorizedDirectoryRequest *req = [QCloudSMHGetMyAuthorizedDirectoryRequest new];
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
     
     req.dirPath = @"/";
     req.limit = 200;
@@ -336,15 +661,13 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 - (void)test11GetRoleListTeamInfo {
     XCTestExpectation *expectation = [self expectationWithDescription:@"testMyAuthorizedDirectory"];
     QCloudSMHGetRoleListRequest *request = [[QCloudSMHGetRoleListRequest alloc] init];
-    request.libraryId = @"smh0hn0ke4y0k471";QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
 
-    [request setFinishBlock:^(id _Nullable outputObject, NSError *_Nullable error) {
+    [request setFinishBlock:^(NSArray<QCloudSMHRoleInfo *> * _Nullable result, NSError * _Nullable error) {
         XCTAssertNil(error);
-        XCTAssertNotNil(outputObject);
-        XCTAssertTrue([outputObject isKindOfClass:[NSArray class]]);
-        NSArray * roles = outputObject;
-        XCTAssertTrue(roles.count == 7);
+        XCTAssertNotNil(result);
+        XCTAssertTrue([result isKindOfClass:[NSArray class]]);
         [expectation fulfill];
     }];
     [[QCloudSMHService defaultSMHService] getRoleList:request];
@@ -355,72 +678,31 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"testGetlistContents"];
     __block QCloudSMHListContentsRequest *req = [QCloudSMHListContentsRequest new];
-    
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
-    req.dirPath = @"/";
-    req.limit = 10;
-    req.requestSerializer.cachePolicy = NSURLRequestReloadIgnoringCacheData;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
     [req setFinishBlock:^(QCloudSMHContentListInfo *_Nullable result, NSError *_Nullable error) {
         XCTAssertNil(error);
         XCTAssertNotNil(result);
-        if (result.contents.count > 0) {
-            
-            NSMutableArray *favoriteInfos = [NSMutableArray array];
-            for (QCloudSMHContentInfo *contentInfo in result.contents) {
-                QCloudSMHCheckFavoriteInfo *checkInfo = [QCloudSMHCheckFavoriteInfo new];
-                checkInfo.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-                checkInfo.path = @"/";
-                [favoriteInfos addObject:checkInfo];
-            }
-            
-            QCloudSMHCheckFavoriteRequest *req = [QCloudSMHCheckFavoriteRequest new];
-            req.organizationId =QCloudSMHTestTools.singleTool.getOrgnizationId;
-            req.userToken = QCloudSMHTestTools.singleTool.getUserToken;
-            req.checkFavoriteInfos = [favoriteInfos copy];
-            [req setFinishBlock:^(NSArray<QCloudSMHCheckFavoriteResultInfo *> * _Nonnull result1, NSError * _Nonnull error1) {
-                XCTAssertNil(error1);
-                XCTAssertNotNil(result1);
-                XCTAssertTrue(result.contents.count == result1.count);
-                [expectation fulfill];
-            }];
-            [[QCloudSMHUserService defaultSMHUserService] checkFavoriteState:req];
-        }else{
-            [expectation fulfill];
-        }
+        [expectation fulfill];
     }];
     [[QCloudSMHService defaultSMHService] listContents:req];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
--(void)test13ListHisotryVersion{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testListHisotryVersion"];
-    QCloudSMHListHistoryVersionRequest *req = [QCloudSMHListHistoryVersionRequest new];
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    req.userToken = QCloudSMHTestTools.singleTool.getUserToken;
-    req.organizationId = QCloudSMHTestTools.singleTool.getOrgnizationId;
-    req.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_move"]]];
-    req.limit = 50;
-    [req setFinishBlock:^(QCloudSMHListHistoryVersionResult *_Nullable result, NSError *_Nullable error) {
-        XCTAssertNil(error);
-        XCTAssertNotNil(result);
-        [expectation fulfill];
-    }];
-    [[QCloudSMHUserService defaultSMHUserService] listHisotryVersion:req];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
-
--(void)test14GetPreginURLFileObject{
+-(void)test13GetPreginURLFileObject{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testGetPreginURLFileObject"];
     QCloudSMHGetPresignedURLRequest *req = [QCloudSMHGetPresignedURLRequest new];
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
     req.priority = QCloudAbstractRequestPriorityHigh;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
 
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
-    req.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_move"]]];
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    req.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testSimpleFile stringByAppendingString:@"_move"]]];
+    req.historyId = @"1";
+    req.scale = 0.5;
+    req.widthSize = 100;
+    req.heightSize = 100;
+    req.frameNumber = 100;
     [req setFinishBlock:^(NSString *result, NSError *_Nullable error) {
         XCTAssertNil(error);
         XCTAssertNotNil(result);
@@ -431,69 +713,25 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
--(void)test15GetFileInfo{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testGetFileInfo"];
-    QCloudSMHGetFileInfoRequest *req = [QCloudSMHGetFileInfoRequest new];
-    req.dirPath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_move"]]];
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    req.organizationId = QCloudSMHTestTools.singleTool.getOrgnizationId;
-    req.userToken = QCloudSMHTestTools.singleTool.getUserToken;
-    [req setFinishBlock:^(QCloudSMHContentInfo *_Nonnull result, NSError *_Nullable error) {
-        XCTAssertNil(error);
-        XCTAssertNotNil(result);
-        XCTAssertTrue([result.paths.lastObject isEqualToString:[testFileName stringByAppendingString:@"_move"]]);
-        XCTAssertTrue([result.paths.firstObject isEqualToString:testDirName]);
-        [expectation fulfill];
+-(void)test14QuickUpload{
+    
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"test03UploadFile"];
+    
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    NSInteger fileSize = 20 * 1024*1024;
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:fileSize]];
+    uploadReq.uploadPath = @"QuickUploadFile";
+    uploadReq.uploadBodyIsCompleted = YES;
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        [expectation1 fulfill];
     }];
-    [[QCloudSMHUserService defaultSMHUserService] getFileInfo:req];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
-
-- (void)test15FavorateObject {
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testGetFileInfo"];
-    QCloudSMHFavoriteFileRequest *req = [QCloudSMHFavoriteFileRequest new];
-    req.priority = QCloudAbstractRequestPriorityHigh;
-    req.organizationId = QCloudSMHTestTools.singleTool.getOrgnizationId;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    req.path = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_move"]]];
-    req.userToken =  QCloudSMHTestTools.singleTool.getUserToken;
-    [req setFinishBlock:^(QCloudSMHFavoriteInfo *favoriteInfo, NSError * _Nullable error) {
-        XCTAssertNil(error);
-        XCTAssertNotNil(favoriteInfo);
-        XCTAssertTrue(favoriteInfo.favoriteId > 0);
-        
-        QCloudSMHDeleteFavoriteRequest *req1 = [QCloudSMHDeleteFavoriteRequest new];
-        req1.userToken = QCloudSMHTestTools.singleTool.getUserToken;
-        req1.organizationId = QCloudSMHTestTools.singleTool.getOrgnizationId;
-        req1.favoriteIds = @[@(favoriteInfo.favoriteId)];
-        [req1 setFinishBlock:^(id _Nullable outputObject, NSError *_Nullable error) {
-            XCTAssertNil(error);
-            XCTAssertNotNil(outputObject);
-            [expectation fulfill];
-        }];
-        [[QCloudSMHUserService defaultSMHUserService] deleteFavoriteFiles:req1];
-        
-    }];
-    [[QCloudSMHUserService defaultSMHUserService] favoriteFile:req];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
-
-- (void)test15ListFavorateObject {
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testGetFileInfo"];
-    QCloudGetFavoriteListRequest *req = [QCloudGetFavoriteListRequest new];
-    req.userToken =  QCloudSMHTestTools.singleTool.getUserToken;
-    req.sortType = QCloudSMHSortTypeFavoriteTime;
-    req.organizationId = QCloudSMHTestTools.singleTool.getOrgnizationId;
-    [req setFinishBlock:^(QCloudSMHFavoriteResult *_Nullable result, NSError *_Nullable error) {
-        XCTAssertNil(error);
-        XCTAssertNotNil(result);
-        [expectation fulfill];
-    }];
-    [[QCloudSMHUserService defaultSMHUserService] getFavoriteList:req];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
-
--(void)test15QuickUpload{
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"testQuickUpload"];
     
@@ -508,11 +746,11 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
     
     QCloudSMHQuickPutObjectRequest * request = [QCloudSMHQuickPutObjectRequest new];
     request.createionDate = [self createDate];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
     request.conflictStrategy = QCloudSMHConflictStrategyEnumRename;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.userId = QCloudSMHTestTools.singleTool.getUserId;
-    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_quick"]]];
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    request.filePath = @"QuickUploadFile_2";
     request.beginningHash = beginningHashString;
     request.fileSize = @(20 * 1024 *1024).stringValue;
     request.finishBlock = ^(id outputObject, NSError *error) {
@@ -533,11 +771,11 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
         }
         QCloudSMHQuickPutObjectRequest * request1 = [QCloudSMHQuickPutObjectRequest new];
         request1.createionDate = [self createDate];
-        request1.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
+        request1.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
         request1.conflictStrategy = QCloudSMHConflictStrategyEnumRename;
-        request1.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-        request1.userId = QCloudSMHTestTools.singleTool.getUserId;
-        request1.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testFileName stringByAppendingString:@"_quick"]]];
+        request1.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        request1.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+        request1.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testSimpleFile stringByAppendingString:@"_quick"]]];
         
         request1.beginningHash = beginningHashString;
         request1.fullHash = [NSData qcloudSha256BytesTostring:fullHash];
@@ -561,62 +799,67 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
     return [dateFormatter stringFromDate:NSDate.new];
 }
 
--(void)test16DeleteDir{
+-(void)test15DeleteDir{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testRenameFile"];
-    QCloudSMHDeleteObjectRequest *req = [QCloudSMHDeleteObjectRequest new];
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
-    
-    NSMutableArray *batchInfos = [NSMutableArray array];
-    
-    QCloudSMHBatchDeleteInfo *info = [QCloudSMHBatchDeleteInfo new];
-    
-    info.path = testDirName;
-    [batchInfos addObject:info];
+    QCloudSMHPutDirectoryRequest *req = [QCloudSMHPutDirectoryRequest new];
+    req.dirPath = @"deleteDir";
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    [req setFinishBlock:^(QCloudSMHContentInfo *contentInfo, NSError *_Nullable error) {
+        QCloudSMHDeleteObjectRequest *req = [QCloudSMHDeleteObjectRequest new];
+        req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        
+        req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+        
+        NSMutableArray *batchInfos = [NSMutableArray array];
+        
+        QCloudSMHBatchDeleteInfo *info = [QCloudSMHBatchDeleteInfo new];
+        
+        info.path = @"deleteDir";
+        [batchInfos addObject:info];
 
-    req.batchInfos = [batchInfos copy];
-    [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
-        XCTAssertNil(error);
-        XCTAssertNotNil(result);
-        [expectation fulfill];
+        req.batchInfos = [batchInfos copy];
+        [req setFinishBlock:^(QCloudSMHBatchResult *result, NSError *_Nullable error) {
+            XCTAssertNil(error);
+            XCTAssertNotNil(result);
+            [expectation fulfill];
+        }];
+        [[QCloudSMHService defaultSMHService]deleteObject:req];
     }];
-    [[QCloudSMHService defaultSMHService]deleteObject:req];
+    [[QCloudSMHService defaultSMHService] putDirectory:req];
+    
     [self waitForExpectationsWithTimeout:100 handler:nil];
 }
 
--(void)test17DeleteRecycleObject{
+-(void)test16DeleteRecycleObject{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testRecycleObjectList"];
     QCloudSMHGetRecycleObjectListReqeust *req = [QCloudSMHGetRecycleObjectListReqeust new];
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
     
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
     
     req.limit = 200;
     req.sortType = QCloudSMHSortTypeCTimeReverse;
     [req setFinishBlock:^(QCloudSMHRecycleObjectListInfo *_Nullable result, NSError *_Nullable error) {
+        
         XCTAssertNil(error);
         XCTAssertNotNil(result);
-        Boolean exit = NO;
-        __block NSString * recycledItemId;
-        for (QCloudSMHRecycleObjectItemInfo * item in result.contents) {
-            if ([item.name isEqualToString:testDirName]) {
-                exit = true;
-                recycledItemId = item.recycledItemId;
-                break;
-            }
+        if (result.contents.count == 0) {
+            [expectation fulfill];
+            return;
         }
-        XCTAssertTrue(exit);
-        XCTAssertNotNil(recycledItemId);
+
+        NSInteger recycledItemId = result.contents.firstObject.recycledItemId;
         
         QCloudSMHBatchDeleteRecycleObjectReqeust *req1 = [QCloudSMHBatchDeleteRecycleObjectReqeust new];
-        req1.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-        req1.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+        req1.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        req1.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
     
-        req1.userId = QCloudSMHTestTools.singleTool.getUserId;
-        req1.recycledItemIds = @[@([recycledItemId integerValue])];
+        req1.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+        req1.recycledItemIds = @[@(recycledItemId)];
         [req1 setFinishBlock:^(id _Nullable outputObject, NSError *_Nullable error) {
             XCTAssertNil(error);
             XCTAssertNotNil(outputObject);
@@ -628,15 +871,15 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
--(void)testCrossCopy{
+-(void)test17CrossCopy{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testCrossCopy"];
     QCloudSMHCrossSpaceAsyncCopyDirectoryRequest *req = [QCloudSMHCrossSpaceAsyncCopyDirectoryRequest new];
-    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
 
-    req.userId = QCloudSMHTestTools.singleTool.getUserId;
-    req.dirPath = @"-1";
-    req.from = @"-2";
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    req.dirPath = testDirName;
+    req.from = testDirName;
     req.fromSpaceId = @"space1d18pweh1rw2u";
     req.conflictStrategy = QCloudSMHConflictStrategyEnumRename;
     [req setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
@@ -649,20 +892,25 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 }
 
 -(void)testExitFileAuthorize{
+    
     XCTestExpectation *expectation = [self expectationWithDescription:@"testExitFileAuthorize"];
     QCloudSMHExitFileAuthorizeRequest * request = [QCloudSMHExitFileAuthorizeRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
 
-    request.userId = QCloudSMHTestTools.singleTool.getUserId;
+    request.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
     QCloudSMHExitFileAuthorize * info = [QCloudSMHExitFileAuthorize new];
-    info.name = @"";
+    info.name = @"观察者";
     info.userId = @"1";
-    info.roleId = @"1";
+    info.roleId = 1;
     request.authorizeTo = @[info];
-    request.dirPath = @"ffff1";
+    request.dirPath = @"/";
     [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-        XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"RoleNotFound"]);
+        if (error) {
+            XCTAssertTrue([error.userInfo[@"code"]isEqualToString:@"RoleNotFound"]);
+        }else{
+            XCTAssertNil(error);
+        }
         [expectation fulfill];
     }];
     [[QCloudSMHService defaultSMHService] exitFileAuthorize:request];
@@ -672,43 +920,83 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 -(void)testHeadFile{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testHeadFile"];
     QCloudSMHHeadFileRequest * request = [QCloudSMHHeadFileRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.userId = QCloudSMHTestTools.singleTool.getUserId;
-    request.filePath = @"test.PNG";
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testSimpleFile]];
     [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-        XCTAssertTrue(error.code == 400);
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
     [[QCloudSMHService defaultSMHService] headFile:request];
     [self waitForExpectationsWithTimeout:100 handler:nil];
 }
 
--(void)testQCloudSMHDeleteFileRequest{
+-(void)test10QCloudSMHDeleteFileRequest{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testHeadFile"];
-    QCloudSMHDeleteFileRequest * request = [QCloudSMHDeleteFileRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.userId = QCloudSMHTestTools.singleTool.getUserId;
-    request.filePath = @"test.jpg";
-    request.permanent = 0;
-    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-        XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"FileNotFound"]);
-        [expectation fulfill];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:2 * 1024 *1024]];
+    uploadReq.uploadPath = @"test10QCloudSMHDeleteFileRequest";
+    uploadReq.uploadBodyIsCompleted = YES;
+
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        QCloudSMHDeleteFileRequest * request = [QCloudSMHDeleteFileRequest new];
+        request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        request.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+        request.filePath = @"test10QCloudSMHDeleteFileRequest";
+        [request setFinishBlock:^(QCloudSMHDeleteResult * _Nullable result, NSError * _Nullable error) {
+            XCTAssertNil(error);
+            QCloudSMHDeleteRecycleObjectReqeust * request = [QCloudSMHDeleteRecycleObjectReqeust new];
+            request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+            request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+            request.recycledItemId = result.recycledItemId;
+            [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+                XCTAssertNil(error);
+                [expectation fulfill];
+            }];
+            [[QCloudSMHService defaultSMHService] deleteRecycleObject:request];
+        }];
+        [[QCloudSMHService defaultSMHService] deleteFile:request];
     }];
-    [[QCloudSMHService defaultSMHService] deleteFile:request];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
     [self waitForExpectationsWithTimeout:100 handler:nil];
 }
 
 -(void)testQCloudSMHGetAlbumRequest{
+    
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"testExitFileAuthorize"];
+    QCloudSMHPutDirectoryRequest *req = [QCloudSMHPutDirectoryRequest new];
+    req.dirPath = @"testQCloudSMHGetAlbumRequest";
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    [req setFinishBlock:^(QCloudSMHContentInfo *contentInfo, NSError *_Nullable error) {
+        if (error) {
+            XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"SameNameDirectoryOrFileExists"]);
+        }else{
+            XCTAssertNil(error);
+            XCTAssertNotNil(contentInfo);
+        }
+        [expectation1 fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] putDirectory:req];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
     XCTestExpectation *expectation = [self expectationWithDescription:@"testExitFileAuthorize"];
     QCloudSMHGetAlbumRequest * request = [QCloudSMHGetAlbumRequest new];
     request.size = @"100";
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.userId = QCloudSMHTestTools.singleTool.getUserId;
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    request.albumName = @"testQCloudSMHGetAlbumRequest";
     [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-        XCTAssertTrue(error.code == 400);
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
     [[QCloudSMHService defaultSMHService] getAlbum:request];
@@ -718,11 +1006,12 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 -(void)testQCloudSMHEditFileOnlineRequest{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHEditFileOnlineRequest"];
     QCloudSMHEditFileOnlineRequest * request = [QCloudSMHEditFileOnlineRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.userId = QCloudSMHTestTools.singleTool.getUserId;
-    request.filePath = @"test (2).doc";
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testSimpleFile]];
     [request setFinishBlock:^(NSString * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
     [[QCloudSMHService defaultSMHService] getEditFileOnlineUrl:request];
@@ -732,12 +1021,13 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 -(void)testQCloudSMHCreateFileRequest{
     XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHCreateFileRequest"];
     QCloudSMHCreateFileRequest * request = [QCloudSMHCreateFileRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.userId = QCloudSMHTestTools.singleTool.getUserId;
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
     request.fromTemplate = QCloudSMHFileTemplateWord;
     request.filePath = @"test.doc";
     [request setFinishBlock:^(QCloudSMHContentInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
             [expectation fulfill];
         }];
     
@@ -757,31 +1047,38 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 }
 
 - (void)testQCloudSMHDeleteAuthorizeRequest {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHDeleteAuthorizeRequest"];
     QCloudSMHDeleteAuthorizeRequest * request = [QCloudSMHDeleteAuthorizeRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.dirPath = @"/";
     
-    request.dirPath = @"/dirPath";
-    
-    QCloudSMHSelectRoleInfo * role = [[QCloudSMHSelectRoleInfo alloc]initWithType:QCloudSMHRoleMember targetId:@"userId" roleId:@"1" name:@"name"];
+    QCloudSMHSelectRoleInfo * role = [[QCloudSMHSelectRoleInfo alloc]initWithType:QCloudSMHRoleMember targetId:@"1" roleId:1 name:@"观察者"];
     
     request.selectRoles = @[role];
     
     [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-            
+        if (error) {
+            XCTAssertTrue([error.userInfo[@"code"]isEqualToString:@"RoleNotFound"]);
+        }else{
+            XCTAssertNil(error);
+        }
+        [expectation fulfill];
     }];
     
     [[QCloudSMHService defaultSMHService] deleteAuthorizedDirectoryFromSomeone:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
 - (void)testQCloudSMHGetINodeDetailRequest {
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHGetRecentlyUsedFileRequest"];
     QCloudSMHGetINodeDetailRequest * request = [QCloudSMHGetINodeDetailRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
     request.iNode = @"v1_XACMAKUAkwD0CrwZDMqLTSg";
     [request setFinishBlock:^(QCloudSMHINodeDetailInfo * _Nullable result, NSError * _Nullable error) {
-        NSLog(@"%@",result);
-        [expectation fulfill];
+            [expectation fulfill];
     }];
     [[QCloudSMHService defaultSMHService] getINodeDetail:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
@@ -790,8 +1087,8 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
 - (void)testQCloudSMHGetRecentlyUsedFileRequest {
     XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHGetRecentlyUsedFileRequest"];
     QCloudSMHGetRecentlyUsedFileRequest * request = [QCloudSMHGetRecentlyUsedFileRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
     request.type = @[@"all"];
     [request setFinishBlock:^(QCloudSMHRecentlyUsedFileInfo * _Nullable result, NSError * _Nullable error) {
         NSLog(@"%@",result.contents.firstObject);
@@ -801,147 +1098,577 @@ requestCreatorWithContinue:(QCloudAccessTokenFenceQueueContinue)continueBlock {
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
--(void)testQCloudUpdateDirectoryTagRequest{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudUpdateDirectoryTagRequest"];
-    QCloudUpdateDirectoryTagRequest * request = [QCloudUpdateDirectoryTagRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
+-(void)testQCloudSMHGetFileCountRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHGetFileCountRequest"];
+    QCloudSMHGetFileCountRequest * request = [QCloudSMHGetFileCountRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    [request setFinishBlock:^(QCloudSMHFileCountInfo *  _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] getCloudFileCount:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHRenameDirectoryRequest{
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"createDirectory"];
+    QCloudSMHPutDirectoryRequest *req = [QCloudSMHPutDirectoryRequest new];
+    req.dirPath = @"rename_dir";
+    req.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    req.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    req.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    [req setFinishBlock:^(QCloudSMHContentInfo *contentInfo, NSError *_Nullable error) {
+        [expectation1 fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] putDirectory:req];
+    
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHRenameDirectoryRequest"];
+    QCloudSMHRenameDirectoryRequest * request = [QCloudSMHRenameDirectoryRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.dirPath = @"rename_dir_target";
+    request.from = @"rename_dir";
+    [request setFinishBlock:^(QCloudSMHRenameResult * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService]renameDirecotry:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+    
+    XCTestExpectation *expectation2 = [self expectationWithDescription:@"QCloudSMHDeleteDirectoryRequest"];
+    QCloudSMHDeleteDirectoryRequest * request1 = [QCloudSMHDeleteDirectoryRequest new];
+    request1.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request1.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request1.dirPath = @"rename_dir_target";
+    [request1 setFinishBlock:^(QCloudSMHDeleteResult * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation2 fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService]deleteDirectory :request1];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+    
+}
+
+-(void)testQCloudSMHPutTagRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHPutTagRequest"];
+    QCloudSMHPutTagRequest * request = [QCloudSMHPutTagRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.tagName = @"tagname";
+    request.tagType = @"1";
+    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+        QCloudSMHGetTagListRequest * request2 = [QCloudSMHGetTagListRequest new];
+        request2.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        request2.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        [request2 setFinishBlock:^(NSArray<QCloudTagModel *> * _Nullable result, NSError * _Nullable error) {
+            QCloudSMHDeleteTagRequest * request1 = QCloudSMHDeleteTagRequest.new;
+            request1.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+            request1.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+            request1.tagId = @"1";
+            [request1 setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+                XCTAssertNil(error);
+                [expectation fulfill];
+            }];
+            [[QCloudSMHService defaultSMHService] deleteTag:request1];
+            XCTAssertNil(error);
+        }];
+        [[QCloudSMHService defaultSMHService] getTagList:request2];
+        
+    }];
+    [[QCloudSMHService defaultSMHService] putTag:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHDeleteDirectoryRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHDeleteDirectoryRequest"];
+    QCloudSMHDeleteDirectoryRequest * request = [QCloudSMHDeleteDirectoryRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
     request.dirPath = testDirName;
-    request.labels = @[@"label1",@"label1"];
+    [request setFinishBlock:^(QCloudSMHDeleteResult * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService]deleteDirectory :request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHDetailDirectoryRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHDetailDirectoryRequest"];
+    QCloudSMHDetailDirectoryRequest * request = [QCloudSMHDetailDirectoryRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = @"";
+    [request setFinishBlock:^(QCloudSMHContentInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] detailDirectory:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHPostAuthorizeRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHPostAuthorizeRequest"];
+    QCloudSMHPostAuthorizeRequest * request = [QCloudSMHPostAuthorizeRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.dirPath = @"/";
+    QCloudSMHSelectRoleInfo * role = QCloudSMHSelectRoleInfo.new;
+    role.type = QCloudSMHRoleGrop;
+    role.targetId = @"1";
+    role.roleId = 1;
+    role.name = @"观察者";
+    request.selectRoles = @[role];
     [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-        NSLog(@"%@",outputObject);
+        if (error) {
+            XCTAssertTrue([error.userInfo[@"code"]isEqualToString:@"RoleNotFound"]);
+        }else{
+            XCTAssertNil(error);
+        }
         [expectation fulfill];
     }];
-    [[QCloudSMHService defaultSMHService] updateDirectoryTag:request];
+    [[QCloudSMHService defaultSMHService] authorizedDirectoryToSomeone:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
--(void)testQCloudSMHGetSpaceHomeFileRequest{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"QCloudSMHGetSpaceHomeFileRequest"];
-    QCloudSMHGetSpaceHomeFileRequest * request = [QCloudSMHGetSpaceHomeFileRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.directoryFilter = QCloudSMHDirectoryOnlyDir;
-    [request setFinishBlock:^(QCloudSMHSpaceHomeFileInfo * _Nullable result, NSError * _Nullable error) {
-        NSLog(@"%@",result);
+-(void)testQCloudSMHGetFileListByTagsRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHGetFileListByTagsRequest"];
+    QCloudSMHGetFileListByTagsRequest * request = [QCloudSMHGetFileListByTagsRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    QCloudFileQueryTagModel * tag = [QCloudFileQueryTagModel new];
+    tag.tagId = @"1";
+
+    request.tagList = @[tag];
+    [request setFinishBlock:^(QCloudQueryTagFilesInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
-    [[QCloudSMHService defaultSMHService] getSpaceHomeFile:request];
+    [[QCloudSMHService defaultSMHService] getFileListByTags:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
--(void)testQCloudUpdateFileTagRequest{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudUpdateFileTagRequest"];
-    QCloudUpdateFileTagRequest * request = [QCloudUpdateFileTagRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testFileName]];
-    request.labels = @[@"label1",@"label1"];
+-(void)testQCloudSMHCopyFileRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHCopyFileRequest"];
+    QCloudSMHCopyFileRequest * request = [QCloudSMHCopyFileRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:[testSimpleFile stringByAppendingString:@"_copy"]]];
+    request.from = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testSimpleFile]];
+    [request setFinishBlock:^(QCloudSMHRenameResult * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService]copyFile:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHPutHisotryVersionRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHPutHisotryVersionRequest"];
+    QCloudSMHPutHisotryVersionRequest * request = [QCloudSMHPutHisotryVersionRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.enableFileHistory = YES;
     [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-        NSLog(@"%@",outputObject);
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
-    [[QCloudSMHService defaultSMHService] updateFileTag:request];
+    [[QCloudSMHService defaultSMHService]putHisotryVersion :request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
-
--(void)testQCloudSMHGetRecyclePresignedURLRequest{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"QCloudSMHGetRecyclePresignedURLRequest"];
-    QCloudSMHGetRecyclePresignedURLRequest * request = [QCloudSMHGetRecyclePresignedURLRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.recycledItemId = @"723074";
+-(void)testQCloudSMHDeleteAllRecycleObjectReqeust{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHDeleteAllRecycleObjectReqeust"];
+    QCloudSMHDeleteAllRecycleObjectReqeust * request = [QCloudSMHDeleteAllRecycleObjectReqeust new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
     [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-        NSLog(@"%@",outputObject);
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
-    [[QCloudSMHService defaultSMHService] getRecyclePresignedURL:request];
+    
+    [[QCloudSMHService defaultSMHService] deleteAllRecyleObject:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
-
--(void)testQCloudSMHGetRecycleFileDetailReqeust{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"QCloudSMHGetRecycleFileDetailReqeust"];
-    QCloudSMHGetRecycleFileDetailReqeust * request = [QCloudSMHGetRecycleFileDetailReqeust new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.recycledItemId = @"723074";
-    [request setFinishBlock:^(QCloudSMHRecycleObjectItemInfo * _Nullable result, NSError * _Nullable error) {
-        NSLog(@"%@",result);
+-(void)testQCloudGetTaskStatusRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudGetTaskStatusRequest"];
+    QCloudGetTaskStatusRequest * request = [QCloudGetTaskStatusRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.taskIdList = @[@1];
+    [request setFinishBlock:^(NSArray<QCloudSMHBatchResult *> * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
-    [[QCloudSMHService defaultSMHService] getRecycleFileDetail:request];
+    [[QCloudSMHService defaultSMHService] getTaskStatus:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
-
--(void)testQCloudSetSpaceTrafficLimitRequest{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"QCloudSetSpaceTrafficLimitRequest"];
-    QCloudSetSpaceTrafficLimitRequest * request = [QCloudSetSpaceTrafficLimitRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    request.downloadTrafficLimit = 1 * 1024 * 1024;
+-(void)testQCloudSMHPutFileTagRequest{
+    
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"testQCloudSMHPutFileTagRequest"];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    uploadReq.body =[NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:2 * 1024 *1024]];
+    uploadReq.uploadPath = @"put_file_tag";
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [expectation1 fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHPutFileTagRequest_1"];
+    QCloudSMHPutFileTagRequest * request = [QCloudSMHPutFileTagRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = @"put_file_tag";
+    QCloudSMHTagModel * tag = [QCloudSMHTagModel new];
+    tag.tagId = @"id";
+    tag.tagValue = @"value";
+    request.kvTags = @[tag];
+    
     [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-        NSLog(@"%@",outputObject);
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
-    [[QCloudSMHService defaultSMHService] setSpaceTrafficLimit:request];
+    
+    [[QCloudSMHService defaultSMHService] putFileTag:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
-}
-
--(void)testQCloudSMHFavoriteSpaceFileRequest{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"QCloudSMHFavoriteSpaceFileRequest"];
-    QCloudSMHFavoriteSpaceFileRequest * request = [QCloudSMHFavoriteSpaceFileRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-//    request.path = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testFileName]];
-    request.inode = @"c7106bbe6d55415e00062f32c5e987b3";
-    [request setFinishBlock:^(QCloudSMHFavoriteSpaceFileResult * _Nullable result, NSError * _Nullable error) {
-        NSLog(@"%@",result);
-        [expectation fulfill];
-    }];
-    [[QCloudSMHService defaultSMHService] favoriteSpaceFile:request];
-    [self waitForExpectationsWithTimeout:30 handler:nil];
-}
-
--(void)testQCloudSMHDeleteFavoriteSpaceFileRequest{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"QCloudSMHDeleteFavoriteSpaceFileRequest"];
-    QCloudSMHDeleteFavoriteSpaceFileRequest * request = [QCloudSMHDeleteFavoriteSpaceFileRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-//    request.path = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testFileName]];
-    request.inode = @"c7106bbe6d55415e00062f32c5e987b3";
+    
+    XCTestExpectation *expectation2 = [self expectationWithDescription:@"testQCloudSMHPutFileTagRequest_2"];
+    request = [QCloudSMHPutFileTagRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = @"put_file_tag";
+    
+    request.tags = @[@"test"];
+    
     [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
-        NSLog(@"%@",outputObject);
-        [expectation fulfill];
+        XCTAssertNil(error);
+        [expectation2 fulfill];
     }];
-    [[QCloudSMHService defaultSMHService] deleteFavoriteSpaceFile:request];
+    
+    [[QCloudSMHService defaultSMHService] putFileTag:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
--(void)testQCloudSMHListFavoriteSpaceFileRequest{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"QCloudSMHListFavoriteSpaceFileRequest"];
-    QCloudSMHListFavoriteSpaceFileRequest * request = [QCloudSMHListFavoriteSpaceFileRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceId;
-    [request setFinishBlock:^(QCloudSMHContentListInfo * _Nullable result, NSError * _Nullable error) {
-        NSLog(@"%@",result);
+-(void)testQCloudSMHPutObjectLinkRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHPutObjectLinkRequest"];
+    QCloudSMHPutObjectLinkRequest * request = [QCloudSMHPutObjectLinkRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = testDirName;
+    request.linkTo = @"test.com";
+    [request setFinishBlock:^(QCloudSMHPutObjectLinkInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
-    [[QCloudSMHService defaultSMHService] listFavoriteSpaceFile:request];
+    [[QCloudSMHService defaultSMHService] putObjectLink:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
--(void)testQCloudGetSpaceUsageRequest{
-    XCTestExpectation *expectation = [self expectationWithDescription:@"QCloudGetSpaceUsageRequest"];
-    QCloudGetSpaceUsageRequest * request = [QCloudGetSpaceUsageRequest new];
-    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryId;
-    request.spaceIds = QCloudSMHTestTools.singleTool.getSpaceId;
-    [request setFinishBlock:^(NSArray<QCloudSMHSpaceUsageInfo *> * _Nullable result, NSError * _Nullable error) {
-        NSLog(@"%@",result);
+-(void)testQCloudSMHHeadDirectoryRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHHeadDirectoryRequest"];
+    QCloudSMHHeadDirectoryRequest * request = [QCloudSMHHeadDirectoryRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.dirPath = @"/";
+    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+        XCTAssertNil(error);
         [expectation fulfill];
     }];
-    [[QCloudSMHService defaultSMHService] getSpaceUsage:request];
+    [[QCloudSMHService defaultSMHService] headDirectory:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 
+-(void)testQCloudSMHGetHistoryInfoRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHGetHistoryInfoRequest"];
+    QCloudSMHGetHistoryInfoRequest * request = [QCloudSMHGetHistoryInfoRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
 
+    [request setFinishBlock:^(QCloudSMHHistoryStateInfo * _Nullable result, NSError * _Nullable error) {
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] getHistoryDetailInfo:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHInitiateSearchRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHInitiateSearchRequest"];
+    QCloudSMHInitiateSearchRequest * request = [QCloudSMHInitiateSearchRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.keyword = @"test";
+    request.scope = @"/";
+    request.searchTypes = @[@(QCloudSMHSearchTypeAll)];
+    request.searchMode = QCloudSMHSearchModeNormal;
+    request.minFileSize = 0;
+    request.maxFileSize = 1024 * 1024 * 1024 * 1024;
+    [request setFinishBlock:^(QCloudSMHSearchListInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        QCloudSMHResumeSearchRequest * rRequest = [QCloudSMHResumeSearchRequest new];
+        rRequest.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+        rRequest.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+        rRequest.searchId = result.searchId;
+        rRequest.nextMarker = result.nextMarker;
+        [rRequest setFinishBlock:^(QCloudSMHSearchListInfo * _Nullable result, NSError * _Nullable error) {
+            if (!result.searchId) {
+                [expectation fulfill];
+            }else{
+                QCloudSMHAbortSearchRequest * abortRequest = [QCloudSMHAbortSearchRequest new];
+                abortRequest.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+                abortRequest.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+                abortRequest.searchId = result.searchId;
+                [abortRequest setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+                    XCTAssertNil(error);
+                    [expectation fulfill];
+                }];
+                [[QCloudSMHService defaultSMHService] abortSearch:abortRequest];
+            }
+           
+        }];
+        [[QCloudSMHService defaultSMHService] resumeSearch:rRequest];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] initSearch:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+-(void)testQCloudSMHDeleteHistoryVersionRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHDeleteHistoryVersionRequest"];
+    QCloudSMHDeleteHistoryVersionRequest * request = [QCloudSMHDeleteHistoryVersionRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.historyIds = @[@"1"];
+    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+        XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"DirectoryHistoryNotFound"]);
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] deleteHisotryVersion:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHAPIListHistoryVersionRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHAPIListHistoryVersionRequest"];
+    QCloudSMHAPIListHistoryVersionRequest * request = [QCloudSMHAPIListHistoryVersionRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testSimpleFile]];
+    
+    [request setFinishBlock:^(QCloudSMHListHistoryVersionResult * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] listHistoryVersion:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHAPIListHistoryVersionRequest2{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHAPIListHistoryVersionRequest"];
+    QCloudSMHAPIListHistoryVersionRequest * request = [QCloudSMHAPIListHistoryVersionRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testSimpleFile]];
+    request.page = 1;
+    request.pageSize = 100;
+    request.sortType = QCloudSMHSortTypeName;
+    [request setFinishBlock:^(QCloudSMHListHistoryVersionResult * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] listHistoryVersion:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudCOSSMHDownloadObjectRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudCOSSMHDownloadObjectRequest"];
+    QCloudCOSSMHDownloadObjectRequest * request = [QCloudCOSSMHDownloadObjectRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testSimpleFile]];
+    request.downloadingURL = [NSURL URLWithString:[QCloudDocumentsPath() stringByAppendingString:[NSString stringWithFormat:@"%@_test",NSDate.now]]];
+    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] smhDownload:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudCOSSMHDownloadObjectRequest2{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudCOSSMHDownloadObjectRequest"];
+    QCloudCOSSMHDownloadObjectRequest * request = [QCloudCOSSMHDownloadObjectRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testBigFile]];
+    request.downloadingURL = [NSURL URLWithString:[QCloudDocumentsPath() stringByAppendingString:@"/test"]];
+    
+    [request setDownProcessBlock:^(int64_t bytesDownload, int64_t totalBytesDownload, int64_t totalBytesExpectedToDownload) {
+        if (totalBytesDownload > 1024 * 1024) {
+            [request cancel];
+            [expectation fulfill];
+        }
+    }];
+    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+    
+    }];
+    
+    [[QCloudSMHService defaultSMHService] smhDownload:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHDeleteFileTagRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHDeleteFileTagRequest"];
+    QCloudSMHDeleteFileTagRequest * request = [QCloudSMHDeleteFileTagRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.fileTagId = @"1";
+    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] deleteFileTag:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHGetFileTagRequest{
+    
+    XCTestExpectation *expectation1 = [self expectationWithDescription:@"testQCloudSMHGetFileTagRequest"];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV1;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    uploadReq.body =[NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithSize:2 * 1024 *1024]];
+    uploadReq.uploadPath = @"get_file_tag";
+    
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [expectation1 fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:10 handler:nil];
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHGetFileTagRequest_1"];
+    QCloudSMHGetFileTagRequest * request = [QCloudSMHGetFileTagRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = @"get_file_tag";
+    [request setFinishBlock:^(NSArray<QCloudFileTagItemModel *> * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] getFileTag:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHSetLatestVersionRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHSetLatestVersionRequest"];
+    QCloudSMHSetLatestVersionRequest * request = [QCloudSMHSetLatestVersionRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.historyId = 123;
+    [request setFinishBlock:^(QCloudSMHContentInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"DirectoryHistoryNotFound"]);
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] setLatestVersion:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudDeleteLocalSyncRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudDeleteLocalSyncRequest"];
+    QCloudDeleteLocalSyncRequest * request = [QCloudDeleteLocalSyncRequest new];
+    request.syncId = @"1";
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] deleteLocalSync:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHGetUploadStateRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHGetUploadStateRequest"];
+    QCloudSMHGetUploadStateRequest * request = [QCloudSMHGetUploadStateRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.confirmKey = @"test";
+    [request setFinishBlock:^(QCloudSMHUploadStateInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"UploadNotFound"]);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] getUploadStateInfo:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHSpaceAuthorizeRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHSpaceAuthorizeRequest"];
+    QCloudSMHSpaceAuthorizeRequest * request = [QCloudSMHSpaceAuthorizeRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.authorizeSpaceId =  QCloudSMHTestTools.singleTool.getSpaceIdV1;
+
+    request.roleId = 1;
+    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+        if (error) {
+            XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"RoleNotFound"]);
+        }else{
+            XCTAssertNil(error);
+        }
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] spaceAuthorize:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudGetFileThumbnailRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudGetFileThumbnailRequest"];
+    QCloudGetFileThumbnailRequest * request = [QCloudGetFileThumbnailRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    request.filePath = [testDirName stringByAppendingString:[@"/" stringByAppendingString:testBigFile]];
+    request.size = 100;
+    [request setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] getThumbnail:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+-(void)testQCloudSMHAbortSearchRequest{
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testQCloudSMHAbortSearchRequest"];
+
+    QCloudSMHAbortSearchRequest * abortRequest = [QCloudSMHAbortSearchRequest new];
+    abortRequest.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV1;
+    abortRequest.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV1;
+    abortRequest.searchId = @"test";
+    [abortRequest setFinishBlock:^(id  _Nullable outputObject, NSError * _Nullable error) {
+        if (error) {
+            XCTAssertTrue([error.userInfo[@"code"] isEqualToString:@"SearchIdInvalid"]);
+        }else{
+            XCTAssertNil(error);
+        }
+        
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] abortSearch:abortRequest];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
 @end

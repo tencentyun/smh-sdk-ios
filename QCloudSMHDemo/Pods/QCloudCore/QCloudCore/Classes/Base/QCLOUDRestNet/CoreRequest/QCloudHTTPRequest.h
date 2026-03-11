@@ -52,6 +52,11 @@ typedef void (^QCloudHTTPRequestConfigure)(QCloudRequestSerializer *_Nonnull req
 @property (nonatomic, strong , readonly) NSURL *_Nonnull downloadingTempURL;
 
 /**
+  * 是否禁止将下载的文件写入内存中（默认为NO）
+ */
+@property (nonatomic, assign) BOOL forbidenWirteToCahce;
+
+/**
  本地已经下载的数据偏移量，如果使用则会从改位置开始下载，如果不使用，则从头开始下载，如果您使用了Range参数，则需要注意改参数。
  */
 @property (nonatomic, assign) int64_t localCacheDownloadOffset;
@@ -141,8 +146,25 @@ typedef void (^QCloudHTTPRequestConfigure)(QCloudRequestSerializer *_Nonnull req
 - (void)onReviveErrorResponse:(NSURLResponse *_Nullable)prsponse error:(NSError *_Nullable)error;
 - (void)onReciveRespone:(NSURLResponse *_Nullable)response data:(NSData *_Nullable)data;
 
--(BOOL)needChangeHost;
+/// 判断是否为 CI 域名
+- (BOOL)isCIHost;
 
-+(BOOL)needChangeHost:(NSString *_Nullable)host;
+/// 判断是否为 COS 域名
+- (BOOL)isCOSHost;
+
+/// 获取备份域名
++ (NSString *_Nullable)getBackupHost:(NSString *_Nullable)host;
+
+/// 判断当前请求是否需要切换域名
+- (BOOL)needChangeHost;
+
+/// 判断指定域名是否需要切换（不检查响应头）
+/// @param host 域名
++ (BOOL)needChangeHost:(NSString *_Nullable)host;
+
+/// 判断指定域名是否需要切换（检查响应头中的 request-id）
+/// @param host 域名
+/// @param responseHeaders 响应头（用于检查 x-cos-request-id 或 x-ci-request-id）
++ (BOOL)needChangeHost:(NSString *_Nullable)host responseHeaders:(NSDictionary *_Nullable)responseHeaders;
 
 @end

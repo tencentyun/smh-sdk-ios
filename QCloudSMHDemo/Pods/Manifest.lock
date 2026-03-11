@@ -1,29 +1,23 @@
 PODS:
-  - QCloudCore (6.4.5):
-    - QCloudCore/Default (= 6.4.5)
-  - QCloudCore/Default (6.4.5):
-    - QCloudTrack/Beacon (= 6.4.5)
-  - QCloudCOSSMH/WithoutCoreVersion (1.0.7):
-    - QCloudCore
-  - QCloudTrack/Beacon (6.4.5)
+  - QCloudCore/WithoutMTA (6.5.4)
+  - QCloudCOSSMH/Api (1.0.9):
+    - QCloudCore/WithoutMTA (= 6.5.4)
 
 DEPENDENCIES:
-  - QCloudCOSSMH/WithoutCoreVersion (from `../`)
+  - QCloudCOSSMH/Api (from `../`)
 
 SPEC REPOS:
   trunk:
     - QCloudCore
-    - QCloudTrack
 
 EXTERNAL SOURCES:
   QCloudCOSSMH:
     :path: "../"
 
 SPEC CHECKSUMS:
-  QCloudCore: a1c543624fe34c5e98c92b7faf421a23f57ad5e3
-  QCloudCOSSMH: a95b6dff37d45401310d0402c3b97a2038b5e518
-  QCloudTrack: 6bf7aaa7e870d72fb4c9c88455dc63c7c65073b7
+  QCloudCore: 9558f2245ff3218acda09b79810d05660ff420f9
+  QCloudCOSSMH: 4c872b43609b4723f1cb8406e4b2f216a5cfae74
 
-PODFILE CHECKSUM: 91efc64246e548aa276c9919677ae4f440febd61
+PODFILE CHECKSUM: dc0212f8bd3e2a2a5d600d795b301d5e73ac6882
 
 COCOAPODS: 1.16.2

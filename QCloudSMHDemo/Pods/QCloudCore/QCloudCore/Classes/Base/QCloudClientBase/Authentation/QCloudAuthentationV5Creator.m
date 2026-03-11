@@ -18,6 +18,7 @@
 #import "QCloudURLHelper.h"
 #import "NSDate+QCLOUD.h"
 #import "QCloudError.h"
+#import "NSURLRequest+COS.h"
 #define DEFAULT_TOKEN_HEADER_NAME @"x-cos-security-token"
 
 @implementation NSDictionary (HeaderFilter)
@@ -92,22 +93,29 @@
 
 - (QCloudSignature *)signatureForData:(NSMutableURLRequest *)urlrequest {
     if (!self.credential.secretID.length) {
-        @throw [NSException exceptionWithName:QCloudErrorDomain reason:@"请检查 secretID 是否为空" userInfo:nil];
+        QCloudLogErrorE(@"Signature", @"请检查 secretID 是否为空");
+        return nil;
     }
     if (!self.credential.secretKey.length) {
-        @throw [NSException exceptionWithName:QCloudErrorDomain reason:@"请检查 secretKey 是否为空" userInfo:nil];
+        QCloudLogErrorE(@"Signature", @"请检查 secretKey 是否为空");
+        return nil;
     }
 
     if ([self.credential.secretID hasPrefix:@" "] || [self.credential.secretID hasPrefix:@" "] ) {
-        @throw [NSException exceptionWithName:QCloudErrorDomain reason:@"请检查 secretID 是否合法" userInfo:nil];
+        QCloudLogErrorE(@"Signature", @"请检查 secretID 是否合法");
+        return nil;
     }
     if ([self.credential.secretKey hasPrefix:@" "] || [self.credential.secretKey hasPrefix:@" "] ) {
-        @throw [NSException exceptionWithName:QCloudErrorDomain reason:@"请检查 secretID 是否合法" userInfo:nil];
+        QCloudLogErrorE(@"Signature", @"请检查 secretID 是否合法");
+        return nil;
     }
   
     if (self.credential.token) {
         NSString *tokenHeaderName = self.tokenHeaderName != nil ? self.tokenHeaderName : DEFAULT_TOKEN_HEADER_NAME;
         [urlrequest setValue:self.credential.token forHTTPHeaderField:tokenHeaderName];
+    }
+    if (([urlrequest.HTTPMethod isEqualToString:@"DELETE"]||[urlrequest.HTTPMethod isEqualToString:@"PUT"]||[urlrequest.HTTPMethod isEqualToString:@"POST"]) && ![urlrequest.allHTTPHeaderFields.allKeys containsObject:@"Content-Length"] ) {
+        [urlrequest setValue:@"0" forHTTPHeaderField:@"Content-Length"];
     }
     int64_t nowInterval = 0;
     if (self.credential.startDate) {
@@ -115,6 +123,7 @@
     } else {
         nowInterval = [[NSDate date] timeIntervalSince1970];
     }
+    QCloudLogDebugP(@"Signature",@"local time is %ld", [[NSDate date] timeIntervalSince1970]);
     //  默认一个签名为10分钟有效，防止签名时间过长，导致泄露
     NSTimeInterval experationInterVal = nowInterval + 10 * 60;
     if (self.credential.expirationDate) {
@@ -123,10 +132,14 @@
     NSString *signTime = [NSString stringWithFormat:@"%lld;%lld", (int64_t)nowInterval, (int64_t)experationInterVal];
     NSDictionary *headers = [[urlrequest allHTTPHeaderFields] filteHeaders];
     NSDictionary *urlParamters = QCloudURLReadQuery(urlrequest.URL);
-    if (self.shouldSignedList) {
+    NSArray * shouldSignedList = self.shouldSignedList;
+    if (urlrequest.shouldSignedList) {
+        shouldSignedList = urlrequest.shouldSignedList;
+    }
+    if (shouldSignedList) {
         NSMutableDictionary *shouldSignedHeaderDic = [NSMutableDictionary dictionary];
         NSMutableDictionary *shouldSignedParamsDic = [NSMutableDictionary dictionary];
-        for (NSString *key in self.shouldSignedList) {
+        for (NSString *key in shouldSignedList) {
             if ([headers objectForKey:key]) {
                 shouldSignedHeaderDic[key] = [headers objectForKey:key];
             } else if ([urlParamters objectForKey:key]) {
@@ -174,11 +187,11 @@
     AppendFormatString(headerFormat);
 
     NSString *formatStringSHA = [formatString qcloud_sha1];
-    QCloudLogDebug(@"format string is %@", formatString);
+    QCloudLogDebugP(@"Signature",@"format string is %@", formatString);
     // step 3 计算StringToSign
 
     NSString *stringToSign = [NSString stringWithFormat:@"%@\n%@\n%@\n", @"sha1", signTime, formatStringSHA];
-    QCloudLogDebug(@"StringToSign is %@", stringToSign);
+    QCloudLogDebugP(@"Signature",@"StringToSign is %@", stringToSign);
     // step 4 计算签名
 
     NSString *signatureStr = [NSString qcloudHMACHexsha1:stringToSign secret:signKey];
@@ -211,10 +224,11 @@
     NSString *authoration =
         [NSString stringWithFormat:@"q-sign-algorithm=sha1&q-ak=%@&q-sign-time=%@&q-key-time=%@&q-header-list=%@&q-url-param-list=%@&q-signature=%@",
                                    self.credential.secretID, signTime, keyTime, DumpAllKeys(headers), DumpAllKeys(urlParamters), signatureStr];
-    QCloudLogDebug(@"authoration is %@", authoration);
+    QCloudLogDebugP(@"Signature",@"authoration is %@", authoration);
 
     QCloudSignature *signature = [QCloudSignature signatureWith1Day:authoration];
     signature.token = self.credential.token;
+    [signature setSignatureSourceType:QCloudSignatureSourceTypeSDK];
     return signature;
 }
 

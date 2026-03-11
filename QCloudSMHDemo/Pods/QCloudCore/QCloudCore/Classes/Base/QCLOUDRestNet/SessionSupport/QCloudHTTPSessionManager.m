@@ -28,6 +28,7 @@
 #import "UIDevice+QCloudFCUUID.h"
 #import "QCloudThreadSafeMutableDictionary.h"
 #import "QCloudWeakProxy.h"
+#import "QCloudLoaderManager.h"
 
 #ifndef __IPHONE_13_0
 #define __IPHONE_13_0    130000
@@ -102,8 +103,9 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
             _quicSession = func(cls, createQuicSessionSelector, self);
         }
     } else {
-        QCloudLogDebug(@"quicSession is nil");
+        QCloudLogDebugE(@"HTTP",@"quicSession is nil");
     }
+    
     _buildDataQueue = dispatch_queue_create("com.tencent.qcloud.build.data", NULL);
     _taskQueue = [NSMutableDictionary new];
     _operationQueue = [QCloudOperationQueue new];
@@ -127,8 +129,6 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     }
 }
 
-- (void)cancelRequests:(NSArray<NSNumber *> *)requestID {
-}
 - (void)cacheTask:(NSURLSessionTask *)task data:(QCloudURLSessionTaskData *)data forSEQ:(int)seq {
     if (!task) {
         return;
@@ -190,6 +190,11 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     [_operationQueue addOpreation:operation];
     return (int)request.requestID;
 }
+
+- (void)requestOperationFinishWithRequestId:(int64_t)requestID{
+    [_operationQueue requestOperationFinishWithRequestId:requestID];
+}
+
 #if TARGET_OS_IOS
 // only work at iOS 10 and up
 - (void)URLSession:(NSURLSession *)session
@@ -236,11 +241,15 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
         completionHandler(nil);
         return;
     }
-    if(![taskData.httpRequest needChangeHost] || taskData.httpRequest.runOnService.configuration.disableChangeHost == YES || [response.allHeaderFields.allKeys containsObject:@"x-cos-request-id"] || [request.URL.absoluteURL.host rangeOfString:@"tencentcos.cn"].length > 0){
+    
+    NSString *requestHost = request.URL.absoluteURL.host;
+    // 检查是否需要允许重定向:
+    if(taskData.httpRequest.runOnService.configuration.disableChangeHost == YES ||
+       ![QCloudHTTPRequest needChangeHost:requestHost responseHeaders:response.allHeaderFields]){
         completionHandler(request);
     }else{
         completionHandler(nil);
-        NSError *error = [NSError errorWithDomain:request.URL.host code:QCloudNetworkErrorCodeDomainInvalid userInfo:@{NSLocalizedDescriptionKey: @""}];
+        NSError *error = [NSError errorWithDomain:requestHost code:QCloudNetworkErrorCodeDomainInvalid userInfo:@{NSLocalizedDescriptionKey: @""}];
         [task cancel];
         [self URLSession:session task:task didCompleteWithError:error];
     }
@@ -250,7 +259,7 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
               dataTask:(NSURLSessionDataTask *)dataTask
     didReceiveResponse:(NSURLResponse *)response
      completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler {
-    QCloudLogDebug(@"didReceiveResponse: %@", response);
+    QCloudLogDebugR(@"HTTP",@"didReceiveResponse: %@", response);
     QCloudURLSessionTaskData *taskData = [self taskDataForTask:dataTask];
     [taskData.httpRequest.benchMarkMan benginWithKey:kReadResponseHeaderTookTime];
     taskData.response = (NSHTTPURLResponse *)response;
@@ -312,7 +321,7 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    QCloudLogInfo(@"任务完成的回调 didCompleteWithError response = %@ error = ", task.response, error);
+    QCloudLogInfoR(@"HTTP",@"任务完成的回调 didCompleteWithError response = %@ error = %@", task.response, error);
     [[NSNotificationCenter defaultCenter]
         postNotificationName:kQCloudRestNetURLUsageNotification
                       object:nil
@@ -328,10 +337,10 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     if (!taskData) {
         return;
     }
+
+    BOOL needRetryWithDomainChange = [self shouldRetry:taskData error:error];
     
-    if(taskData.response.statusCode > 400 && [hostURL.host rangeOfString:@"tencentcos.cn"].length == 0 && ![taskData.response.allHeaderFields.allKeys containsObject:@"x-cos-request-id"] &&
-       [taskData.httpRequest needChangeHost] &&
-       taskData.httpRequest.runOnService.configuration.disableChangeHost == NO){
+    if (needRetryWithDomainChange) {
         error = [NSError errorWithDomain:hostURL.host code:QCloudNetworkErrorCodeDomainInvalid userInfo:@{NSLocalizedDescriptionKey: @""}];
         taskData.isTaskCancelledByStatusCodeCheck = NO;
     }
@@ -339,7 +348,7 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     int seq = [self seqForTask:task];
     __weak typeof(self) weakSelf = self;
     if (!taskData.isTaskCancelledByStatusCodeCheck && error) {
-        QCloudLogError(@"Network Error %@", error);
+        QCloudLogErrorE(@"HTTP",@"Network Error %@", error);
         void (^EndRetryFunc)(void) = ^(void) {
             [taskData.httpRequest onReviveErrorResponse:task.response error:error];
             [weakSelf removeTask:task];
@@ -357,7 +366,7 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
             }
             if (![taskData.retryHandler
                     retryFunction:^{
-                        QCloudLogDebug(@"[%i] 错误，开始重试", seq);
+                        QCloudLogDebugP(@"HTTP",@"[%i] 错误，开始重试", seq);
                         if (error.code == -1003) {
                             [[QCloudHttpDNS shareDNS] findHealthyIpFor:hostURL.host];
                         }
@@ -368,10 +377,27 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
                             if ([task respondsToSelector:@selector(countOfBytesSent)]) {
                                 countOfBytesSent = task.countOfBytesSent;
                             }
+                            int64_t countOfBytesExpectedToSend = 0;
+                            if ([task respondsToSelector:@selector(countOfBytesExpectedToSend)]) {
+                                countOfBytesExpectedToSend = task.countOfBytesExpectedToSend;
+                            }
                             [taskData.httpRequest notifySendProgressBytesSend:-(countOfBytesSent)
                                                                totalBytesSend:countOfBytesSent
-                                                     totalBytesExpectedToSend:task.countOfBytesExpectedToSend];
+                                                     totalBytesExpectedToSend:countOfBytesExpectedToSend];
                         }
+                
+                        BOOL needChangeHost = NO;
+                        NSInteger statusCodeCategory = taskData.response.statusCode / 100;
+                        // 3xx: 第一次失败就换域名
+                        if (statusCodeCategory == 3) {
+                            needChangeHost = [self shouldSwitchDomain:taskData error:error];
+                        }
+                        // 5xx 或未收到回包: 最后一次重试时换域名
+                        else if (statusCodeCategory != 2 &&
+                                 taskData.httpRequest.retryCount == taskData.retryHandler.maxCount - 1) {
+                            needChangeHost = [self shouldSwitchDomain:taskData error:error];
+                        }
+                
                         QCloudHTTPRequest *httpRequset = taskData.httpRequest;
                         [taskData restData];
                         [weakSelf removeTask:task];
@@ -379,7 +405,7 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
                         if (QCloudFileExist(httpRequset.downloadingTempURL.path)) {
                             httpRequset.localCacheDownloadOffset = QCloudFileSize(httpRequset.downloadingTempURL.path);
                         }
-                        httpRequset.requestData.needChangeHost = [httpRequset needChangeHost] && !httpRequset.runOnService.configuration.disableChangeHost;
+                        httpRequset.requestData.needChangeHost = needChangeHost;
                         [httpRequset setValue:@(YES) forKey:@"isRetry"];
                         httpRequset.retryCount = taskData.httpRequest.retryCount + 1;
                         [weakSelf executeRestHTTPReqeust:httpRequset];
@@ -426,6 +452,65 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
                 disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
             }
         }
+    } else if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
+        if (taskData.httpRequest.runOnService.configuration.clientCertificateData) {
+            CFDataRef inP12Data = (__bridge CFDataRef)taskData.httpRequest.runOnService.configuration.clientCertificateData;
+            SecIdentityRef identity = NULL;
+            SecTrustRef trust = NULL;
+            OSStatus status = noErr;
+            
+            const void *keys[] = { kSecImportExportPassphrase };
+            const void *values[] = { (__bridge CFStringRef)taskData.httpRequest.runOnService.configuration.password };
+            CFDictionaryRef options = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
+            
+            CFArrayRef items = NULL;
+            status = SecPKCS12Import(inP12Data, options, &items);
+            
+            if (status != errSecSuccess || items == NULL || CFArrayGetCount(items) == 0) {
+                NSLog(@"SecPKCS12Import 错误: %d", (int)status);
+                if (options) CFRelease(options);
+                if (items) CFRelease(items);
+                disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+                completionHandler(disposition, credential);
+                return;
+            }
+            
+            CFDictionaryRef identityDict = CFArrayGetValueAtIndex(items, 0);
+            identity = (SecIdentityRef)CFRetain(CFDictionaryGetValue(identityDict, kSecImportItemIdentity));
+            trust = (SecTrustRef)CFRetain(CFDictionaryGetValue(identityDict, kSecImportItemTrust));
+            
+            if (options) CFRelease(options);
+            if (items) CFRelease(items);
+            
+            if (status == errSecSuccess && identity != NULL) {
+                SecCertificateRef certificate = NULL;
+                OSStatus certStatus = SecIdentityCopyCertificate(identity, &certificate);
+                
+                if (certStatus != errSecSuccess || certificate == NULL) {
+                    NSLog(@"SecIdentityCopyCertificate 错误: %d", (int)certStatus);
+                    disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+                    completionHandler(disposition, credential);
+                    return;
+                }
+                
+                const void *certs[] = { certificate };
+                CFArrayRef certArray = CFArrayCreate(NULL, certs, 1, NULL);
+                credential = [NSURLCredential credentialWithIdentity:identity
+                                                        certificates:(__bridge NSArray *)certArray
+                                                         persistence:NSURLCredentialPersistenceForSession];
+                
+                if (certArray) CFRelease(certArray);
+                if (certificate) CFRelease(certificate);
+                if (trust) CFRelease(trust);
+                
+                disposition = NSURLSessionAuthChallengeUseCredential;
+            } else {
+                NSLog(@"身份解析失败: %d", (int)status);
+                disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+            }
+        } else {
+            disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+        }
     } else {
         disposition = NSURLSessionAuthChallengePerformDefaultHandling;
     }
@@ -433,6 +518,17 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     if (completionHandler) {
         completionHandler(disposition, credential);
     }
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task needNewBodyStream:(void (^)(NSInputStream * _Nullable))completionHandler {
+    QCloudURLSessionTaskData *taskData = [self taskDataForTask:task];
+        NSInputStream *bodyStream = taskData.bodyStream;
+        
+        if (bodyStream) {
+            completionHandler(bodyStream);
+        } else {
+            completionHandler(nil);
+        }
 }
 
 - (void)cancelRequestWithID:(int)requestID {
@@ -483,7 +579,7 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     if (httpRequest.requestSerializer.HTTPDNSPrefetch && !httpRequest.runOnService.configuration.disableGlobalHTTPDNSPrefetch) {
         transformRequest = [[QCloudHttpDNS shareDNS] resolveURLRequestIfCan:urlRequest];
         if (error) {
-            QCloudLogError(@"DNS转存请求失败%@", error);
+            QCloudLogErrorE(@"HTTP",@"DNS转存请求失败%@", error);
         }
     }
 
@@ -504,6 +600,8 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     } else {
         taskData = [[QCloudURLSessionTaskData alloc] init];
     }
+    
+    taskData.forbidenWirteToCache = httpRequest.forbidenWirteToCahce;
 
     NSError *directError;
 
@@ -548,12 +646,27 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
                 [mutableRequest setValue:[@(fileBody.sliceLength) stringValue] forHTTPHeaderField:@"Content-Length"];
                 [handler closeFile];
                 uploadFileURL = [NSURL fileURLWithPath:tempFile];
-                QCloudLogDebug(@"uploadTempFilePath length = %lld", QCloudFileSize(tempFile));
+                QCloudLogDebugP(@"HTTP",@"uploadTempFilePath length = %lld", QCloudFileSize(tempFile));
             }
 
+        } else if ([body isKindOfClass:[NSInputStream class]]) {
+            // NSInputStream 作为 body 时，不能直接设置 HTTPBodyStream
+            // 必须通过 URLSession:task:needNewBodyStream: delegate 方法提供
+            // 将 inputStream 保存到 taskData 中，稍后在创建 task 时使用
+            taskData.bodyStream = (NSInputStream *)body;
+            // 注意：不能设置 mutableRequest.HTTPBodyStream
+            // uploadTaskWithStreamedRequest 要求请求不能预先包含 body 或 body stream
+            
+            // Content-Length 必须由调用方预先设置到 requestData.httpHeaders 中
+            // 如果未设置，某些服务器可能返回 411 Length Required
+            NSString *contentLength = httpRequest.requestData.httpHeaders[@"Content-Length"];
+            if (!contentLength) {
+                QCloudLogDebugP(@"HTTP", @"使用 NSInputStream 上传但未设置 Content-Length，可能导致上传失败");
+            }
+                    
         } else {
             @throw [NSException exceptionWithName:kQCloudNetworkDomain
-                                           reason:@"不支持设置该类型的body，支持的类型为NSData、QCloudFileOffsetBody、NSURL"
+                                           reason:@"不支持设置该类型的body，支持的类型为NSData、QCloudFileOffsetBody、NSURL、NSInputStream"
                                          userInfo:@{}];
         }
         transformRequest = mutableRequest;
@@ -578,11 +691,16 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     }
     NSURLSessionDataTask *task = nil;
     id quicTask = nil;
-
-    if (!httpRequest.enableQuic) {
+    id <QCloudCustomLoader> loader = [[QCloudLoaderManager manager] getAvailableLoader:httpRequest];
+    if ([QCloudLoaderManager manager].enable && loader) {
+        task = [loader.session taskWithRequset:transformRequest fromFile:uploadFileURL];
+    }else if (!httpRequest.enableQuic) {
         //如果是文件上传
         if (uploadFileURL) {
             task = [self.session uploadTaskWithRequest:transformRequest fromFile:uploadFileURL];
+        } else if (taskData.bodyStream) {
+            // 使用流上传时，必须用 uploadTaskWithStreamedRequest
+            task = [self.session uploadTaskWithStreamedRequest:transformRequest];
         } else {
             task = [self.session dataTaskWithRequest:transformRequest];
         }
@@ -630,7 +748,7 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
         }
     }
 
-    QCloudLogDebug(@"transferHttpHeader %@", transformRequest.allHTTPHeaderFields);
+    QCloudLogDebugP(@"HTTP",@"transferHttpHeader %@", transformRequest.allHTTPHeaderFields);
     taskData.httpRequest = httpRequest;
     QCloudHTTPRetryHanlder *retryHandler = httpRequest.retryPolicy;
     taskData.retryHandler = retryHandler;
@@ -651,6 +769,129 @@ QCloudThreadSafeMutableDictionary *QCloudBackgroundSessionManagerCache(void) {
     } else {
         [task resume];
     }
+}
+
+
+#pragma mark - 域名切换和重试
+
+/**
+ * 判断是否需要切换域名（支持超时错误）
+ *
+ * @param taskData 请求任务数据
+ * @param error 网络错误（用于判断超时场景）
+ * @return YES 需要切换域名，NO 不需要切换
+ */
+- (BOOL)shouldSwitchDomain:(QCloudURLSessionTaskData *)taskData error:(NSError *)error {
+    // 检查是否禁用域名切换
+    if (taskData.httpRequest.runOnService.configuration.disableChangeHost) {
+        return NO;
+    }
+    
+    NSURL *hostURL = [NSURL URLWithString:taskData.httpRequest.requestData.serverURL];
+    
+    // 超时场景：只需检查域名是否可切换，不需要检查响应头
+    if ([self isNetworkConnectionError:error]) {
+        return [QCloudHTTPRequest needChangeHost:hostURL.host];
+    }
+    
+    // 非超时场景：需要检查响应头中的 request-id
+    return [QCloudHTTPRequest needChangeHost:hostURL.host responseHeaders:taskData.response.allHeaderFields];
+}
+
+/**
+ * 判断是否为网络连接异常（超时或连接丢失）
+ *
+ * @param error 网络请求错误
+ * @return YES 表示网络连接异常，NO 表示其他错误
+ */
+- (BOOL)isNetworkConnectionError:(NSError *)error {
+    if (!error || ![error.domain isEqualToString:NSURLErrorDomain]) {
+        return NO;
+    }
+    switch (error.code) {
+        case NSURLErrorTimedOut:
+        case NSURLErrorNetworkConnectionLost:
+            return YES;
+        default:
+            return NO;
+    }
+}
+
+
+/**
+ * 判断是否需要重试（支持超时错误）
+ *
+ * @param taskData 请求任务数据
+ * @param error 网络错误（用于判断超时场景）
+ * @return YES 需要重试，NO 不需要重试
+ */
+- (BOOL)shouldRetry:(QCloudURLSessionTaskData *)taskData error:(NSError *)error {
+    BOOL needRetryWithDomainChange = NO;
+    
+    // 场景1：网络连接异常（超时或连接丢失）
+    if ([self isNetworkConnectionError:error]) {
+        needRetryWithDomainChange = YES;
+    }
+    // 场景2：根据 HTTP 状态码判断
+    else {
+        NSInteger statusCodeCategory = taskData.response.statusCode / 100;
+        if (statusCodeCategory == 2) {
+            needRetryWithDomainChange = [self hasCopyRequestError:taskData];
+        } else if (statusCodeCategory == 3) {
+            NSInteger statusCode = taskData.response.statusCode % 100;
+            if (statusCode == 1 || statusCode == 2 || statusCode == 7) {
+                needRetryWithDomainChange = [self shouldSwitchDomain:taskData error:error];
+            }
+        } else if (statusCodeCategory == 5) {
+            needRetryWithDomainChange = YES;
+        }
+    }
+    
+    // CI 域名额外条件：签名必须是 SDK 生成的
+    if ([taskData.httpRequest isCIHost]) {
+        needRetryWithDomainChange = needRetryWithDomainChange && taskData.httpRequest.signature.sourceType == QCloudSignatureSourceTypeSDK;
+    }
+    
+    return needRetryWithDomainChange;
+}
+
+/**
+ * 检查 2xx Copy 请求响应体中是否包含需要重试的错误
+ *
+ * COS Copy 请求（如 PUT Object - Copy）在 HTTP 状态码为 2xx 时，
+ * 响应体 <CopyObjectResult> 中可能仍包含错误信息。
+ *
+ * 需要重试的错误码：
+ * - InternalError: 服务端内部错误
+ * - SlowDown: 请求频率过高
+ * - ServiceUnavailable: 服务暂时不可用
+ *
+ *
+ * @param taskData 请求任务数据
+ */
+- (BOOL)hasCopyRequestError:(QCloudURLSessionTaskData *)taskData {
+    // 仅处理 2xx 响应
+    NSInteger statusCodeCategory = taskData.response.statusCode / 100;
+    if (statusCodeCategory != 2) {
+        return NO;
+    }
+    if (![taskData.httpRequest isCOSHost]) {
+        return NO;
+    }
+    
+    NSError *error = nil;
+    QCloudResponseXMLSerializerBlock(taskData.response, taskData.data, &error);
+    if (!error) {
+        return NO;
+    }
+    NSString *errorCode = error.userInfo[NSLocalizedDescriptionKey];
+    // 检查是否是需要重试的错误码
+    if ([errorCode isEqualToString:@"InternalError"] ||
+        [errorCode isEqualToString:@"SlowDown"] ||
+        [errorCode isEqualToString:@"ServiceUnavailable"]) {
+        return YES;
+    }
+    return NO;
 }
 
 - (void)dealloc {
