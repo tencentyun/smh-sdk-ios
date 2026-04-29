@@ -13,6 +13,16 @@
 #import "QCloudSMHSpaceHomeFileInfo.h"
 #import "QCloudSMHFavoriteTypeEnum.h"
 #import "QCloudAbstractRequest+Quality.h"
+#import "QCloudCOSSMHUploadObjectRequest.h"
+#import "QCloudSMHFileDeletionCheckResult.h"
+
+/// 暴露私有方法用于测试
+@interface QCloudCOSSMHUploadObjectRequest (Testing)
+
+- (NSString *)encodeSuffix:(NSString *)str;
+
+@end
+
 @interface QCloudSMHDemoModelTests : XCTestCase
 
 @end
@@ -89,6 +99,7 @@
         QCloudSMHSearchTag.class,
         QCloudSMHCopyResult.class,
         QCloudQueryTagFilesInfo.class,
+        QCloudSMHFileDeletionCheckResult.class,
     ];
     for (Class obj in classes) {
         NSObject * result = [obj new];
@@ -966,6 +977,71 @@
     
 }
 
+#pragma mark - QCloudSMHFileDeletionCheckResult 模型测试
+
+- (void)testFileDeletionCheckResultModel {
+    // 测试 QCloudSMHFileDeletionCheckResult 模型属性 — RemovedByQuota 场景
+    QCloudSMHFileDeletionCheckResult *result = [QCloudSMHFileDeletionCheckResult new];
+    result.reason = @"RemovedByQuota";
+    result.deletedAt = @"2023-10-27T10:00:00Z";
+    result.quotaCleanupRecordRetentionDays = 30;
+    
+    XCTAssertEqualObjects(result.reason, @"RemovedByQuota");
+    XCTAssertEqualObjects(result.deletedAt, @"2023-10-27T10:00:00Z");
+    XCTAssertEqual(result.quotaCleanupRecordRetentionDays, 30);
+    
+    // 测试 Unknown 原因
+    QCloudSMHFileDeletionCheckResult *result2 = [QCloudSMHFileDeletionCheckResult new];
+    result2.reason = @"Unknown";
+    
+    XCTAssertEqualObjects(result2.reason, @"Unknown");
+    XCTAssertNil(result2.deletedAt);
+    XCTAssertEqual(result2.quotaCleanupRecordRetentionDays, 0);
+}
+
+- (void)testFileDeletionCheckResultModelFromJSON {
+    // 测试 JSON 反序列化 — RemovedByQuota
+    NSDictionary *json = @{
+        @"reason": @"RemovedByQuota",
+        @"deletedAt": @"2023-10-27T10:00:00Z",
+        @"quotaCleanupRecordRetentionDays": @(30)
+    };
+    
+    QCloudSMHFileDeletionCheckResult *result = [QCloudSMHFileDeletionCheckResult qcloud_modelWithJSON:json];
+    
+    XCTAssertNotNil(result);
+    XCTAssertEqualObjects(result.reason, @"RemovedByQuota");
+    XCTAssertEqualObjects(result.deletedAt, @"2023-10-27T10:00:00Z");
+    XCTAssertEqual(result.quotaCleanupRecordRetentionDays, 30);
+}
+
+- (void)testFileDeletionCheckResultModelFromJSONUnknown {
+    // 测试 JSON 反序列化 — Unknown 场景，不含 quotaCleanupRecordRetentionDays
+    NSDictionary *json = @{
+        @"reason": @"Unknown",
+        @"deletedAt": @"2024-01-15T08:30:00Z"
+    };
+    
+    QCloudSMHFileDeletionCheckResult *result = [QCloudSMHFileDeletionCheckResult qcloud_modelWithJSON:json];
+    
+    XCTAssertNotNil(result);
+    XCTAssertEqualObjects(result.reason, @"Unknown");
+    XCTAssertEqualObjects(result.deletedAt, @"2024-01-15T08:30:00Z");
+    XCTAssertEqual(result.quotaCleanupRecordRetentionDays, 0);
+}
+
+- (void)testFileDeletionCheckResultModelFromEmptyJSON {
+    // 测试 JSON 反序列化 — 空 JSON
+    NSDictionary *json = @{};
+    
+    QCloudSMHFileDeletionCheckResult *result = [QCloudSMHFileDeletionCheckResult qcloud_modelWithJSON:json];
+    
+    XCTAssertNotNil(result);
+    XCTAssertNil(result.reason);
+    XCTAssertNil(result.deletedAt);
+    XCTAssertEqual(result.quotaCleanupRecordRetentionDays, 0);
+}
+
 - (void)testModelBuild {
     QCloudSMHTaskResult * result = [QCloudSMHTaskResult new];
     [result performSelector:@selector(modelCustomWillTransformFromDictionary:) withObject:@{@"status":@200}];
@@ -986,4 +1062,133 @@
     
     [QCloudSMHListFileInfo performSelector:@selector(modelContainerPropertyGenericClass)];
 }
+
+#pragma mark - encodeSuffix 测试
+
+- (void)testEncodeSuffixNormalFileName {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 普通英文文件名，后缀无需编码
+    NSString *result = [request encodeSuffix:@"/path/to/file.txt"];
+    XCTAssertEqualObjects(result, @"/path/to/file.txt");
+}
+
+- (void)testEncodeSuffixMultipleDots {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 多个点号的文件名，只对最后一段编码
+    NSString *result = [request encodeSuffix:@"/path/to/archive.tar.gz"];
+    XCTAssertEqualObjects(result, @"/path/to/archive.tar.gz");
+}
+
+- (void)testEncodeSuffixWithSpace {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀包含空格
+    NSString *result = [request encodeSuffix:@"/path/to/file.my doc"];
+    XCTAssertTrue([result containsString:@"%20"], @"空格应被编码，结果: %@", result);
+    XCTAssertTrue([result hasPrefix:@"/path/to/file."], @"点号前的部分不应改变");
+}
+
+- (void)testEncodeSuffixWithHash {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀包含 #
+    NSString *result = [request encodeSuffix:@"/path/to/file.c#"];
+    XCTAssertFalse([result hasSuffix:@"#"], @"# 应被编码");
+    XCTAssertTrue([result containsString:@"%23"], @"# 应编码为 %%23，结果: %@", result);
+}
+
+- (void)testEncodeSuffixWithQuestionMark {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀包含 ?
+    NSString *result = [request encodeSuffix:@"/path/to/file.txt?v=1"];
+    XCTAssertTrue([result containsString:@"%3F"], @"? 应被编码为 %%3F，结果: %@", result);
+}
+
+- (void)testEncodeSuffixWithPercent {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀包含 %
+    NSString *result = [request encodeSuffix:@"/path/to/file.100%"];
+    XCTAssertTrue([result containsString:@"%25"], @"%% 应被编码为 %%25，结果: %@", result);
+}
+
+- (void)testEncodeSuffixWithChineseCharacters {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀包含中文
+    NSString *result = [request encodeSuffix:@"/path/to/file.文档"];
+    XCTAssertFalse([result hasSuffix:@"文档"], @"中文应被编码");
+    NSString *suffix = [result componentsSeparatedByString:@"."].lastObject;
+    NSString *decoded = [suffix stringByRemovingPercentEncoding];
+    XCTAssertEqualObjects(decoded, @"文档", @"编码后解码应还原为中文");
+}
+
+- (void)testEncodeSuffixWithoutDot {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 没有点号且全是字母，编码后不变
+    NSString *result = [request encodeSuffix:@"/path/to/Makefile"];
+    XCTAssertEqualObjects(result, @"/path/to/Makefile");
+}
+
+- (void)testEncodeSuffixEmptyString {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    NSString *result = [request encodeSuffix:@""];
+    XCTAssertNotNil(result, @"空字符串不应返回 nil");
+}
+
+- (void)testEncodeSuffixOnlyDot {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    NSString *result = [request encodeSuffix:@"."];
+    XCTAssertNotNil(result);
+    XCTAssertEqualObjects(result, @".");
+}
+
+- (void)testEncodeSuffixMultipleConsecutiveDots {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    NSString *result = [request encodeSuffix:@"..."];
+    XCTAssertNotNil(result);
+    XCTAssertEqualObjects(result, @"...");
+}
+
+- (void)testEncodeSuffixExclamationMark {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀包含 !
+    NSString *result = [request encodeSuffix:@"/path/to/file.txt!"];
+    XCTAssertTrue([result containsString:@"%21"], @"! 应被编码为 %%21，结果: %@", result);
+}
+
+- (void)testEncodeSuffixSingleQuote {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀包含单引号
+    NSString *result = [request encodeSuffix:@"/path/to/file.it's"];
+    XCTAssertTrue([result containsString:@"%27"], @"单引号应被编码为 %%27，结果: %@", result);
+}
+
+- (void)testEncodeSuffixBrackets {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀包含方括号
+    NSString *result = [request encodeSuffix:@"/path/to/file.test[1]"];
+    XCTAssertTrue([result containsString:@"%5B"], @"[ 应被编码为 %%5B，结果: %@", result);
+    XCTAssertTrue([result containsString:@"%5D"], @"] 应被编码为 %%5D，结果: %@", result);
+}
+
+- (void)testEncodeSuffixDotsInPathMiddle {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 路径中间有点号，只对最后一段编码
+    NSString *result = [request encodeSuffix:@"v1.0/upload/file.doc"];
+    XCTAssertEqualObjects(result, @"v1.0/upload/file.doc");
+}
+
+- (void)testEncodeSuffixMixedSpecialChars {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀同时包含多个特殊字符
+    NSString *result = [request encodeSuffix:@"/upload/file.a b#c"];
+    XCTAssertTrue([result containsString:@"%20"], @"空格应被编码，结果: %@", result);
+    XCTAssertTrue([result containsString:@"%23"], @"# 应被编码，结果: %@", result);
+    XCTAssertTrue([result hasPrefix:@"/upload/file."], @"点号前部分不应改变");
+}
+
+- (void)testEncodeSuffixAlreadyEncoded {
+    QCloudCOSSMHUploadObjectRequest *request = [[QCloudCOSSMHUploadObjectRequest alloc] init];
+    // 后缀已包含 %20，% 会被再次编码为 %25
+    NSString *result = [request encodeSuffix:@"/path/file.%20txt"];
+    XCTAssertTrue([result containsString:@"%25"], @"已编码的 %%20 中的 %% 应被编码为 %%25，结果: %@", result);
+}
+
 @end

@@ -116,6 +116,54 @@
 @class QCloudGetSpaceUsageRequest;
 @class QCloudSMHPutObjectLinkRequest;
 @class QCloudSMHExternalURLDownloadRequest;
+@class QCloudSMHFileDeletionCheckRequest;
+
+// ===== 新增 Request 类（codegen 2026-04-22）=====
+@class QCloudSMHCreateTokenRequest;
+@class QCloudSMHRenewTokenRequest;
+@class QCloudSMHDeleteTokenRequest;
+@class QCloudSMHDeleteUserTokensRequest;
+@class QCloudSMHCreateSpaceRequest;
+@class QCloudSMHListSpaceRequest;
+@class QCloudSMHGetSpaceExtensionRequest;
+@class QCloudSMHUpdateSpaceExtensionRequest;
+@class QCloudSMHDeleteSpaceRequest;
+@class QCloudSMHGetLibrarySpaceCountRequest;
+@class QCloudSMHGetLibraryUsageRequest;
+@class QCloudSMHConvertFileRequest;
+@class QCloudSMHPreviewFileRequest;
+@class QCloudSMHDownloadTranscodedVideoRequest;
+@class QCloudSMHGetDeltaCursorRequest;
+@class QCloudSMHQueryDeltaLogRequest;
+@class QCloudSMHEmptyHistoryRequest;
+@class QCloudSMHCreateQuotaRequest;
+@class QCloudSMHGetQuotaRequest;
+@class QCloudSMHUpdateQuotaRequest;
+@class QCloudSMHUpdateQuotaByIdRequest;
+@class QCloudSMHGetQuotaInfoRequest;
+@class QCloudSMHGetMediaFileInfoRequest;
+@class QCloudSMHCreateTranscodeTaskRequest;
+@class QCloudSMHPrepareM3u8UploadRequest;
+@class QCloudSMHConfirmM3u8UploadRequest;
+@class QCloudSMHRenewM3u8UploadRequest;
+@class QCloudSMHModifyM3u8SegmentsRequest;
+@class QCloudSMHLiveTranscodeMediaFileRequest;
+@class QCloudSMHGetDirectoryStatsRequest;
+@class QCloudSMHCalibrateDirectoryStatsRequest;
+@class QCloudSMHRecycleSetLifecycleRequest;
+@class QCloudSMHVerifyExtractionCodeRequest;
+@class QCloudSMHSearchSharesRequest;
+@class QCloudSMHSetShareEnabledRequest;
+@class QCloudSMHGetShareDetailRequest;
+@class QCloudSMHListSharesRequest;
+@class QCloudSMHGetShareUrlDetailRequest;
+@class QCloudSMHUpdateShareRequest;
+@class QCloudSMHSaveShareFileRequest;
+@class QCloudSMHPreviewShareFileRequest;
+@class QCloudSMHDownloadShareFileRequest;
+@class QCloudSMHListShareFilesRequest;
+@class QCloudSMHCreateShareRequest;
+@class QCloudSMHDeleteShareRequest;
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -508,6 +556,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)putObjectLink:(QCloudSMHPutObjectLinkRequest *)request;
 
+/// 查询文件删除原因
+-(void)fileDeletionCheck:(QCloudSMHFileDeletionCheckRequest *)request;
+
 #pragma mark - 第三方 URL 下载（内部使用）
 
 /**
@@ -517,6 +568,343 @@ NS_ASSUME_NONNULL_BEGIN
  * @note 此方法为 SDK 内部使用，用于流式同步上传场景
  */
 - (void)downloadExternalURL:(QCloudSMHExternalURLDownloadRequest *)request;
+
+#pragma mark - Token
+
+/**
+ 生成访问令牌（Access Token）
+
+ @param request 生成访问令牌请求
+ */
+- (void)createToken:(QCloudSMHCreateTokenRequest *)request;
+
+/**
+ 续期访问令牌（Access Token）
+
+ @param request 续期访问令牌请求
+ */
+- (void)renewToken:(QCloudSMHRenewTokenRequest *)request;
+
+/**
+ 删除指定访问令牌（Access Token）
+
+ @param request 删除访问令牌请求
+ */
+- (void)deleteToken:(QCloudSMHDeleteTokenRequest *)request;
+
+/**
+ 删除特定用户的所有访问令牌（Access Token）
+
+ @param request 删除用户所有访问令牌请求
+ */
+- (void)deleteUserTokens:(QCloudSMHDeleteUserTokensRequest *)request;
+
+#pragma mark - Space
+
+/**
+ 创建租户空间
+
+ @param request 创建租户空间请求
+ */
+- (void)createSpace:(QCloudSMHCreateSpaceRequest *)request;
+
+/**
+ 列出租户空间
+
+ @param request 列出租户空间请求
+ */
+- (void)listSpace:(QCloudSMHListSpaceRequest *)request;
+
+/**
+ 查询租户空间属性
+
+ @param request 查询租户空间属性请求
+ */
+- (void)getSpaceExtension:(QCloudSMHGetSpaceExtensionRequest *)request;
+
+/**
+ 修改租户空间属性
+
+ @param request 修改租户空间属性请求
+ */
+- (void)updateSpaceExtension:(QCloudSMHUpdateSpaceExtensionRequest *)request;
+
+/**
+ 删除租户空间
+
+ @param request 删除租户空间请求
+ */
+- (void)deleteSpace:(QCloudSMHDeleteSpaceRequest *)request;
+
+/**
+ 查询媒体库租户空间数量
+
+ @param request 查询租户空间数量请求
+ */
+- (void)getLibrarySpaceCount:(QCloudSMHGetLibrarySpaceCountRequest *)request;
+
+#pragma mark - Usage
+
+/**
+ 查询媒体库容量信息
+
+ @param request 查询媒体库容量信息请求
+ */
+- (void)getLibraryUsage:(QCloudSMHGetLibraryUsageRequest *)request;
+
+#pragma mark - File
+
+/**
+ 文档转码
+
+ @param request 文档转码请求
+ */
+- (void)convertFile:(QCloudSMHConvertFileRequest *)request;
+
+/**
+ 获取 HTML 格式文档预览
+
+ @param request 文档预览请求
+ */
+- (void)previewFile:(QCloudSMHPreviewFileRequest *)request;
+
+/**
+ 视频下载（获取转码后的视频下载链接）
+
+ @param request 视频下载请求
+ */
+- (void)downloadTranscodedVideo:(QCloudSMHDownloadTranscodedVideoRequest *)request;
+
+#pragma mark - Delta
+
+/**
+ 获取增量游标
+
+ @param request 获取增量游标请求
+ */
+- (void)getDeltaCursor:(QCloudSMHGetDeltaCursorRequest *)request;
+
+/**
+ 查询增量变动日志
+
+ @param request 查询增量变动日志请求
+ */
+- (void)queryDeltaLog:(QCloudSMHQueryDeltaLogRequest *)request;
+
+#pragma mark - History
+
+/**
+ 清空历史版本
+
+ @param request 清空历史版本请求
+ */
+- (void)emptyHistory:(QCloudSMHEmptyHistoryRequest *)request;
+
+#pragma mark - Quota
+
+/**
+ 创建配额
+
+ @param request 创建配额请求
+ */
+- (void)createQuota:(QCloudSMHCreateQuotaRequest *)request;
+
+/**
+ 获取租户空间配额
+
+ @param request 获取租户空间配额请求
+ */
+- (void)getQuota:(QCloudSMHGetQuotaRequest *)request;
+
+/**
+ 修改配额
+
+ @param request 修改配额请求
+ */
+- (void)updateQuota:(QCloudSMHUpdateQuotaRequest *)request;
+
+/**
+ 根据配额 ID 修改配额
+
+ @param request 根据配额 ID 修改配额请求
+ */
+- (void)updateQuotaById:(QCloudSMHUpdateQuotaByIdRequest *)request;
+
+/**
+ 获取租户配额信息
+
+ @param request 获取租户配额信息请求
+ */
+- (void)getQuotaInfo:(QCloudSMHGetQuotaInfoRequest *)request;
+
+#pragma mark - HLS
+
+/**
+ 查询媒体文件的元信息（视频高度、宽度、比特率、时长等）
+
+ @param request 查询媒体文件元信息请求
+ */
+- (void)getMediaFileInfo:(QCloudSMHGetMediaFileInfoRequest *)request;
+
+/**
+ 视频转码
+
+ @param request 视频转码请求
+ */
+- (void)createTranscodeTask:(QCloudSMHCreateTranscodeTaskRequest *)request;
+
+/**
+ m3u8 上传准备
+
+ @param request m3u8 上传准备请求
+ */
+- (void)prepareM3u8Upload:(QCloudSMHPrepareM3u8UploadRequest *)request;
+
+/**
+ m3u8 上传完成（确认）
+
+ @param request m3u8 上传完成请求
+ */
+- (void)confirmM3u8Upload:(QCloudSMHConfirmM3u8UploadRequest *)request;
+
+/**
+ m3u8 上传续期
+
+ @param request m3u8 上传续期请求
+ */
+- (void)renewM3u8Upload:(QCloudSMHRenewM3u8UploadRequest *)request;
+
+/**
+ m3u8 分片重传与追加
+
+ @param request m3u8 分片重传与追加请求
+ */
+- (void)modifyM3u8Segments:(QCloudSMHModifyM3u8SegmentsRequest *)request;
+
+/**
+ 发起实时转码任务并获取带授权信息的播放列表
+
+ @param request 实时转码请求
+ */
+- (void)liveTranscodeMediaFile:(QCloudSMHLiveTranscodeMediaFileRequest *)request;
+
+#pragma mark - Directory Stats
+
+/**
+ 查询目录统计数据（子目录数量、文件数量、文件总大小）
+
+ @param request 查询目录统计数据请求
+ */
+- (void)getDirectoryStats:(QCloudSMHGetDirectoryStatsRequest *)request;
+
+/**
+ 校准目录统计数据
+
+ @param request 校准目录统计数据请求
+ */
+- (void)calibrateDirectoryStats:(QCloudSMHCalibrateDirectoryStatsRequest *)request;
+
+#pragma mark - Recycle Lifecycle
+
+/**
+ 设置回收站生命周期
+
+ @param request 设置回收站生命周期请求
+ */
+- (void)recycleSetLifecycle:(QCloudSMHRecycleSetLifecycleRequest *)request;
+
+#pragma mark - Share
+
+/**
+ 验证提取码
+
+ @param request 验证提取码请求
+ */
+- (void)verifyExtractionCode:(QCloudSMHVerifyExtractionCodeRequest *)request;
+
+/**
+ 搜索分享
+
+ @param request 搜索分享请求
+ */
+- (void)searchShares:(QCloudSMHSearchSharesRequest *)request;
+
+/**
+ 禁用或启用分享
+
+ @param request 禁用或启用分享请求
+ */
+- (void)setShareEnabled:(QCloudSMHSetShareEnabledRequest *)request;
+
+/**
+ 获取分享详情
+
+ @param request 获取分享详情请求
+ */
+- (void)getShareDetail:(QCloudSMHGetShareDetailRequest *)request;
+
+/**
+ 列出分享
+
+ @param request 列出分享请求
+ */
+- (void)listShares:(QCloudSMHListSharesRequest *)request;
+
+/**
+ 获取分享 URL 详情
+
+ @param request 获取分享 URL 详情请求
+ */
+- (void)getShareUrlDetail:(QCloudSMHGetShareUrlDetailRequest *)request;
+
+/**
+ 更新分享
+
+ @param request 更新分享请求
+ */
+- (void)updateShare:(QCloudSMHUpdateShareRequest *)request;
+
+/**
+ 分享文件转存
+
+ @param request 分享文件转存请求
+ */
+- (void)saveShareFile:(QCloudSMHSaveShareFileRequest *)request;
+
+/**
+ 分享文件预览
+
+ @param request 分享文件预览请求
+ */
+- (void)previewShareFile:(QCloudSMHPreviewShareFileRequest *)request;
+
+/**
+ 分享文件下载
+
+ @param request 分享文件下载请求
+ */
+- (void)downloadShareFile:(QCloudSMHDownloadShareFileRequest *)request;
+
+/**
+ 列出分享文件
+
+ @param request 列出分享文件请求
+ */
+- (void)listShareFiles:(QCloudSMHListShareFilesRequest *)request;
+
+/**
+ 创建分享
+
+ @param request 创建分享请求
+ */
+- (void)createShare:(QCloudSMHCreateShareRequest *)request;
+
+/**
+ 删除分享
+
+ @param request 删除分享请求
+ */
+- (void)deleteShare:(QCloudSMHDeleteShareRequest *)request;
 
 @end
 

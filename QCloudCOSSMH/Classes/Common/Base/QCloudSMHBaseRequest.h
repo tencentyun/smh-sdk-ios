@@ -40,6 +40,11 @@ FOUNDATION_EXTERN QCloudResponseSerializerBlock QCloudResponseRedirectBlock;
 */
 @property (strong, nonatomic) NSMutableDictionary *customHeaders;
 
+/**
+ 禁止重定向（默认为NO）
+ */
+@property (nonatomic, assign) BOOL disableRedirect;
+
 +(BOOL)isHttps;
 
 - (instancetype)initWithApiType:(QCloudECDAPIType)apiType;

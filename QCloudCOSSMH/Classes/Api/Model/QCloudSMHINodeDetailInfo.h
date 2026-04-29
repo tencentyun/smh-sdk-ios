@@ -39,6 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 文件的 CRC64-ECMA182 校验值，为了避免数字精度问题，这里为字符串格式；
 @property (nonatomic, strong) NSString *crc64;
 
+/// 文件内容的Cas标识
+@property (nonatomic, copy) NSString *contentCas;
+
 @end
 
 NS_ASSUME_NONNULL_END

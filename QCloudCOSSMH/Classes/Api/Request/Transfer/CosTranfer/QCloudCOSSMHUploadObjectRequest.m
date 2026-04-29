@@ -535,6 +535,8 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
             complete.localCreationTime = self.localCreationTime;
             complete.localModificationTime = self.localModificationTime;
             complete.withInode = self.withInode;
+            complete.contentCas = self.contentCas;
+            complete.withContentCas = self.withContentCas;
             if (self.putInitInfo) {
                 complete.confirmKey = strongSelf.putInitInfo.confirmKey;
             }
@@ -975,6 +977,8 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     complete.priority = QCloudAbstractRequestPriorityHigh;
     complete.conflictStrategy = self.conflictStrategy;
     complete.withInode = self.withInode;
+    complete.contentCas = self.contentCas;
+    complete.withContentCas = self.withContentCas;
     complete.category = self.category;
     complete.labels = self.labels;
     complete.localCreationTime = self.localCreationTime;
@@ -1253,12 +1257,18 @@ static NSUInteger kQCloudCOSXMLMD5Length = 32;
     [[QCloudSMHService defaultSMHService] renewUploadInfo:request];
 }
 
--(NSString * )encodeSuffix:(NSString *)str{
+-(NSString *)encodeSuffix:(NSString *)str {
     
-    NSMutableArray * names = [[str componentsSeparatedByString:@"."] mutableCopy];
+    NSMutableArray *names = [[str componentsSeparatedByString:@"."] mutableCopy];
+    if (names.count <= 1) {
+        return str;
+    }
     
-    NSCharacterSet * charSet = [NSCharacterSet characterSetWithCharactersInString:@"!*'\"();:@&=+$,/?%#[]% "];
-    NSString * type = [names.lastObject stringByAddingPercentEncodingWithAllowedCharacters:charSet];
+    // 使用 URLPathAllowedCharacterSet 作为基础，字母数字和常见路径字符不会被编码，
+    // 同时移除需要编码的特殊字符（如空格、#、? 等）
+    NSMutableCharacterSet *charSet = [[NSCharacterSet URLPathAllowedCharacterSet] mutableCopy];
+    [charSet removeCharactersInString:@"!*'\"();:@&=+$,/?%#[]% "];
+    NSString *type = [names.lastObject stringByAddingPercentEncodingWithAllowedCharacters:charSet];
     [names removeLastObject];
     [names addObject:type];
     return [names componentsJoinedByString:@"."];

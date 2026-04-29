@@ -12,9 +12,22 @@
 #import "QCloudSMHCheckHostRequest.h"
 #import "QCloudSMHGetINodeDetailRequest.h"
 #import "QCloudSMHGetRecentlyUsedFileRequest.h"
+#import "QCloudSMHDeleteFileRequest.h"
+#import "QCloudSMHCopyFileRequest.h"
+#import "QCloudSMHRenameFileRequest.h"
+#import "QCloudSMHDetailDirectoryRequest.h"
+#import "QCloudSMHListContentsRequest.h"
+#import "QCloudSMHCompleteUploadRequest.h"
+#import "QCloudCOSSMHUploadObjectRequest.h"
+#import "QCloudSMHGetDownloadInfoRequest.h"
+#import "QCloudSMHFileDeletionCheckRequest.h"
+#import "QCloudSMHFileDeletionCheckResult.h"
+#import "QCloudSMHErrorCode.h"
+#import "NSObject+QCloudModel.h"
 
 static NSString * testDirName = @"iosunittestDir";
 static NSString * testFileName = @"testFile";
+static NSString * testContentCasFile = @"testContentCasFile";
 
 @interface QCloudSMHDemo01FileV2Tests : XCTestCase <QCloudSMHAccessTokenProvider, QCloudAccessTokenFenceQueueDelegate>
 @property (nonatomic) QCloudSMHAccessTokenFenceQueue *fenceQueue;
@@ -229,4 +242,314 @@ static NSString * testFileName = @"testFile";
     [[QCloudSMHService defaultSMHService] getSpaceUsage:request];
     [self waitForExpectationsWithTimeout:30 handler:nil];
 }
+
+#pragma mark - withContentCas 和 contentCas 字段测试
+
+- (void)testUploadAndDeleteFileWithContentCas {
+    // 文件上传接口：设置 contentCas 和 withContentCas
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFileWithContentCas"];
+    __block NSString *contentCas = @"";
+    __block NSString *innode = @"";
+    NSString *path = [@"/" stringByAppendingString:[NSString stringWithFormat:@"%@_%@", @([NSDate.date timeIntervalSince1970]), testContentCasFile]];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV2;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithRandomSizeFrom:1 * 1024 * 1024 to:5 * 1024 * 1024]];
+    uploadReq.uploadPath = path;
+    uploadReq.uploadBodyIsCompleted = YES;
+    uploadReq.withContentCas = YES;
+    uploadReq.withInode = YES;
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        contentCas = result.contentCas;
+        innode = result.inode;
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    // 删除文件请求：设置 contentCas
+    XCTestExpectation *deleteExpectation = [self expectationWithDescription:@"testDeleteFileWithContentCas"];
+    QCloudSMHDeleteFileRequest *request = [QCloudSMHDeleteFileRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    request.filePath = path;
+    request.contentCas = contentCas;
+    [request setFinishBlock:^(QCloudSMHDeleteResult * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [deleteExpectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] deleteFile:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+    
+    XCTestExpectation *getDeleteExpectation = [self expectationWithDescription:@"FileDeletionCheckRequest"];
+    QCloudSMHFileDeletionCheckRequest *checkRequest = [QCloudSMHFileDeletionCheckRequest new];
+    checkRequest.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    checkRequest.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    checkRequest.inode = innode;
+    [checkRequest setFinishBlock:^(QCloudSMHFileDeletionCheckResult * _Nullable result, NSError * _Nullable error) {
+        // 使用不存在的 inode，预期返回错误或 Unknown
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [getDeleteExpectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] fileDeletionCheck:checkRequest];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+- (void)testUploadAndCopyFileWithContentCas {
+    // 文件上传接口：设置 contentCas 和 withContentCas
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFileWithContentCas"];
+    __block NSString *contentCas = @"";
+    NSString *path = [@"/" stringByAppendingString:[NSString stringWithFormat:@"%@_%@", @([NSDate.date timeIntervalSince1970]), testContentCasFile]];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV2;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithRandomSizeFrom:1 * 1024 * 1024 to:5 * 1024 * 1024]];
+    uploadReq.uploadPath = path;
+    uploadReq.uploadBodyIsCompleted = YES;
+    uploadReq.withContentCas = YES;
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        contentCas = result.contentCas;
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    // 复制文件请求：设置 contentCas 和 withContentCas
+    XCTestExpectation *copyExpectation = [self expectationWithDescription:@"testCopyFileWithContentCas"];
+    QCloudSMHCopyFileRequest *request = [QCloudSMHCopyFileRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    request.filePath = [@"/" stringByAppendingString:[NSString stringWithFormat:@"copy_%@_%@", @([NSDate.date timeIntervalSince1970]), testContentCasFile]];
+    request.from = path;
+    request.conflictStrategy = QCloudSMHConflictStrategyEnumOverWrite;
+    request.contentCas = contentCas;
+    request.withContentCas = YES;
+    [request setFinishBlock:^(QCloudSMHRenameResult * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        [copyExpectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] copyFile:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+- (void)testUploadAndRenameFileWithContentCas {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFileWithContentCas"];
+    __block NSString *contentCas = @"";
+    NSString *path = [@"/" stringByAppendingString:[NSString stringWithFormat:@"%@_%@", @([NSDate.date timeIntervalSince1970]), testContentCasFile]];
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV2;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithRandomSizeFrom:1 * 1024 * 1024 to:5 * 1024 * 1024]];
+    uploadReq.uploadPath = path;
+    uploadReq.uploadBodyIsCompleted = YES;
+    uploadReq.withContentCas = YES;
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        contentCas = result.contentCas;
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    // 重命名文件请求：设置 contentCas 和 withContentCas
+    XCTestExpectation *renameExpectation = [self expectationWithDescription:@"testRenameFileWithContentCas"];
+    QCloudSMHRenameFileRequest *request = [QCloudSMHRenameFileRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    request.filePath = [@"/" stringByAppendingString:[NSString stringWithFormat:@"rename_%@_%@", @([NSDate.date timeIntervalSince1970]), testContentCasFile]];
+    request.from = path;
+    request.conflictStrategy = QCloudSMHConflictStrategyEnumOverWrite;
+    request.moveAuthority = YES;
+    request.withContentCas = YES;
+    request.contentCas = contentCas;
+    [request setFinishBlock:^(QCloudSMHRenameResult * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        [renameExpectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] renameFile:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+- (void)testUploadAndGetINodeDetailWithContentCas {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFileWithContentCas"];
+    __block NSString *contentCas = @"";
+    NSString *path = [@"/" stringByAppendingString:[NSString stringWithFormat:@"%@_%@", @([NSDate.date timeIntervalSince1970]), testContentCasFile]];
+    __block NSString *innode = @"";
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV2;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithRandomSizeFrom:1 * 1024 * 1024 to:5 * 1024 * 1024]];
+    uploadReq.uploadPath = path;
+    uploadReq.uploadBodyIsCompleted = YES;
+    uploadReq.withContentCas = YES;
+    uploadReq.withInode = YES;
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        contentCas = result.contentCas;
+        innode = result.inode;
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    // 根据文件 ID 查看文件详情请求：设置 contentCas 和 withContentCas
+    XCTestExpectation *getExpectation = [self expectationWithDescription:@"testGetINodeDetailWithContentCas"];
+    QCloudSMHGetINodeDetailRequest *request = [QCloudSMHGetINodeDetailRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    request.iNode = innode;
+    request.contentCas = contentCas;
+    request.withContentCas = YES;
+    [request setFinishBlock:^(QCloudSMHINodeDetailInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        [getExpectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] getINodeDetail:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+- (void)testUploadAndDetailDirectoryWithContentCas {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFileWithContentCas"];
+    NSString *path = [@"/" stringByAppendingString:[NSString stringWithFormat:@"%@_%@", @([NSDate.date timeIntervalSince1970]), testContentCasFile]];
+    __block NSString *contentCas = @"";
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV2;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithRandomSizeFrom:1 * 1024 * 1024 to:5 * 1024 * 1024]];
+    uploadReq.uploadPath = path;
+    uploadReq.uploadBodyIsCompleted = YES;
+    uploadReq.withContentCas = YES;
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        contentCas = result.contentCas;
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    // 查看文件详情请求（目录详情）：设置 withContentCas
+    XCTestExpectation *detailExpectation = [self expectationWithDescription:@"testDetailDirectoryWithContentCas"];
+    QCloudSMHDetailDirectoryRequest *request = [QCloudSMHDetailDirectoryRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    request.filePath = path;
+    request.withInode = YES;
+    request.withFavoriteStatus = YES;
+    request.withContentCas = YES;
+    [request setFinishBlock:^(QCloudSMHContentInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        [detailExpectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] detailDirectory:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+- (void)testListContentsWithContentCas {
+    // 列出目录内容请求：设置 withContentCas
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testListContentsWithContentCas"];
+    QCloudSMHListContentsRequest *request = [QCloudSMHListContentsRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    request.dirPath = @"/";
+    request.limit = 100;
+    request.withInode = YES;
+    request.withFavoriteStatus = YES;
+    request.withContentCas = YES;
+    __block BOOL isContentCas = NO;
+    [request setFinishBlock:^(QCloudSMHContentListInfo * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        for (QCloudSMHContentInfo *info in result.contents) {
+            if (info.contentCas.length > 0) {
+                isContentCas = YES;
+                break;
+            }
+        }
+        XCTAssertTrue(isContentCas, @"contentCas 不能为空");
+        [expectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] listContents:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+- (void)testUploadAndGetDownloadInfoWithContentCas {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"testUploadFileWithContentCas"];
+    NSString *path = [@"/" stringByAppendingString:[NSString stringWithFormat:@"%@_%@", @([NSDate.date timeIntervalSince1970]), testContentCasFile]];
+    __block NSString *contentCas = @"";
+    QCloudCOSSMHUploadObjectRequest *uploadReq = [QCloudCOSSMHUploadObjectRequest new];
+    uploadReq.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    uploadReq.userId = QCloudSMHTestTools.singleTool.getUserIdV2;
+    uploadReq.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    
+    uploadReq.body = [NSURL fileURLWithPath:[QCloudSMHTestTools tempFileWithRandomSizeFrom:1 * 1024 * 1024 to:5 * 1024 * 1024]];
+    uploadReq.uploadPath = path;
+    uploadReq.uploadBodyIsCompleted = YES;
+    uploadReq.withContentCas = YES;
+    [uploadReq setFinishBlock:^(QCloudSMHContentInfo *result, NSError *error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        XCTAssertNotNil(result.contentCas, @"contentCas 不能为空");
+        contentCas = result.contentCas;
+        [expectation fulfill];
+    }];
+    
+    [[QCloudSMHService defaultSMHService] uploadObject:uploadReq];
+    [self waitForExpectationsWithTimeout:100 handler:nil];
+    
+    // 获取下载信息请求：设置 contentCas 和 withContentCas
+    XCTestExpectation *infoExpectation = [self expectationWithDescription:@"testGetDownloadInfoWithContentCas"];
+    QCloudSMHGetDownloadInfoRequest *request = [QCloudSMHGetDownloadInfoRequest new];
+    request.libraryId = QCloudSMHTestTools.singleTool.getLibraryIdV2;
+    request.spaceId = QCloudSMHTestTools.singleTool.getSpaceIdV2;
+    request.filePath = path;
+    request.purpose = QCloudSMHPurposeDownload;
+    request.historyId = 0;
+    request.contentCas = contentCas;
+    request.withContentCas = YES;
+    [request setFinishBlock:^(QCloudSMHDownloadInfoModel * _Nullable result, NSError * _Nullable error) {
+        XCTAssertNil(error);
+        XCTAssertNotNil(result);
+        [infoExpectation fulfill];
+    }];
+    [[QCloudSMHService defaultSMHService] getDonwloadInfo:request];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
+}
+
+
 @end

@@ -1,77 +1,79 @@
 {
   "name": "QCloudCOSSMH",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "summary": "QCloudCOSSMH 腾讯云iOS-SDK组件",
-  "description": "TODO: Add long description of the pod here.aaa",
-  "pod_target_xcconfig": {
-    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
-  },
   "homepage": "https://cloud.tencent.com/",
   "license": "MIT",
   "authors": {
-    "QCloudTerminalLab": "g_PDTC_storage_DEV_terminallab@tencent.com"
+    "QCloud Terminal Team": "QCloudTerminalTeam"
   },
   "source": {
-    "git": "http://git.woa.com/qcloud-terminal/QCloudiOSCodes/tree/develop/BisnessComponents/COSSMH/QCloudCOSSMH",
-    "branch": "develop-SMH-SDK"
+    "git": "https://github.com/tencentyun/smh-sdk-ios.git",
+    "tag": "1.0.10"
+  },
+  "pod_target_xcconfig": {
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
+  },
+  "user_target_xcconfig": {
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
   },
   "platforms": {
-    "ios": "9.0"
+    "ios": "10.0"
   },
   "static_framework": true,
   "default_subspecs": "Default",
   "subspecs": [
     {
       "name": "Default",
-      "source_files": "Pod/Classes/**/*",
+      "source_files": "QCloudCOSSMH/Classes/**/*",
       "exclude_files": [
-        "Pod/Classes/Api/QCloudCOSSMHApi.h",
-        "Pod/Classes/User/QCloudCOSSMHUser.h"
+        "QCloudCOSSMH/Classes/Api/QCloudCOSSMHApi.h",
+        "QCloudCOSSMH/Classes/User/QCloudCOSSMHUser.h"
       ],
       "dependencies": {
         "QCloudCore": [
-          "6.5.4"
+          "6.5.5"
         ]
       }
     },
     {
       "name": "WithoutCoreVersion",
-      "source_files": "Pod/Classes/**/*",
+      "source_files": "QCloudCOSSMH/Classes/**/*",
       "exclude_files": [
-        "Pod/Classes/Api/QCloudCOSSMHApi.h",
-        "Pod/Classes/User/QCloudCOSSMHUser.h"
+        "QCloudCOSSMH/Classes/Api/QCloudCOSSMHApi.h",
+        "QCloudCOSSMH/Classes/User/QCloudCOSSMHUser.h"
       ],
       "dependencies": {
         "QCloudCore": [
-
+          "6.5.5"
         ]
       }
     },
     {
       "name": "Slim",
-      "source_files": "Pod/Classes/**/*",
+      "source_files": "QCloudCOSSMH/Classes/**/*",
       "exclude_files": [
-        "Pod/Classes/Api/QCloudCOSSMHApi.h",
-        "Pod/Classes/User/QCloudCOSSMHUser.h"
+        "QCloudCOSSMH/Classes/Api/QCloudCOSSMHApi.h",
+        "QCloudCOSSMH/Classes/User/QCloudCOSSMHUser.h"
       ],
       "dependencies": {
         "QCloudCore/WithoutMTA": [
-          "6.5.4"
+          "6.5.5"
         ]
       }
     },
     {
       "name": "Api",
       "source_files": [
-        "Pod/Classes/Api/*",
-        "Pod/Classes/Api/**/*",
-        "Pod/Classes/QCloudCOSSMHVersion.*",
-        "Pod/Classes/Common/*",
-        "Pod/Classes/Common/**/*"
+        "QCloudCOSSMH/Classes/Api/*",
+        "QCloudCOSSMH/Classes/Api/**/*",
+        "QCloudCOSSMH/Classes/QCloudCOSSMHVersion.*",
+        "QCloudCOSSMH/Classes/Common/*",
+        "QCloudCOSSMH/Classes/Common/**/*"
       ],
       "dependencies": {
         "QCloudCore/WithoutMTA": [
-          "6.5.4"
+          "6.5.5"
         ]
       }
     }

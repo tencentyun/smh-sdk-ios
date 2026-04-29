@@ -1,7 +1,7 @@
 PODS:
-  - QCloudCore/WithoutMTA (6.5.4)
-  - QCloudCOSSMH/Api (1.0.9):
-    - QCloudCore/WithoutMTA (= 6.5.4)
+  - QCloudCore/WithoutMTA (6.5.5)
+  - QCloudCOSSMH/Api (1.0.10):
+    - QCloudCore/WithoutMTA (= 6.5.5)
 
 DEPENDENCIES:
   - QCloudCOSSMH/Api (from `../`)
@@ -15,8 +15,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  QCloudCore: 9558f2245ff3218acda09b79810d05660ff420f9
-  QCloudCOSSMH: 4c872b43609b4723f1cb8406e4b2f216a5cfae74
+  QCloudCore: cbdf50b7cee5dd515b0467f55361ac8af36349cd
+  QCloudCOSSMH: 4e200cc30a042ec5f1ee0dd15767c0c65c9a633d
 
 PODFILE CHECKSUM: dc0212f8bd3e2a2a5d600d795b301d5e73ac6882
 

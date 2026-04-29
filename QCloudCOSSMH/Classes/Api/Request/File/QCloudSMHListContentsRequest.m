@@ -82,6 +82,9 @@
     
     [self.requestData setQueryStringParamter:self.withInode?@"1":@"0" withKey:@"with_inode"];
     [self.requestData setQueryStringParamter:self.withFavoriteStatus?@"1":@"0" withKey:@"with_favorite_status"];
+    if (self.withContentCas) {
+        [self.requestData setQueryStringParamter:@"1" withKey:@"with_content_cas"];
+    }
     
     if (self.accessToken) {
         [self.requestData setQueryStringParamter:self.accessToken withKey:@"access_token"];

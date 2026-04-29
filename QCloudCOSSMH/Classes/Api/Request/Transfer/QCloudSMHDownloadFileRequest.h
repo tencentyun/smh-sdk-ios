@@ -38,6 +38,11 @@ typedef void(^QCloudSMHReciveResponseHeader)(NSDictionary * header);
 
 @property (strong, nonatomic)QCloudSMHReciveResponseHeader responseHeader;
 
+/**
+ 文件内容的 Cas 标识，可选参数。当文件存在并且文件内容的 Cas 标识匹配时，才允许删除此文件；
+ */
+@property (nonatomic, strong, nullable) NSString *contentCas;
+
 @end
 
 NS_ASSUME_NONNULL_END

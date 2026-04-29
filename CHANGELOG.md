@@ -1,3 +1,9 @@
+# 1.0.10
+1. 新增 46 个 API 接口（Token、Space、File、Directory、Recycle、Share 模块）
+2. 补齐部分接口缺失参数
+3. 新增 macOS 平台支持
+4. 升级 QCloudCore 依赖版本到 6.5.5
+
 # 1.0.9
 1. 新增第三方URL上传功能
 

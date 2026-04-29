@@ -19,6 +19,7 @@
 
     NSArray *responseSerializers = @[
         QCloudAcceptRespnseCodeBlock([NSSet setWithObjects:@(200), @(201), @(202), @(203), @(204), @(205), @(206), @(207), @(208), @(226), nil], nil),
+        QCloudResponseJSONSerilizerBlock,
         QCloudResponseAppendHeadersSerializerBlock,
         QCloudResponseObjectSerilizerBlock([QCloudSMHRenameResult class])
     ];
@@ -41,8 +42,13 @@
     }
     
     [self.requestData setParameter:QCloudSMHConflictStrategyByTransferToString(self.conflictStrategy) withKey:@"conflict-resolution-strategy"];
-    
-    NSDictionary * dic = @{@"copyFrom":self.from};
+    if (self.withContentCas) {
+        [self.requestData setQueryStringParamter:@"1" withKey:@"with_content_cas"];
+    }
+    NSMutableDictionary * dic = @{@"copyFrom":self.from}.mutableCopy;
+    if (self.contentCas.length > 0) {
+        [dic setObject:self.contentCas forKey:@"contentCas"];
+    }
     NSData * data = [dic qcloud_modelToJSONData];
     self.requestData.directBody = data;
 

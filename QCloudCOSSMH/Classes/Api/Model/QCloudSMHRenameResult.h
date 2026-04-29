@@ -13,6 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,copy)NSArray *paths;
 
+/**
+ 文件内容的Cas标识
+ */
+@property (nonatomic, copy) NSString *contentCas;
+
 @end
 
 
