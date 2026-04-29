@@ -41,6 +41,9 @@
         [__pathComponents addObject:self.filePath];
     }
     [self.requestData setQueryStringParamter:@(self.permanent).stringValue withKey:@"permanent"];
+    if (self.contentCas.length > 0) {
+        [self.requestData setQueryStringParamter:self.contentCas withKey:@"content_cas"];
+    }
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];
     return YES;
 }

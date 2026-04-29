@@ -43,13 +43,19 @@
     }
     self.requestData.URIComponents = __pathComponents;
     [self.requestData setParameter:QCloudSMHConflictStrategyByTransferToString(self.conflictStrategy) withKey:@"conflict_resolution_strategy"];
+    if (self.withContentCas) {
+        [self.requestData setQueryStringParamter:@"1" withKey:@"with_content_cas"];
+    }
     [self.requestData setQueryStringParamter:self.moveAuthority?@"true":@"false" withKey:@"move_authority"];
     
     if (self.from.length > 1 && [[self.from substringToIndex:1] isEqualToString:@"/"]) {
         self.from = [self.from substringFromIndex:1];
     }
     
-    NSDictionary * dic = @{@"from":self.from?:@""};
+    NSMutableDictionary * dic = @{@"from":self.from?:@""}.mutableCopy;
+    if (self.contentCas.length > 0) {
+        [dic setObject:self.contentCas forKey:@"contentCas"];
+    }
     NSData * data = [dic qcloud_modelToJSONData];
     self.requestData.directBody = data;
 

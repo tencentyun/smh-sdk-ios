@@ -147,6 +147,7 @@ class SMHTokenGenerator:
             result["request_params"] = {
                 "base_url": base_url,
                 "library_id": library_id,
+                "library_secret": library_secret,
                 "space_id": space_id,
                 "user_id": user_id,
                 "period": period

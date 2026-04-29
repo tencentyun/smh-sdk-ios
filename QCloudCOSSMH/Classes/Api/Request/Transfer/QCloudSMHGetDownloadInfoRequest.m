@@ -57,6 +57,12 @@
     if (self.preCheck) {
         [self.requestData setQueryStringParamter:@(self.preCheck).stringValue withKey:@"pre_check"];
     }
+    if (self.contentCas.length > 0) {
+        [self.requestData setQueryStringParamter:self.contentCas withKey:@"content_cas"];
+    }
+    if (self.withContentCas) {
+        [self.requestData setQueryStringParamter:@"1" withKey:@"with_content_cas"];
+    }
     
     [self.requestData setQueryStringParamter:QCloudSMHPurposeTypeTransferToString(self.purpose) withKey:@"purpose"];
     

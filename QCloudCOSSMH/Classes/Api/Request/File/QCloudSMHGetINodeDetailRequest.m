@@ -45,6 +45,12 @@
     self.requestData.serverURL = serverHost.absoluteString;
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];
     self.requestData.URIComponents = __pathComponents;
+    if (self.contentCas.length > 0) {
+        [self.requestData setQueryStringParamter:self.contentCas withKey:@"content_cas"];
+    }
+    if (self.withContentCas) {
+        [self.requestData setQueryStringParamter:@"1" withKey:@"with_content_cas"];
+    }
     [__pathComponents addObject:self.iNode];
     
     [self.requestData setValue:serverHost.host forHTTPHeaderField:@"Host"];

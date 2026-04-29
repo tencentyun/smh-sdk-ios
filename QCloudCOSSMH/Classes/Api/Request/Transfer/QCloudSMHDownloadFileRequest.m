@@ -55,6 +55,10 @@
     }
     [self.requestData setQueryStringParamter:QCloudSMHPurposeTypeTransferToString(self.purpose) withKey:@"purpose"];
     
+    if (self.contentCas.length > 0) {
+        [self.requestData setQueryStringParamter:self.contentCas withKey:@"content_cas"];
+    }
+    
     NSURL *serverHost = [NSURL URLWithString:[_serverDomain stringByAppendingString:@"api/v1/file"]];
     self.requestData.serverURL = serverHost.absoluteString;
     NSMutableArray *__pathComponents = [NSMutableArray arrayWithArray:self.requestData.URIComponents];

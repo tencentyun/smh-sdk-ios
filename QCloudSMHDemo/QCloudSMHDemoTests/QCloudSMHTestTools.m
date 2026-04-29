@@ -77,6 +77,10 @@
     return  _smhTokenDicV1[@"library_id"] ?: @"";
 }
 
+-(NSString *)getLibrarySecretV1{
+    return  _smhTokenDicV1[@"library_secret"] ?: @"";
+}
+
 #pragma mark - v2 接口
 
 -(NSString *)getUserIdV2{
@@ -101,6 +105,10 @@
     return  _smhTokenDicV2[@"library_id"] ?: @"";
 }
 
+-(NSString *)getLibrarySecretV2{
+    return  _smhTokenDicV2[@"library_secret"] ?: @"";
+}
+
 + (NSString *)tempFileWithSize:(int)size {
     NSString *file4MBPath = QCloudPathJoin(QCloudTempDir(), [NSUUID UUID].UUIDString);
 
@@ -112,6 +120,16 @@
     [handler closeFile];
 
     return file4MBPath;
+}
+
++ (NSString *)tempFileWithRandomSizeFrom:(int)minSize to:(int)maxSize {
+    // 使用当前时间戳（纳秒级）作为随机种子
+    NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+    unsigned int seed = (unsigned int)(timestamp * 1000000);
+    srand(seed);
+    int randomSize = minSize + (rand() % (maxSize - minSize + 1));
+    NSLog(@"Random file size: %d bytes (seed from timestamp: %.6f)", randomSize, timestamp);
+    return [self tempFileWithSize:randomSize];
 }
 
 #pragma mark - 读取json文件

@@ -167,6 +167,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 是否因为配额超限而被删除文件（仅非目录或相簿返回）；
 @property (nonatomic, assign)BOOL removedByQuota;
+
+/**
+ * 文件内容标识
+ */
+@property (nonatomic, copy) NSString *contentCas;
 @end
 
 

@@ -73,6 +73,52 @@
 #import "QCloudGetSpaceUsageRequest.h"
 #import "QCloudSMHPutObjectLinkRequest.h"
 #import "QCloudSMHExternalURLDownloadRequest.h"
+#import "QCloudSMHFileDeletionCheckRequest.h"
+#import "QCloudSMHCreateTokenRequest.h"
+#import "QCloudSMHRenewTokenRequest.h"
+#import "QCloudSMHDeleteTokenRequest.h"
+#import "QCloudSMHUpdateQuotaByIdRequest.h"
+#import "QCloudSMHGetQuotaInfoRequest.h"
+#import "QCloudSMHPrepareM3u8UploadRequest.h"
+#import "QCloudSMHConfirmM3u8UploadRequest.h"
+#import "QCloudSMHRenewM3u8UploadRequest.h"
+#import "QCloudSMHModifyM3u8SegmentsRequest.h"
+#import "QCloudSMHLiveTranscodeMediaFileRequest.h"
+#import "QCloudSMHDeleteUserTokensRequest.h"
+#import "QCloudSMHCreateSpaceRequest.h"
+#import "QCloudSMHListSpaceRequest.h"
+#import "QCloudSMHGetSpaceExtensionRequest.h"
+#import "QCloudSMHUpdateSpaceExtensionRequest.h"
+#import "QCloudSMHDeleteSpaceRequest.h"
+#import "QCloudSMHGetLibrarySpaceCountRequest.h"
+#import "QCloudSMHGetLibraryUsageRequest.h"
+#import "QCloudSMHConvertFileRequest.h"
+#import "QCloudSMHPreviewFileRequest.h"
+#import "QCloudSMHDownloadTranscodedVideoRequest.h"
+#import "QCloudSMHGetDeltaCursorRequest.h"
+#import "QCloudSMHQueryDeltaLogRequest.h"
+#import "QCloudSMHEmptyHistoryRequest.h"
+#import "QCloudSMHCreateQuotaRequest.h"
+#import "QCloudSMHGetQuotaRequest.h"
+#import "QCloudSMHUpdateQuotaRequest.h"
+#import "QCloudSMHGetMediaFileInfoRequest.h"
+#import "QCloudSMHCreateTranscodeTaskRequest.h"
+#import "QCloudSMHGetDirectoryStatsRequest.h"
+#import "QCloudSMHCalibrateDirectoryStatsRequest.h"
+#import "QCloudSMHRecycleSetLifecycleRequest.h"
+#import "QCloudSMHVerifyExtractionCodeRequest.h"
+#import "QCloudSMHSearchSharesRequest.h"
+#import "QCloudSMHSetShareEnabledRequest.h"
+#import "QCloudSMHGetShareDetailRequest.h"
+#import "QCloudSMHListSharesRequest.h"
+#import "QCloudSMHGetShareUrlDetailRequest.h"
+#import "QCloudSMHUpdateShareRequest.h"
+#import "QCloudSMHSaveShareFileRequest.h"
+#import "QCloudSMHPreviewShareFileRequest.h"
+#import "QCloudSMHDownloadShareFileRequest.h"
+#import "QCloudSMHListShareFilesRequest.h"
+#import "QCloudSMHCreateShareRequest.h"
+#import "QCloudSMHDeleteShareRequest.h"
 
 @interface QCloudSMHService()
 @property (nonatomic,strong)QCloudConfiguration *configuration;
@@ -553,11 +599,217 @@ static QCloudSMHService *_service;
     [self performRequest:request];
 }
 
+-(void)fileDeletionCheck:(QCloudSMHFileDeletionCheckRequest *)request{
+    [self performRequest:request];
+}
+
 #pragma mark - 第三方 URL 下载（内部使用）
 
 - (void)downloadExternalURL:(QCloudSMHExternalURLDownloadRequest *)request {
     request.timeoutInterval = self.configuration.timeoutInterval;
     [[QCloudHTTPSessionManager shareClient] performRequest:request];
+}
+
+#pragma mark - Token
+
+- (void)createToken:(QCloudSMHCreateTokenRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest*)request];
+}
+
+- (void)renewToken:(QCloudSMHRenewTokenRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest*)request];
+}
+
+- (void)deleteToken:(QCloudSMHDeleteTokenRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest*)request];
+}
+
+- (void)deleteUserTokens:(QCloudSMHDeleteUserTokensRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest*)request];
+}
+
+#pragma mark - Space
+
+- (void)createSpace:(QCloudSMHCreateSpaceRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)listSpace:(QCloudSMHListSpaceRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)getSpaceExtension:(QCloudSMHGetSpaceExtensionRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)updateSpaceExtension:(QCloudSMHUpdateSpaceExtensionRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)deleteSpace:(QCloudSMHDeleteSpaceRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)getLibrarySpaceCount:(QCloudSMHGetLibrarySpaceCountRequest *)request {
+    [self performRequest:request];
+}
+
+#pragma mark - Usage
+
+- (void)getLibraryUsage:(QCloudSMHGetLibraryUsageRequest *)request {
+    [self performRequest:request];
+}
+
+#pragma mark - File
+
+- (void)convertFile:(QCloudSMHConvertFileRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)previewFile:(QCloudSMHPreviewFileRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)downloadTranscodedVideo:(QCloudSMHDownloadTranscodedVideoRequest *)request {
+    [self performRequest:request];
+}
+
+#pragma mark - Delta
+
+- (void)getDeltaCursor:(QCloudSMHGetDeltaCursorRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)queryDeltaLog:(QCloudSMHQueryDeltaLogRequest *)request {
+    [self performRequest:request];
+}
+
+#pragma mark - History
+
+- (void)emptyHistory:(QCloudSMHEmptyHistoryRequest *)request {
+    [self performRequest:request];
+}
+
+#pragma mark - Quota
+
+- (void)createQuota:(QCloudSMHCreateQuotaRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)getQuota:(QCloudSMHGetQuotaRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)updateQuota:(QCloudSMHUpdateQuotaRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)updateQuotaById:(QCloudSMHUpdateQuotaByIdRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)getQuotaInfo:(QCloudSMHGetQuotaInfoRequest *)request {
+    [self performRequest:request];
+}
+
+#pragma mark - HLS
+
+- (void)getMediaFileInfo:(QCloudSMHGetMediaFileInfoRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)createTranscodeTask:(QCloudSMHCreateTranscodeTaskRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)prepareM3u8Upload:(QCloudSMHPrepareM3u8UploadRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)confirmM3u8Upload:(QCloudSMHConfirmM3u8UploadRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)renewM3u8Upload:(QCloudSMHRenewM3u8UploadRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)modifyM3u8Segments:(QCloudSMHModifyM3u8SegmentsRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)liveTranscodeMediaFile:(QCloudSMHLiveTranscodeMediaFileRequest *)request {
+    [self performRequest:request];
+}
+
+#pragma mark - Directory
+
+- (void)getDirectoryStats:(QCloudSMHGetDirectoryStatsRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)calibrateDirectoryStats:(QCloudSMHCalibrateDirectoryStatsRequest *)request {
+    [self performRequest:request];
+}
+
+#pragma mark - Recycle
+
+- (void)recycleSetLifecycle:(QCloudSMHRecycleSetLifecycleRequest *)request {
+    [self performRequest:request];
+}
+
+#pragma mark - Share
+
+- (void)verifyExtractionCode:(QCloudSMHVerifyExtractionCodeRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest*)request];
+}
+
+- (void)searchShares:(QCloudSMHSearchSharesRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)setShareEnabled:(QCloudSMHSetShareEnabledRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)getShareDetail:(QCloudSMHGetShareDetailRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)listShares:(QCloudSMHListSharesRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)getShareUrlDetail:(QCloudSMHGetShareUrlDetailRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest*)request];
+}
+
+- (void)updateShare:(QCloudSMHUpdateShareRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)saveShareFile:(QCloudSMHSaveShareFileRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
+
+- (void)previewShareFile:(QCloudSMHPreviewShareFileRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest*)request];
+}
+
+- (void)downloadShareFile:(QCloudSMHDownloadShareFileRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
+
+- (void)listShareFiles:(QCloudSMHListShareFilesRequest *)request {
+    [[QCloudHTTPSessionManager shareClient] performRequest:(QCloudHTTPRequest *)request];
+}
+
+- (void)createShare:(QCloudSMHCreateShareRequest *)request {
+    [self performRequest:request];
+}
+
+- (void)deleteShare:(QCloudSMHDeleteShareRequest *)request {
+    [self performRequest:request];
 }
 
 @end

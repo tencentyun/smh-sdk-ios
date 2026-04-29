@@ -24,6 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,assign)int permanent;
 
+/**
+ 文件内容的 Cas 标识，可选参数。当文件存在并且文件内容的 Cas 标识匹配时，才允许删除此文件；
+ */
+@property (nonatomic, strong, nullable) NSString *contentCas;
 
 -(void)setFinishBlock:(void (^ _Nullable)(QCloudSMHDeleteResult * _Nullable result, NSError * _Nullable error ))QCloudRequestFinishBlock;
 @end
